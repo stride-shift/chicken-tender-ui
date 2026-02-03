@@ -5,6 +5,7 @@ import { DashboardPage } from '@/pages/DashboardPage'
 import { TendersPage } from '@/pages/TendersPage'
 import { RubricPage } from '@/pages/RubricPage'
 import { LoginPage } from '@/pages/LoginPage'
+import { ResetPasswordPage } from '@/pages/ResetPasswordPage'
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary'
 import { ToastProvider } from '@/contexts/ToastContext'
 import { SidebarProvider } from '@/contexts/SidebarContext'
@@ -38,6 +39,9 @@ export default function App() {
           <Routes>
             {/* Login route - outside AppShell for full-screen experience */}
             <Route path="/login" element={<LoginPage />} />
+
+            {/* Password reset route - outside AppShell, handles Supabase callback */}
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
 
             {/* Protected routes - wrapped in AppShell */}
             <Route

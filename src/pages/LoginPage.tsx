@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/contexts/AuthContext';
 import LoginCard from '@/features/auth/components/LoginCard';
+import { ForgotPasswordModal } from '@/features/auth/components/ForgotPasswordModal';
 
 // Light mode color palette
 const theme = {
@@ -14,6 +15,7 @@ export function LoginPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const handleLogin = useCallback(
     async (username: string, password: string) => {
@@ -35,6 +37,13 @@ export function LoginPage() {
     [auth, isLoading, navigate]
   );
 
+  const handleForgotPassword = useCallback(
+    async (email: string) => {
+      await auth.forgotPassword(email);
+    },
+    [auth]
+  );
+
   return (
     <div
       style={{
@@ -48,12 +57,16 @@ export function LoginPage() {
         gap: 16,
       }}
     >
-      <LoginCard onLogin={handleLogin} isLoading={isLoading} />
+      <LoginCard
+        onLogin={handleLogin}
+        onForgotPassword={() => setShowForgotPassword(true)}
+        isLoading={isLoading}
+      />
       {error && (
         <div
           style={{
-            fontFamily: '"Press Start 2P", monospace',
-            fontSize: 8,
+            fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+            fontSize: 11,
             color: '#dc2626',
             background: '#fef2f2',
             border: '3px solid #dc2626',
@@ -66,6 +79,12 @@ export function LoginPage() {
           {error}
         </div>
       )}
+
+      <ForgotPasswordModal
+        isOpen={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+        onSubmit={handleForgotPassword}
+      />
     </div>
   );
 }

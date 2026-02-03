@@ -29,4 +29,5 @@ export interface AuthContextValue extends AuthState {
   logout: () => Promise<void>;
   setActiveClient: (clientCode: string) => void;
   updatePassword: (newPassword: string) => Promise<void>;
+  forgotPassword: (email: string) => Promise<void>;
 }

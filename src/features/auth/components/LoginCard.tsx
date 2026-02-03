@@ -4,6 +4,7 @@ import { ArcadeButton } from '@/components/ui/ArcadeButton';
 
 interface LoginCardProps {
   onLogin: (username: string, password: string) => void;
+  onForgotPassword?: () => void;
   isLoading: boolean;
 }
 
@@ -20,9 +21,10 @@ const theme = {
   inputBg: '#ffffff',
 };
 
-const LoginCard: React.FC<LoginCardProps> = ({ onLogin, isLoading }) => {
+const LoginCard: React.FC<LoginCardProps> = ({ onLogin, onForgotPassword, isLoading }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,15 +51,15 @@ const LoginCard: React.FC<LoginCardProps> = ({ onLogin, isLoading }) => {
 
       <div style={{ padding: '40px 32px' }}>
         {/* Logo */}
-        <div style={{ marginBottom: 32 }}>
-          <CombinedLogo size="large" showPixelBoot={isLoading} />
+        <div style={{ marginBottom: 40 }}>
+          <CombinedLogo size="xlarge" showPixelBoot={isLoading} />
         </div>
 
         {/* Tagline */}
         <div
           style={{
-            fontFamily: '"Press Start 2P", monospace',
-            fontSize: 7,
+            fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+            fontSize: 9,
             color: theme.textMuted,
             textAlign: 'center',
             marginBottom: 32,
@@ -85,8 +87,8 @@ const LoginCard: React.FC<LoginCardProps> = ({ onLogin, isLoading }) => {
           <div>
             <label
               style={{
-                fontFamily: '"Press Start 2P", monospace',
-                fontSize: 7,
+                fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+                fontSize: 11,
                 color: theme.textMuted,
                 display: 'block',
                 marginBottom: 8,
@@ -107,8 +109,8 @@ const LoginCard: React.FC<LoginCardProps> = ({ onLogin, isLoading }) => {
             >
               <span
                 style={{
-                  fontFamily: '"Press Start 2P", monospace',
-                  fontSize: 10,
+                  fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+                  fontSize: 14,
                   color: theme.primary,
                   marginRight: 10,
                 }}
@@ -123,8 +125,8 @@ const LoginCard: React.FC<LoginCardProps> = ({ onLogin, isLoading }) => {
                 disabled={isLoading}
                 style={{
                   flex: 1,
-                  fontFamily: '"Press Start 2P", monospace',
-                  fontSize: 9,
+                  fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+                  fontSize: 13,
                   color: theme.text,
                   background: 'transparent',
                   border: 'none',
@@ -140,8 +142,8 @@ const LoginCard: React.FC<LoginCardProps> = ({ onLogin, isLoading }) => {
           <div>
             <label
               style={{
-                fontFamily: '"Press Start 2P", monospace',
-                fontSize: 7,
+                fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+                fontSize: 11,
                 color: theme.textMuted,
                 display: 'block',
                 marginBottom: 8,
@@ -161,8 +163,8 @@ const LoginCard: React.FC<LoginCardProps> = ({ onLogin, isLoading }) => {
             >
               <span
                 style={{
-                  fontFamily: '"Press Start 2P", monospace',
-                  fontSize: 10,
+                  fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+                  fontSize: 14,
                   color: theme.primary,
                   marginRight: 10,
                 }}
@@ -170,15 +172,15 @@ const LoginCard: React.FC<LoginCardProps> = ({ onLogin, isLoading }) => {
                 ▸
               </span>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter password..."
                 disabled={isLoading}
                 style={{
                   flex: 1,
-                  fontFamily: '"Press Start 2P", monospace',
-                  fontSize: 9,
+                  fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+                  fontSize: 13,
                   color: theme.text,
                   background: 'transparent',
                   border: 'none',
@@ -187,6 +189,23 @@ const LoginCard: React.FC<LoginCardProps> = ({ onLogin, isLoading }) => {
                   letterSpacing: 1,
                 }}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                disabled={isLoading}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '0 4px',
+                  fontSize: 18,
+                  color: theme.textMuted,
+                  opacity: isLoading ? 0.5 : 1,
+                }}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? '👁️' : '👁️‍🗨️'}
+              </button>
             </div>
           </div>
 
@@ -197,8 +216,8 @@ const LoginCard: React.FC<LoginCardProps> = ({ onLogin, isLoading }) => {
             size="lg"
             disabled={isLoading}
             style={{
-              fontFamily: '"Press Start 2P", monospace',
-              fontSize: 11,
+              fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+              fontSize: 14,
               marginTop: 8,
               width: '100%',
             }}
@@ -214,9 +233,10 @@ const LoginCard: React.FC<LoginCardProps> = ({ onLogin, isLoading }) => {
             }}
           >
             <span
+              onClick={onForgotPassword}
               style={{
-                fontFamily: '"Press Start 2P", monospace',
-                fontSize: 6,
+                fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+                fontSize: 12,
                 color: theme.accent,
                 cursor: 'pointer',
                 letterSpacing: 1,
