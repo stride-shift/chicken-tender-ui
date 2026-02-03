@@ -1,0 +1,205 @@
+#+TITLE: Components - Quick Reference
+#+DATE: 2026-01-31
+
+* Overview
+
+Shared UI components used across the application. Organized into layout, shared, and ui subdirectories.
+
+* Layout Components
+
+Located in =components/layout/=:
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| AppShell | layout/AppShell.tsx:10 | Main layout wrapper managing sidebar toggle state |
+| Header | layout/Header.tsx:10 | Top navigation bar with arcade branding, client code, and logout |
+| Sidebar | layout/Sidebar.tsx:53 | Collapsible navigation menu with route links |
+
+* Shared Components
+
+Located in =components/shared/=:
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| RecommendationBadge | shared/RecommendationBadge.tsx:31 | Arcade-styled badge with shape variants per level |
+| StatusBadge | shared/StatusBadge.tsx:22 | LED-style badge with glowing status indicator |
+| ImportanceBadge | shared/ImportanceBadge.tsx:14 | Gradient badge with arcade styling per importance |
+| LoadingState | shared/LoadingState.tsx:7 | Animated loading bar with pulsing segments |
+| ErrorState | shared/ErrorState.tsx:9 | Arcade "GAME OVER" error display with PixelBox |
+| EmptyState | shared/EmptyState.tsx:8 | Arcade-styled empty state with PixelBox |
+| ErrorBoundary | shared/ErrorBoundary.tsx:49 | React error boundary catching component tree errors |
+| Pagination | shared/Pagination.tsx:7 | Arcade-styled page navigation with 3D buttons |
+| DateDisplay | shared/DateDisplay.tsx:7 | Date formatter with LED-style urgency countdown |
+| Markdown | shared/Markdown.tsx:9 | Styled markdown renderer using ReactMarkdown library |
+| FormattedSummary | shared/FormattedSummary.tsx:13 | Parses AI summary text into structured headings and lists |
+
+* UI Components
+
+Located in =components/ui/=:
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| PixelBox | ui/PixelBox.tsx:8 | Container with pixel-art border and corner accents |
+| LEDNumber | ui/LEDNumber.tsx:7 | Glowing LED-style number display with text shadow |
+| HealthBar | ui/HealthBar.tsx:10 | Segmented progress bar with filled segment styling |
+| Scanlines | ui/Scanlines.tsx:5 | CRT scanline overlay effect for retro aesthetic |
+| PixelStrip | ui/PixelStrip.tsx:6 | Repeating color strip divider element |
+| ArcadeButton | ui/ArcadeButton.tsx:46 | 3D button with gradient and shadow variants |
+| Toast | ui/Toast.tsx:43 | Arcade-styled toast notification with type theming |
+| Toaster | ui/Toaster.tsx:4 | Toast container managing toast queue and display |
+
+* Badge Style Reference
+
+** RecommendationBadge
+
+Config at =shared/RecommendationBadge.tsx:9=
+
+| Value | Shape | Style |
+|-------|-------|-------|
+| excellent_fit | Hexagon | Green gradient with glow |
+| good_fit | Diamond | Blue gradient, rotated 45deg |
+| worth_reviewing | Pill | Amber gradient, rounded |
+| not_recommended | Rectangle | White with gray border |
+
+** StatusBadge
+
+Config at =shared/StatusBadge.tsx:8=
+
+| Value | Color | Style |
+|-------|-------|-------|
+| active | #22c55e (green) | LED dot with glow |
+| closed | #64748b (slate) | LED dot with glow |
+| cancelled | #ef4444 (red) | LED dot with glow |
+| awarded | #f59e0b (amber) | LED dot with glow |
+
+** ImportanceBadge
+
+Config at =shared/ImportanceBadge.tsx:8=
+
+| Value | Style |
+|-------|-------|
+| high | Red gradient with pulse animation |
+| medium | Amber gradient |
+| low | Gray solid |
+
+* Arcade UI Components
+
+** PixelBox
+
+Container component (=ui/PixelBox.tsx:8=) providing pixel-art styling:
+
+- Configurable border color (default: #2d8f8f teal)
+- Configurable background color (default: white)
+- 4px offset box shadow on all sides
+- Pixel corner accents at each corner
+- Used by: Header, Sidebar, ErrorState, EmptyState
+
+** LEDNumber
+
+Display component (=ui/LEDNumber.tsx:7=) for numeric values:
+
+- Glowing text shadow effect (10px, 20px, 30px blur)
+- Three sizes: small, medium, large
+- Configurable color (default: #2d8f8f teal)
+- Monospace font with letter-spacing
+
+** HealthBar
+
+Progress component (=ui/HealthBar.tsx:10=) with segmented display:
+
+- Configurable segment count (default: 20)
+- Light and dark variants
+- Filled segments have inset shadow
+- Optional numeric label display
+
+** ArcadeButton
+
+Button component (=ui/ArcadeButton.tsx:46=) with 3D arcade styling:
+
+- Five variants: primary, secondary, success, warning, danger
+- Three sizes: sm, md, lg
+- Gradient background with bottom shadow
+- Hover/active state translations for 3D press effect
+- Disabled state styling included
+
+** PixelStrip
+
+Decorative component (=ui/PixelStrip.tsx:6=) for dividers:
+
+- Repeating color pattern from array
+- Configurable segment count (default: 60)
+- Default colors: coral, cream, teal, cream
+- 8px height
+
+** Scanlines
+
+Overlay component (=ui/Scanlines.tsx:5=) for CRT effect:
+
+- Absolute positioned, covers parent
+- Configurable opacity (default: 0.03)
+- Horizontal lines at 4px intervals
+- pointer-events: none for non-blocking
+
+* Layout Structure
+
+AppShell (=layout/AppShell.tsx:10=) orchestrates the overall layout:
+
+- Renders Header at top with sidebar toggle callback
+- Renders PixelStrip below header for visual separation
+- Renders Sidebar with collapse state
+- Wraps children in main content area with dynamic margin based on sidebar state
+- Sidebar collapsed: 64px margin (ml-16), expanded: 224px margin (ml-56)
+
+Header (=layout/Header.tsx:10=) provides:
+
+- Wrapped in PixelBox with coral border
+- Contains PixelStrip with coral/teal colors
+- Burger menu button triggering sidebar toggle
+- Application branding with gradient (TENDER in dark, RENDER in cream)
+- Current page indicator with arcade button styling
+- Client code indicator badge
+- Uses useAuth hook for logout
+- Uses useNavigate for redirect to /login
+- Logout button (ArcadeButton danger variant) in right section
+
+Sidebar (=layout/Sidebar.tsx:53=) manages navigation:
+
+- Wrapped in PixelBox with teal border
+- Fixed position below header, transitions width on collapse
+- Collapsed: 64px wide, Expanded: 224px wide
+- Navigation items: Dashboard (/), Tenders (/tenders), Rubric (/rubric)
+- Active route uses gradient background with bottom shadow
+
+* Error Handling
+
+** ErrorBoundary
+
+Class component (=shared/ErrorBoundary.tsx:49=) catching React errors:
+
+- Wraps component trees to prevent full app crashes
+- Uses getDerivedStateFromError to capture error state
+- Logs errors via componentDidCatch
+- Renders custom fallback or default error UI
+- Default fallback includes reload button
+
+** ErrorState
+
+Functional component (=shared/ErrorState.tsx:9=) for explicit error display:
+
+- Wrapped in PixelBox with red border
+- Default title "GAME OVER" with text shadow
+- Optional retry button using ArcadeButton (danger variant)
+- Used for API errors, failed queries
+
+** Toast Notifications
+
+Toast system (=ui/Toast.tsx:43=, =ui/Toaster.tsx:4=) for transient messages:
+
+- Three types: success ("ACHIEVEMENT UNLOCKED"), error ("GAME OVER"), info ("ALERT")
+- Gradient background with inner gradient
+- Emoji icons per type
+- Fixed bottom-right positioning at z-50
+- Managed via ToastContext
+
+---
+/Last Updated/: 2026-01-31

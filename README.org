@@ -1,0 +1,120 @@
+#+TITLE: TenderRender Frontend
+#+DATE: 2026-01-30
+
+* What This Is
+
+React frontend for the TenderRender tender management platform. South African government tenders (from eTenders ZA) evaluated against client-specific rubrics.
+
+*Multi-tenant:* Each client sees only their own evaluations. Client isolation enforced via =client_code= in all RPC calls.
+
+* Documentation Map
+
+** For Agents: Reading Order
+
+| Step | Document | When to Read |
+|------|----------|--------------|
+| 1 | This file (README.org) | Always first — navigation hub |
+| 2 | [[file:ARCHITECTURE.org][ARCHITECTURE.org]] | Understanding system design, component hierarchy, data flow |
+| 3 | [[file:FUNCTIONS.org][FUNCTIONS.org]] | Working with data fetching, RPC function signatures |
+| 4 | [[file:DATABASE.org][DATABASE.org]] | Understanding data shapes, enums, JSONB structures |
+| 5 | [[file:DOCUMENTATION_PHILOSOPHY.org][DOCUMENTATION_PHILOSOPHY.org]] | Before updating any documentation |
+| 6 | Quick references | When diving into specific module implementation |
+
+** Strategic Layer (High-Level)
+
+| File | Purpose |
+|------|---------|
+| [[file:ARCHITECTURE.org][ARCHITECTURE.org]] | Tech stack, component hierarchy, data flow, state management, layout system, error handling |
+| [[file:DATABASE.org][DATABASE.org]] | Schema tables, enums, JSONB structures (what data looks like) |
+| [[file:FUNCTIONS.org][FUNCTIONS.org]] | RPC functions the frontend calls, parameters, return types |
+| [[file:DOCUMENTATION_PHILOSOPHY.org][DOCUMENTATION_PHILOSOPHY.org]] | Documentation standards, formatting rules, maintenance process |
+
+** Quick References (Implementation Detail)
+
+| File | Coverage |
+|------|----------|
+| [[file:src/features/tenders/quick_reference.org][src/features/tenders/quick_reference.org]] | 13 components, 5 hooks for tender list/detail |
+| [[file:src/features/dashboard/quick_reference.org][src/features/dashboard/quick_reference.org]] | 10 components, 2 hooks for dashboard stats/visualizations |
+| [[file:src/components/quick_reference.org][src/components/quick_reference.org]] | Layout, shared, UI components (15 total) |
+| [[file:src/lib/quick_reference.org][src/lib/quick_reference.org]] | Supabase client, 23 TypeScript types, pages, contexts |
+| [[file:src/features/auth/quick_reference.org][src/features/auth/quick_reference.org]] | 3 components, 1 hook for login/auth |
+
+** Context Files (Backend Reference)
+
+| File | Purpose |
+|------|---------|
+| [[file:context_files/frontend.md][context_files/frontend.md]] | API documentation, JSONB structures, enums |
+| [[file:context_files/supabase_schema.sql][context_files/supabase_schema.sql]] | Full database schema |
+| [[file:context_files/005_frontend_functions.sql][context_files/005_frontend_functions.sql]] | RPC function implementations (source of truth) |
+| [[file:context_files/004_frontend_views.sql][context_files/004_frontend_views.sql]] | Database views |
+| [[file:context_files/006_frontend_indexes.sql][context_files/006_frontend_indexes.sql]] | Performance indexes |
+
+* Quick Start
+
+** Install and Run
+
+#+BEGIN_EXAMPLE
+npm install
+npm run dev
+#+END_EXAMPLE
+
+** Environment Variables
+
+Copy =.env.example= to =.env.local=:
+
+#+BEGIN_EXAMPLE
+cp .env.example .env.local
+#+END_EXAMPLE
+
+| Variable | Purpose |
+|----------|---------|
+| VITE_SUPABASE_URL | Supabase project URL |
+| VITE_SUPABASE_ANON_KEY | Supabase anon key (safe for browser) |
+| VITE_DEV_CLIENT_CODE | Client code for dev mode (defaults to 'pragma') |
+
+*Never commit =.env.local= or expose service keys in frontend code.*
+
+* Key Routes
+
+| Route | Purpose |
+|-------|---------|
+| / | Dashboard — stats, alerts, recent changes |
+| /tenders | Tender list with filters |
+| /tenders/:id | Tender list with detail panel open |
+| /rubric | Client rubric display |
+| /login | Login screen |
+
+* Supabase MCP
+
+This project uses the Supabase MCP for AI-assisted development:
+- Query tables, run SQL, apply migrations
+- Search Supabase docs
+- Generate TypeScript types
+
+Project ID: =weylrgoywbqgkvpndzra=
+
+* Development Notes
+
+| Note | Detail |
+|------|--------|
+| Timezone | South African (SAST) — no conversion needed |
+| Documents | Link to eTenders source URLs — we don't host files |
+| Data retention | Tenders removed ~7 days after closing |
+| Auth | AuthContext scaffold in place, dev bypass via =VITE_DEV_CLIENT_CODE=, logout button in header |
+| Default client | 'pragma' |
+
+* Tech Stack Summary
+
+| Layer | Choice |
+|-------|--------|
+| Framework | Vite + React 19 |
+| Language | TypeScript |
+| Styling | Tailwind CSS 4 |
+| Data | TanStack Query + Supabase RPC |
+| Routing | React Router v6 |
+| Visualization | Recharts |
+
+See [[file:ARCHITECTURE.org][ARCHITECTURE.org]] for full tech stack details and rationale.
+
+---
+/Last Updated/: 2026-01-31

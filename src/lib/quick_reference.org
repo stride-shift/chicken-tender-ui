@@ -1,0 +1,165 @@
+#+TITLE: Lib, Pages, Hooks & Contexts - Quick Reference
+#+DATE: 2026-01-31
+
+* Overview
+
+Core utilities, type definitions, page components, global hooks, and React contexts.
+
+* Lib (=lib/=)
+
+** Supabase Client
+
+| File | Purpose |
+|------|---------|
+| supabase.ts:12 | Exports configured Supabase client instance |
+| supabase.ts:15-16 | getClientCode() function, defaults to 'pragma' |
+
+*** Configuration
+
+| Line | Details |
+|------|---------|
+| supabase.ts:3-4 | Reads VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY |
+| supabase.ts:6-10 | Throws error if environment variables missing |
+| supabase.ts:16 | Defaults to 'pragma' if VITE_DEV_CLIENT_CODE unset |
+
+** Types
+
+| File | Purpose |
+|------|---------|
+| types.ts | TypeScript interfaces for all RPC responses |
+
+*** Key Type Definitions
+
+| Type | Line | Purpose |
+|------|------|---------|
+| Recommendation | types.ts:2 | Enum for tender recommendation levels |
+| Importance | types.ts:3 | Enum for change importance (high/medium/low) |
+| TenderStatus | types.ts:4 | Enum for tender lifecycle status |
+| ChangeType | types.ts:5 | Enum for change type (metadata/document) |
+| DashboardStats | types.ts:8 | Dashboard metrics from get_dashboard_stats RPC |
+| TenderListItem | types.ts:21 | Paginated tender list with llm_notes field |
+| TenderDetail | types.ts:52 | Full tender detail from get_tender_detail |
+| KnockoutResultValue | types.ts:103 | Evaluation knockout answer with reason |
+| CriteriaResultValue | types.ts:109 | Evaluation criteria answer with evidence |
+| TenderDocument | types.ts:115 | Document metadata and download info |
+| DocumentChange | types.ts:128 | Document in change history (file_name, source_document_id) |
+| TenderChange | types.ts:134 | Change history with importance and details |
+| FieldChange | types.ts:155 | Individual field change in change history |
+| FilterOptions | types.ts:164 | Province/department/category filter options |
+| FilterOption | types.ts:170 | Individual filter option with count |
+| ActivityItem | types.ts:177 | Activity feed item from get_activity_feed |
+| ClientRubric | types.ts:191 | Full rubric from get_client_rubric |
+| RubricKnockout | types.ts:205 | Knockout question in rubric |
+| RubricCriterion | types.ts:211 | Scoring criterion in rubric |
+| ThresholdRange | types.ts:219 | Score threshold range for recommendations |
+| ScoringConfig | types.ts:225 | Rubric scoring configuration |
+
+* Pages (=pages/=)
+
+| Page | File | Route | Purpose |
+|------|------|-------|---------|
+| DashboardPage | DashboardPage.tsx:9 | / | Renders StatsGrid, AlertsRow, charts (ScoreDistribution + DepartmentTreemap), then TenderCarousel |
+| TendersPage | TendersPage.tsx:4 | /tenders, /tenders/:tenderId | Tender list and detail side-by-side |
+| RubricPage | RubricPage.tsx:5 | /rubric | Displays active client evaluation rubric |
+| LoginPage | LoginPage.tsx:11 | /login | Login screen with in-place loading animation |
+
+*** Page Details
+
+| Page | Key Lines | Details |
+|------|-----------|---------|
+| DashboardPage | 14-15 | Renders StatsGrid and AlertsRow |
+| DashboardPage | 20-21 | Renders ScoreDistributionChart and DepartmentTreemap |
+| DashboardPage | 25 | Renders TenderCarousel |
+| TendersPage | 5-6, 8 | Parses tenderId from URL, creates selectedTenderId |
+| TendersPage | 10-12 | Navigation handler for tender selection |
+| TendersPage | 14-25 | Two-panel layout with TenderListPanel and TenderDetailPanel |
+| RubricPage | 6 | Uses useActiveClientRubric hook for data |
+| RubricPage | 76-77 | Calls ensureArray to parse JSONB arrays |
+| RubricPage | 373-384 | ensureArray helper ensures JSONB parsed correctly |
+| RubricPage | 136-169 | Displays knockout criteria section |
+| RubricPage | 171-204 | Displays scoring criteria section |
+| RubricPage | 206-262 | Displays recommendation threshold ranges |
+| LoginPage | 48 | Renders LoginCard with onLogin and isLoading props |
+| LoginPage | 15 | Uses isLoading state to prevent duplicate submissions |
+| LoginPage | 28 | Navigates to / after successful login |
+
+* Global Hooks (=hooks/=)
+
+| Hook | File | Purpose |
+|------|------|---------|
+| useToast | useToast.ts:1 | Re-exports useToastContext from ToastContext |
+
+* Contexts (=contexts/=)
+
+| Context | File | Purpose |
+|---------|------|---------|
+| ToastContext | ToastContext.tsx:17 | Provides toast state and methods |
+
+*** ToastContext Details
+
+| Export | Line | Purpose |
+|--------|------|---------|
+| ToastType | ToastContext.tsx:3 | Type for success/error/info toast types |
+| Toast | ToastContext.tsx:5 | Toast object with id, message, type |
+| ToastProvider | ToastContext.tsx:19 | Provider component wrapping app |
+| useToastContext | ToastContext.tsx:43 | Hook to access toast context |
+| addToast | ToastContext.tsx:27 | Adds toast, auto-removes after 5 seconds |
+| removeToast | ToastContext.tsx:23 | Manually removes toast by id |
+
+* App Entry Points
+
+| File | Purpose |
+|------|---------|
+| App.tsx:10 | Root component with routing and providers |
+| main.tsx:17 | Application entry point with React render |
+
+*** App.tsx Details
+
+| Line | Details |
+|------|---------|
+| 12 | Wraps app in AuthProvider for authentication context |
+| 13 | Wraps app in ToastProvider |
+| 14 | Wraps app in ErrorBoundary |
+| 15 | Route: /login → LoginPage (outside AppShell) |
+| 16 | Wraps protected routes in AppShell layout |
+| 17 | Uses ProtectedRoute component for authenticated routes |
+| 18 | Route: / → DashboardPage (protected) |
+| 19 | Route: /tenders → TendersPage (protected) |
+| 20 | Route: /tenders/:tenderId → TendersPage with param (protected) |
+| 21 | Route: /rubric → RubricPage (protected) |
+| 22 | Route: * → Redirect to / |
+| 26 | Renders Toaster component outside AppShell |
+
+*** main.tsx Details
+
+| Line | Details |
+|------|---------|
+| 8 | Creates TanStack Query client |
+| 11 | Sets staleTime to 5 minutes |
+| 12 | Disables refetch on window focus |
+| 19 | Wraps app in QueryClientProvider |
+| 20 | Wraps app in BrowserRouter |
+
+* Routing
+
+React Router v6 setup with nested routes and URL parameters.
+
+| Route | Component | Params | Purpose |
+|-------|-----------|--------|---------|
+| /login | LoginPage | - | Login screen (no AppShell) |
+| / | DashboardPage | - | Dashboard overview |
+| /tenders | TendersPage | - | Tender list without selection |
+| /tenders/:tenderId | TendersPage | tenderId: number | Tender list with detail panel |
+| /rubric | RubricPage | - | Display evaluation rubric |
+| * | Navigate to / | - | Catch-all redirect |
+
+* Environment Variables
+
+| Variable | Used By | Purpose |
+|----------|---------|---------|
+| VITE_SUPABASE_URL | supabase.ts:3 | Supabase project URL |
+| VITE_SUPABASE_ANON_KEY | supabase.ts:4 | Supabase anonymous key |
+| VITE_DEV_CLIENT_CODE | supabase.ts:16 | Development client code (defaults to 'pragma') |
+
+---
+/Last Updated/: 2026-01-31

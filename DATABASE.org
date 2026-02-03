@@ -1,0 +1,253 @@
+#+TITLE: TenderRender Frontend - Database Reference
+#+DATE: 2026-01-29
+
+* Overview
+
+This document describes the database schema relevant to the frontend. The frontend is read-only — all data access is through RPC functions (see [[file:FUNCTIONS.org][FUNCTIONS.org]]).
+
+For full schema details, see =context_files/supabase_schema.sql=.
+
+* Core Tables
+
+| Table | Purpose | Frontend Relevance |
+|-------|---------|-------------------|
+| tenders | Core tender info synced from eTenders ZA | Primary data displayed |
+| tender_documents | Document metadata | Document list in detail view |
+| tender_syntheses | AI-generated tender summaries | Title, report text, quality score |
+| tender_changes | Field-level change history | Activity feed, change tracking |
+| tender_evaluations | Scored assessments against client rubrics | Recommendation, scores, results |
+| clients | Client organizations | Client identification |
+| client_rubrics | Evaluation criteria per client | Rubric display |
+| user_profiles | Links Supabase auth to clients | Future auth integration |
+| provinces | Province lookup | Filter options |
+| departments | Department lookup | Filter options |
+| categories | Category lookup | Filter options |
+
+* Enums
+
+** recommendation
+
+Evaluation recommendation levels (ordered best to worst):
+
+| Value | Meaning | UI Color |
+|-------|---------|----------|
+| excellent_fit | Strong match, high priority | Green |
+| good_fit | Good match, worth pursuing | Blue |
+| worth_reviewing | Potential fit, needs review | Yellow |
+| not_recommended | Does not match criteria | Gray |
+
+*"Relevant"* = any recommendation except =not_recommended=
+
+** current_status
+
+Tender lifecycle status:
+
+| Value | Meaning |
+|-------|---------|
+| active | Open for bids |
+| awarded | Contract awarded |
+| closed | Bidding closed |
+| cancelled | Tender cancelled |
+
+** evaluation_status
+
+Evaluation processing status:
+
+| Value | Meaning |
+|-------|---------|
+| pending | Awaiting evaluation |
+| processing | Evaluation in progress |
+| completed | Evaluation finished |
+| failed | Evaluation failed |
+
+** highest_importance
+
+Change severity level:
+
+| Value | Meaning | Examples |
+|-------|---------|----------|
+| high | Affects bid strategy | closing_date, status, compulsory briefing |
+| medium | Logistics impact | location, contact, submission rules |
+| low | Informational | description edits, minor updates |
+
+** change_type
+
+Type of change recorded:
+
+| Value | Meaning |
+|-------|---------|
+| metadata | Tender field changes |
+| document | Files added/removed/modified |
+
+* JSONB Structures
+
+** changes_json (tender_changes)
+
+Structure returned in activity feed and tender detail. Each change event is stored as a separate row with its own =observed_at= timestamp.
+
+#+BEGIN_EXAMPLE
+{
+  "changes": [
+    {
+      "field": "closing_date",
+      "category": "core",
+      "previous": "2026-02-01T16:00:00",
+      "current": "2026-02-15T16:00:00",
+      "importance": "high"
+    }
+  ],
+  "documents": {
+    "added": [
+      {"file_name": "addendum_1.pdf", "source_document_id": "12345"}
+    ],
+    "removed": [
+      {"file_name": "old_specs.pdf", "source_document_id": "11111"}
+    ],
+    "modified": [
+      {"file_name": "updated_terms.pdf", "source_document_id": "22222"}
+    ]
+  },
+  "summary": {
+    "total_changes": 1,
+    "high_count": 1,
+    "medium_count": 0,
+    "low_count": 0
+  }
+}
+#+END_EXAMPLE
+
+*** Document Change Object
+
+Each item in =added=, =removed=, =modified= arrays:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| file_name | string | Document filename |
+| source_document_id | string (optional) | eTenders document ID |
+
+** knockout_results (tender_evaluations)
+
+Knockout question results:
+
+#+BEGIN_EXAMPLE
+[
+  {
+    "id": "ko_1",
+    "question": "Does this tender require services in our capability areas?",
+    "answer": "YES",
+    "explanation": "Tender requires software development services."
+  }
+]
+#+END_EXAMPLE
+
+Answers: =YES=, =NO=, =UNSURE=
+
+** criteria_results (tender_evaluations)
+
+Scored criteria results:
+
+#+BEGIN_EXAMPLE
+[
+  {
+    "id": "cr_1",
+    "question": "How well does the scope align with our expertise?",
+    "answer": "FULLY",
+    "weight": 3,
+    "points_earned": 3,
+    "points_possible": 3,
+    "explanation": "Direct match to core competencies."
+  }
+]
+#+END_EXAMPLE
+
+Answers: =FULLY= (100%), =PARTIALLY= (50%), =MINIMALLY= (25%), =NO= (0%), =UNSURE= (config-dependent)
+
+** scoring_config (client_rubrics)
+
+Rubric scoring configuration:
+
+#+BEGIN_EXAMPLE
+{
+  "max_points_per_criterion": 3,
+  "unsure_handling": "neutral",
+  "thresholds": {
+    "excellent_fit": 80,
+    "good_fit": 60,
+    "worth_reviewing": 40
+  }
+}
+#+END_EXAMPLE
+
+** knockouts (client_rubrics)
+
+Knockout question definitions:
+
+#+BEGIN_EXAMPLE
+[
+  {
+    "id": "ko_1",
+    "question": "Does this tender require services in our capability areas?",
+    "fail_message": "Tender is outside our service offerings."
+  }
+]
+#+END_EXAMPLE
+
+** criteria (client_rubrics)
+
+Scoring criteria definitions:
+
+#+BEGIN_EXAMPLE
+[
+  {
+    "id": "cr_1",
+    "question": "How well does the scope align with our expertise?",
+    "weight": 3,
+    "category": "relevance",
+    "unsure_handling": "neutral"
+  }
+]
+#+END_EXAMPLE
+
+* Views
+
+For view definitions, see =context_files/004_frontend_views.sql=.
+
+| View | Purpose |
+|------|---------|
+| v_tender_with_evaluation | Active tenders joined with synthesis + evaluation + client info |
+| v_tender_changes_with_context | Changes with tender and client evaluation context |
+
+* Indexes
+
+For index definitions, see =context_files/006_frontend_indexes.sql=.
+
+Performance indexes exist for:
+- Tender lookups by status, dates, location
+- Evaluation lookups by client and recommendation
+- Change lookups by date and importance
+- Full-text search on tender descriptions
+
+* Notes
+
+** Client Isolation
+
+Each client only sees their own evaluations. RLS policies enforce this at the database level.
+
+** Data Retention
+
+Tenders are removed ~7 days after closing. Evaluated tenders may be retained longer for historical stats.
+
+** Timezones
+
+All users and tenders are South African (SAST). No timezone conversion needed in the frontend.
+
+* Related Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [[file:FUNCTIONS.org][FUNCTIONS.org]] | RPC functions that query this schema |
+| [[file:context_files/frontend.md][context_files/frontend.md]] | Detailed API documentation |
+| [[file:context_files/supabase_schema.sql][context_files/supabase_schema.sql]] | Full schema SQL |
+
+---
+/Last Updated/: 2026-01-29

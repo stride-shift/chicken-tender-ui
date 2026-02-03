@@ -1,0 +1,481 @@
+#+TITLE: TenderRender Frontend - Architecture
+#+DATE: 2026-01-31
+
+* Overview
+
+React frontend for the TenderRender tender management platform. Connects directly to Supabase via RPC functions (no API gateway).
+
+Multi-tenant application where each client sees only their own evaluated tenders. Client isolation enforced via =client_code= parameter in all RPC calls.
+
+* Design Principles
+
+| Principle | Description |
+|-----------|-------------|
+| Modularity | Focused components with single responsibilities |
+| Colocation | Keep related code together (component + hooks in feature folders) |
+| Composition | Build complex UIs from simple, reusable pieces |
+| Type Safety | TypeScript everywhere, no =any= types |
+| Server State First | TanStack Query for all API data; minimal client state |
+
+* Tech Stack
+
+| Layer | Choice | Reason |
+|-------|--------|--------|
+| Framework | Vite + React 19 | Fast builds, simple config, no SSR needed |
+| Language | TypeScript | Type safety, Supabase has excellent types |
+| Styling | Tailwind CSS 4 + Arcade Design System | Utility-first styles with retro arcade aesthetic |
+| Components | Custom Arcade UI | PixelBox, LEDNumber, HealthBar, ArcadeButton primitives |
+| Charts | Recharts | Composable, React-first charting library |
+| Data | TanStack Query | Caching, loading states, refetching |
+| Routing | React Router v6 | Client-side routing with URL params |
+| Backend | Supabase | Direct RPC connection |
+
+* Arcade Design System
+
+Retro arcade-inspired visual language with light mode cream backgrounds and bold colored accents.
+
+| Element | Implementation |
+|---------|----------------|
+| Containers | PixelBox with 4px offset shadows and pixel corner accents |
+| Numbers | LEDNumber with glowing text shadow effect |
+| Progress | HealthBar with segmented display |
+| Buttons | ArcadeButton with gradient backgrounds and 3D press effect |
+| Effects | Scanlines overlay, PixelStrip dividers |
+| Colors | Cream (#FFFBF0) backgrounds, teal (#2D8F8F) and coral (#FF6B6B) accents |
+
+Badges use arcade-styled variants: hexagon shapes for excellent fit, LED dots for status, gradient fills for importance.
+
+See =src/components/quick_reference.org= for arcade component implementation details.
+
+* Project Structure
+
+#+BEGIN_EXAMPLE
+src/
+├── App.tsx                    # Root component with routing and providers
+├── main.tsx                   # Entry point with QueryClient setup
+├── features/                  # Feature modules (domain logic)
+│   ├── auth/                 # Authentication (login, context, components)
+│   ├── tenders/              # Tender list, detail, filters (13 components, 5 hooks)
+│   └── dashboard/            # Stats, alerts, activity (10 components, 2 hooks)
+├── components/               # Shared UI components
+│   ├── layout/               # AppShell, Header, Sidebar
+│   ├── shared/               # Arcade-styled Badges, States, Pagination
+│   └── ui/                   # Arcade primitives (PixelBox, LEDNumber, etc.)
+├── lib/                      # Utilities and config
+│   ├── supabase.ts           # Supabase client + getClientCode()
+│   └── types.ts              # TypeScript interfaces (23 types)
+├── hooks/                    # Global hooks (useToast)
+├── contexts/                 # React contexts (ToastContext)
+├── pages/                    # Route-level components (thin wrappers)
+└── styles/                   # Global styles
+#+END_EXAMPLE
+
+See =src/lib/quick_reference.org= for detailed file contents.
+
+* Provider Hierarchy
+
+Application wrapping order in =main.tsx= and =App.tsx=:
+
+#+BEGIN_EXAMPLE
+QueryClientProvider          # TanStack Query (staleTime: 5min, no refetch on focus)
+└── AuthProvider             # Auth state (user, clientCode, login/logout)
+    └── BrowserRouter        # React Router v6
+        └── ToastProvider    # Toast notification state
+            └── ErrorBoundary    # Catches React component errors
+                └── AppShell     # Layout with Header + Sidebar
+                    └── Routes   # Page components
+#+END_EXAMPLE
+
+| Provider | Purpose | Configuration |
+|----------|---------|---------------|
+| QueryClientProvider | Server state caching | staleTime: 5 minutes, refetchOnWindowFocus: false |
+| AuthProvider | Authentication state | user, clientCode, isAuthenticated, login/logout |
+| BrowserRouter | Client-side routing | - |
+| ToastProvider | Toast notification state | Auto-dismiss after 5 seconds |
+| ErrorBoundary | Error recovery | Renders fallback UI, reload button |
+
+* Data Flow
+
+#+BEGIN_EXAMPLE
+User Action → Component → Custom Hook → TanStack Query → Supabase RPC → Database
+                  ↑                           ↓
+                  └────── Cached Response ────┘
+#+END_EXAMPLE
+
+| Step | Layer | Responsibility |
+|------|-------|----------------|
+| 1 | Component | Renders UI, handles user interactions |
+| 2 | Hook | Encapsulates data fetching logic, parameters |
+| 3 | TanStack Query | Manages cache, loading/error states, refetching |
+| 4 | Supabase Client | Executes =supabase.rpc()= calls |
+| 5 | Database | Returns data via RPC functions |
+
+** Hook → RPC Function Mapping
+
+| Hook | RPC Function | Location |
+|------|--------------|----------|
+| useDashboardStats | get_dashboard_stats | features/dashboard/hooks |
+| useTenders | get_tenders_paginated | features/tenders/hooks |
+| useTenderDetail | get_tender_detail | features/tenders/hooks |
+| useFilterOptions | get_filter_options | features/tenders/hooks |
+| useClientRubric | get_client_rubric | features/tenders/hooks |
+| useActiveClientRubric | get_active_client_rubric | features/tenders/hooks |
+
+See [[file:FUNCTIONS.org][FUNCTIONS.org]] for RPC function signatures.
+
+* State Management
+
+| State Type | Solution | Examples |
+|------------|----------|----------|
+| Server State | TanStack Query | Tender list, detail, dashboard stats |
+| URL State | React Router | Selected tender ID, route |
+| Filter State | Component useState | Relevance, province, search text |
+| UI State | Component useState | Tab selection, sidebar collapsed |
+| Global UI | React Context | Toast notifications |
+
+*No Redux/Zustand needed* — server state is the bulk of this app.
+
+* Routing
+
+| Route | Page | Purpose |
+|-------|------|---------|
+| /login | LoginPage | Login screen (outside AppShell) |
+| / | DashboardPage | Overview stats, alerts, recent activity |
+| /tenders | TendersPage | Tender list with filters, no selection |
+| /tenders/:tenderId | TendersPage | Tender list with detail panel open |
+| /rubric | RubricPage | Client rubric display |
+| * | Redirect to / | Catch-all |
+
+URL parameter =:tenderId= enables direct linking to specific tenders.
+
+* Pages Overview
+
+** Dashboard (/)
+
+At-a-glance metrics, alerts, featured tenders, and visualizations.
+
+#+BEGIN_EXAMPLE
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Stats Grid (6 cards):                                                       │
+│ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────┐ │
+│ │ Total    │ │ Relevant │ │Not Relev.│ │Excellent │ │ Good Fit │ │Review│ │
+│ │ Active   │ │    42    │ │    28    │ │    8     │ │    18    │ │  16  │ │
+│ └──────────┘ └──────────┘ └──────────┘ └──────────┘ └──────────┘ └──────┘ │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Alerts Row (3 cards):                                                       │
+│ ┌─────────────────────┐ ┌───────────────────┐ ┌─────────────────────────┐  │
+│ │ 3 Briefings in 7d   │ │ 5 Closing in 7d   │ │ 2 Changes (24h)         │  │
+│ └─────────────────────┘ └───────────────────┘ └─────────────────────────┘  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Charts (2-column grid):                                                     │
+│ ┌──────────────────────┐  ┌─────────────────────┐                          │
+│ │ Score Distribution   │  │ Department Treemap  │                          │
+│ │ (Donut Chart)        │  │ (Top 12)            │                          │
+│ └──────────────────────┘  └─────────────────────┘                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Tender Carousel (expand/collapse toggle for carousel vs. grid view)         │
+│ ┌──────────┐  ┌──────────┐  ┌──────────┐                                   │
+│ │ Tender 1 │  │ Tender 2 │  │ Tender 3 │  ← → ● ● ●                        │
+│ └──────────┘  └──────────┘  └──────────┘                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+#+END_EXAMPLE
+
+| Component | Data Source |
+|-----------|-------------|
+| StatsGrid | get_dashboard_stats → total_active, total_relevant, not_relevant, excellent_count, good_count, worth_reviewing_count |
+| AlertsRow | get_dashboard_stats → briefings_next_7_days, closing_next_7_days, high_importance_changes_24h |
+| ScoreDistributionChart | get_dashboard_stats → excellent_count, good_count, worth_reviewing_count |
+| DepartmentTreemap | get_filter_options → departments with counts (top 12) |
+| TenderCarousel | get_tenders_paginated → relevant tenders (limit: 8), toggles between carousel and grid views |
+
+See =src/features/dashboard/quick_reference.org= for component details.
+
+** Tenders Page (/tenders) - Master-Detail Layout
+
+Browse tenders and view details in a split-pane layout.
+
+#+BEGIN_EXAMPLE
+┌────────────────────────────────────────────────────────────────────────────┐
+│ [≡] TenderRender                                              [pragma]     │
+├────────┬───────────────────────────────────────────────────────────────────┤
+│        │  ┌─────────────────────────┬────────────────────────────────────┐ │
+│  Side  │  │    TENDER LIST (left)   │      TENDER DETAIL (right)         │ │
+│  bar   │  │                         │                                    │ │
+│        │  │ Filters:                │  Title + Recommendation Badge      │ │
+│ ┌────┐ │  │ [Relevance ▼] [Search]  │  ─────────────────────────────     │ │
+│ │Dash│ │  │                         │                                    │ │
+│ └────┘ │  │ ┌─────────────────────┐ │  Key Info Cards:                   │ │
+│ ┌────┐ │  │ │ ● Tender 1     [EX] │ │  ┌──────────┐ ┌──────────┐ ┌─────┐ │ │
+│ │Tend│ │  │ │   Health • 5d       │◄──│ │ Closes   │ │ Briefing │ │ 87% │ │ │
+│ └────┘ │  │ └─────────────────────┘ │  │ │ 5 days   │ │ Feb 3 !  │ │score│ │ │
+│ ┌────┐ │  │ ┌─────────────────────┐ │  │ └──────────┘ └──────────┘ └─────┘ │ │
+│ │Rubr│ │  │ │   Tender 2     [GD] │ │  │                                   │ │
+│ └────┘ │  │ │   Treasury • 12d    │ │  │ Tabs: [Opportunity] [Evaluation]  │ │
+│        │  │ └─────────────────────┘ │  │       [Documents] [Changes]       │ │
+│        │  │                         │  │                                   │ │
+│        │  │ < 1 2 3 ... 10 >        │  │ (Tab content below)               │ │
+│        │  └─────────────────────────┴────────────────────────────────────┘ │
+└────────┴───────────────────────────────────────────────────────────────────┘
+#+END_EXAMPLE
+
+*** Component Hierarchy
+
+#+BEGIN_EXAMPLE
+TendersPage
+├── TenderListPanel
+│   ├── TenderListFilters (search, filter dropdowns)
+│   ├── TenderListItem[] (list of tender cards)
+│   └── Pagination
+└── TenderDetailPanel (when tender selected)
+    ├── TenderDetailHeader (title, recommendation, key info cards)
+    ├── TenderDetailTabs (tab navigation)
+    └── Tab Content:
+        ├── TenderOpportunityTab (AI assessment, description, metadata, contact)
+        ├── TenderDetailEval (knockout + criteria results)
+        ├── TenderDetailDocs (document list with download links)
+        └── TenderDetailChanges (change history with field diffs)
+#+END_EXAMPLE
+
+*** Filter State
+
+Managed in TenderListPanel component:
+
+| Filter | Type | Default |
+|--------|------|---------|
+| isRelevant | boolean or null | null (all) |
+| provinceId | number or null | null |
+| departmentId | number or null | null |
+| categoryId | number or null | null |
+| searchText | string | "" |
+| sortBy | string | "recommendation" |
+| sortDesc | boolean | false |
+| page | number | 1 |
+| limit | number | 25 |
+
+Filters reset page to 1 on change.
+
+*** Detail Panel Tabs
+
+| Tab | Content | Component |
+|-----|---------|-----------|
+| Opportunity | AI quality assessment, description, metadata, contact | TenderOpportunityTab |
+| Evaluation | Overall score, knockout results, criteria results | TenderDetailEval |
+| Documents | Document list with download links | TenderDetailDocs |
+| Changes | Change history timeline with field diffs | TenderDetailChanges |
+
+Tab state managed locally in TenderDetailPanel.
+
+See =src/features/tenders/quick_reference.org= for component details.
+
+** Rubric Page (/rubric)
+
+Displays the active client evaluation rubric.
+
+| Section | Content |
+|---------|---------|
+| Header | Rubric name, version, description |
+| Knockouts | Table of knockout questions with fail messages |
+| Scoring Criteria | Table of criteria with weights and categories |
+| Thresholds | Recommendation threshold ranges |
+
+* Layout System
+
+** AppShell Architecture
+
+#+BEGIN_EXAMPLE
+┌──────────────────────────────────────────────────────────────┐
+│ Header (fixed top, z-40)                                     │
+│ [≡ burger] [TenderRender]                    [pragma badge]  │
+├────────────┬─────────────────────────────────────────────────┤
+│            │                                                 │
+│  Sidebar   │              Main Content                       │
+│  (fixed)   │              (with margin-left)                 │
+│            │                                                 │
+│ ┌────────┐ │                                                 │
+│ │  Dash  │ │                                                 │
+│ │ Tender │ │                                                 │
+│ │ Rubric │ │                                                 │
+│ └────────┘ │                                                 │
+│            │                                                 │
+└────────────┴─────────────────────────────────────────────────┘
+#+END_EXAMPLE
+
+** Sidebar Collapse Behavior
+
+| State | Sidebar Width | Content Margin |
+|-------|---------------|----------------|
+| Expanded | 224px (w-56) | ml-56 |
+| Collapsed | 64px (w-16) | ml-16 |
+
+- Burger menu (≡) in header toggles sidebar
+- Expanded: shows icon + label
+- Collapsed: shows icon only
+- Active route highlighted with blue background
+
+See =src/components/quick_reference.org= for layout component details.
+
+* Error Handling Strategy
+
+Three-tier approach:
+
+| Tier | Component | Purpose |
+|------|-----------|---------|
+| 1 | ErrorBoundary | Catches React component crashes, prevents full app failure |
+| 2 | ErrorState | Explicit error display for API/query errors with retry button |
+| 3 | Toast | Transient notifications for recoverable errors |
+
+** ErrorBoundary
+
+- Wraps entire app inside providers
+- Uses =getDerivedStateFromError= to capture error state
+- Renders fallback UI with reload button
+- Location: =src/components/shared/ErrorBoundary.tsx=
+
+** ErrorState
+
+- Used in components when queries fail
+- Shows error icon, message, and optional retry callback
+- Red-themed for visibility
+- Location: =src/components/shared/ErrorState.tsx=
+
+** Toast Notifications
+
+- Three types: success, error, info
+- Auto-dismiss after 5 seconds
+- Fixed bottom-right positioning
+- Managed via ToastContext
+- Location: =src/components/ui/Toast.tsx=, =Toaster.tsx=
+
+* Component Guidelines
+
+** Size Limits
+
+| Guideline | Threshold |
+|-----------|-----------|
+| Max file size | ~500 lines acceptable |
+| Split when | Logic becomes tangled or handles unrelated concerns |
+| Hooks | Keep focused; split if doing too many things |
+
+** Naming Conventions
+
+| Type | Convention | Example |
+|------|------------|---------|
+| Components | PascalCase | =TenderListItem.tsx= |
+| Hooks | camelCase with "use" prefix | =useTenders.ts= |
+| Types | PascalCase | =TenderDetail= |
+| Utilities | camelCase | =formatDate= |
+
+** When to Split Components
+
+Split when:
+- Component handles multiple unrelated concerns
+- Render logic exceeds ~50 lines of JSX
+- Component has >3 useState hooks
+- Reusable piece emerges
+
+Keep together when:
+- Tightly coupled (parent always renders child)
+- Would require excessive prop drilling to split
+- <100 lines total
+
+* Key Concepts
+
+** Recommendation Levels
+
+| Level | Meaning | Badge Color |
+|-------|---------|-------------|
+| excellent_fit | Strong match, high priority | Emerald |
+| good_fit | Good match, worth pursuing | Blue |
+| worth_reviewing | Potential fit, needs review | Amber |
+| not_recommended | Does not match criteria | Slate |
+
+"Relevant" = any recommendation except =not_recommended=
+
+** Change Importance
+
+| Level | Meaning | Badge Color |
+|-------|---------|-------------|
+| high | Affects bid strategy (closing date, status, compulsory briefing) | Red |
+| medium | Logistics impact (location, contact info) | Amber |
+| low | Informational (description edits) | Slate |
+
+** Tender Status
+
+| Status | Meaning | Badge Color |
+|--------|---------|-------------|
+| active | Open for bids | Green |
+| awarded | Contract awarded | Blue |
+| closed | Bidding closed | Slate |
+| cancelled | Tender cancelled | Red |
+
+* Authentication Strategy
+
+** Current Implementation
+
+AuthContext-based authentication with development bypass via =VITE_DEV_CLIENT_CODE=.
+
+*** Development Mode
+
+When =VITE_DEV_CLIENT_CODE= is set, the app auto-authenticates with a mock user:
+
+#+BEGIN_EXAMPLE
+// Dev bypass in AuthContext
+if (devClientCode) {
+  setUser({ id: 'dev-user-001', email: 'dev@tenderrender.local' });
+  setClientCode(devClientCode);
+  setIsAuthenticated(true);
+}
+#+END_EXAMPLE
+
+*** Production Mode
+
+Without =VITE_DEV_CLIENT_CODE=, unauthenticated users are redirected to =/login=. The login form accepts email/password and calls =auth.login()=.
+
+*** Auth State
+
+| State | Type | Purpose |
+|-------|------|---------|
+| user | User or null | Current user (id, email) |
+| clientCode | string or null | Client identifier for RPC calls |
+| isAuthenticated | boolean | Whether user is logged in |
+| isLoading | boolean | Auth state loading |
+
+*** Logout
+
+Header displays logout button when authenticated. Calls =auth.logout()= to clear state and redirect to login.
+
+** Future (Production)
+
+Still scaffolding - real Supabase Auth integration planned:
+
+1. User authenticates via Supabase Auth
+2. App queries =user_profiles= to get =client_pk=
+3. App fetches =client_code= from =clients= table
+4. All RPC calls use that client_code
+
+* UI Decisions
+
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| Tender list format | Cards in scrollable panel | Easy scanning, shows key info |
+| Tender detail | Side panel (master-detail) | No navigation away from list |
+| Sidebar | Collapsible with burger toggle | Maximizes content area when needed |
+| Dark mode | Not implemented | Can add later if needed |
+| Notifications | Toast system | Non-blocking, auto-dismissible |
+
+* Related Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [[file:DATABASE.org][DATABASE.org]] | Schema tables, enums, JSONB structures |
+| [[file:FUNCTIONS.org][FUNCTIONS.org]] | RPC functions, parameters, return types |
+| [[file:DOCUMENTATION_PHILOSOPHY.org][DOCUMENTATION_PHILOSOPHY.org]] | Documentation standards and maintenance |
+| [[file:src/features/auth/quick_reference.org][src/features/auth/quick_reference.org]] | Auth feature implementation details |
+| [[file:src/features/tenders/quick_reference.org][src/features/tenders/quick_reference.org]] | Tenders feature implementation details |
+| [[file:src/features/dashboard/quick_reference.org][src/features/dashboard/quick_reference.org]] | Dashboard feature implementation details |
+| [[file:src/components/quick_reference.org][src/components/quick_reference.org]] | Shared component implementation details |
+| [[file:src/lib/quick_reference.org][src/lib/quick_reference.org]] | Lib, pages, hooks, contexts details |
+| [[file:context_files/frontend.md][context_files/frontend.md]] | API documentation from backend |
+
+---
+/Last Updated/: 2026-01-31

@@ -1,0 +1,314 @@
+#+TITLE: Documentation Philosophy
+#+DATE: 2026-01-29
+
+* Purpose
+
+This file codifies the documentation philosophy for the TenderRender frontend codebase. It serves as the authoritative reference for:
+- Main coordinating agents reading documentation
+- Sub-agents updating or validating documentation
+- Humans maintaining the system
+
+*If you are a main coordinating agent*: Read this file after README.org to understand how documentation is structured and maintained.
+
+*If you are a sub-agent*: Reference the relevant section for your task. You do NOT need to update documentation unless explicitly instructed.
+
+* Core Principles
+
+** 1. Present-State-Only
+
+Documentation represents the *current state* of the system, not its history.
+
+| Do | Don't |
+|----|-------|
+| Document what EXISTS now | Include "Recent Changes" sections |
+| Use present-tense language | Use "we added", "we removed", "previously" |
+| Delete references to removed features | Keep "REMOVED in V5" markers |
+| Update or delete outdated content | Add change logs or audit trails |
+
+*Rationale*: Historical content wastes context window tokens and creates confusion about what currently exists.
+
+** 2. Layer Discipline
+
+Documentation follows a two-layer hierarchy. Each layer has a distinct purpose.
+
+| Layer | Files | Purpose | Audience |
+|-------|-------|---------|----------|
+| Strategic (Layer 2) | README.org, ARCHITECTURE.org, DATABASE.org, FUNCTIONS.org | High-level overview, navigation, architectural decisions | Main agent, humans |
+| QuickReference (Layer 1) | src/*/quick_reference.org | Detailed implementation: line numbers, component props, hook signatures | Sub-agents, implementers |
+
+*Key rule*: Strategic docs should be LEAN. They link to quick_references for details — they don't duplicate them.
+
+#+BEGIN_EXAMPLE
+CORRECT:
+  ARCHITECTURE.org → "Tender list uses TanStack Query for data fetching. See src/features/tenders/quick_reference.org for details."
+
+INCORRECT:
+  ARCHITECTURE.org → [100 lines detailing useTenders hook implementation, filter state management, pagination logic]
+#+END_EXAMPLE
+
+** 3. AI-First Formatting
+
+Primary documentation consumers are AI agents. Optimize for machine parsing.
+
+| Prefer | Over |
+|--------|------|
+| Tables | Prose paragraphs |
+| Bullet lists | Long sentences |
+| Structured hierarchies | ASCII art diagrams |
+| Explicit relationships | Spatial/visual positioning |
+
+*Note*: Some ASCII diagrams (like data flow) provide value. Use judgment — if a diagram aids understanding, keep it.
+
+** 4. Database Interaction Pattern
+
+The frontend does NOT write directly to the database. All data access is through Supabase RPC functions.
+
+*** Read-Only Frontend
+
+| What Frontend Does | How |
+|--------------------|-----|
+| Fetch data | Call RPC functions via =supabase.rpc()= |
+| Display data | Render responses in React components |
+| Cache data | TanStack Query manages cache + refetching |
+
+| What Frontend Does NOT Do | Why |
+|---------------------------|-----|
+| Direct table writes | All writes happen in backend pipeline |
+| Schema modifications | Migrations managed by backend |
+| Complex queries | Encapsulated in RPC functions |
+
+*** Documentation Implications
+
+Since the frontend is read-only:
+- No field update matrices in quick_references
+- DATABASE.org documents schema for *understanding* response shapes
+- FUNCTIONS.org documents RPC functions the frontend *calls*
+- Quick references document which functions each hook/component uses
+
+* File Structure
+
+** Root-Level .org Files (Strategic Layer)
+
+Located in project root:
+
+| File | Purpose | When to Read |
+|------|---------|--------------|
+| README.org | Navigation hub, quick start, links to all docs | First file for any agent |
+| ARCHITECTURE.org | Component hierarchy, data flow, routing, state management | Understanding overall system |
+| DATABASE.org | Schema tables, enums, JSONB structures | Understanding data shapes |
+| FUNCTIONS.org | RPC functions the frontend calls, parameters, return types | Working with data fetching |
+| DOCUMENTATION_PHILOSOPHY.org | This file — documentation standards | Before updating any documentation |
+
+** Quick Reference Files (Detail Layer)
+
+Located in =src/= directories:
+
+| File | Module Coverage |
+|------|-----------------|
+| src/features/tenders/quick_reference.org | TenderList, TenderDetail components, filter/detail hooks |
+| src/features/dashboard/quick_reference.org | StatsGrid, AlertsRow, RecentChanges, dashboard hooks |
+| src/components/quick_reference.org | Layout (AppShell, Header, Sidebar), Shared (Badges, States), UI (Toast) |
+| src/lib/quick_reference.org | Supabase client, TypeScript types, utility functions |
+
+** Context Files (Reference Material)
+
+Located in =context_files/=:
+
+| File | Purpose |
+|------|---------|
+| frontend.md | API documentation, JSONB structures, enums |
+| supabase_schema.sql | Full database schema |
+| 004_frontend_views.sql | Database views |
+| 005_frontend_functions.sql | RPC function implementations |
+| 006_frontend_indexes.sql | Performance indexes |
+
+*Note*: Context files are reference material from the backend. Strategic .org files should reference these but not duplicate their content.
+
+** Quick Reference Format
+
+Each quick_reference.org follows this structure:
+
+#+BEGIN_EXAMPLE
+#+TITLE: Module Name - Quick Reference
+#+DATE: YYYY-MM-DD
+
+* Overview
+Brief 1-2 sentence description.
+
+* Components
+| Component | File | Purpose |
+|-----------|------|---------|
+| ComponentName | ComponentName.tsx:15 | 5-10 word description |
+
+* Hooks
+| Hook | File | RPC Function | Purpose |
+|------|------|--------------|---------|
+| useTenders | useTenders.ts:8 | get_tenders_paginated | Fetches paginated tender list |
+
+* Props/Interfaces
+| Interface | File | Key Fields |
+|-----------|------|------------|
+| TenderListProps | types.ts:45 | clientCode, filters, onSelect |
+
+* [Module-specific sections]
+Tables, bullets, data flow as needed.
+
+* RPC Function Usage
+| Function Called | Used By | Purpose |
+|-----------------|---------|---------|
+| get_dashboard_stats | useDashboardStats | Fetch dashboard metrics |
+
+---
+/Last Updated/: YYYY-MM-DD
+#+END_EXAMPLE
+
+*Constraints*:
+- Line numbers use format =File.tsx:123=
+- Descriptions are 5-10 words max
+- Tables over prose
+- Avoid unnecessary bloat (repetition, content that belongs elsewhere, low-value verbosity)
+- Larger modules warrant larger docs — length is acceptable if the content is necessary
+
+* Agent Roles
+
+** Main Coordinating Agent
+
+The main agent (typically Opus or Sonnet) orchestrates work and maintains high-level context.
+
+*Responsibilities*:
+- Read strategic docs (README.org, ARCHITECTURE.org) for project understanding
+- Decompose user requests into sub-agent tasks
+- Deploy sub-agents with clear, scoped instructions
+- Synthesize sub-agent findings into coherent responses
+- Decide when documentation updates are needed
+- Create README.org together with human (pyramid tip)
+
+*Documentation reading order*:
+1. README.org — navigation and quick start
+2. ARCHITECTURE.org — component hierarchy, data flow (if needed)
+3. FUNCTIONS.org — RPC functions available (if working with data)
+4. DOCUMENTATION_PHILOSOPHY.org — before any doc maintenance
+5. Specific quick_references — only when diving into module details
+
+** Sub-Agents
+
+Sub-agents (typically Sonnet) execute focused tasks.
+
+*Key rules*:
+- Do NOT update documentation unless explicitly instructed
+- Return compact summaries in chat — not verbose markdown files
+- Read the relevant quick_reference.org before modifying code in a module
+- Follow patterns documented in quick_references (reuse existing hooks, components)
+
+*When instructed to update documentation*:
+- Verify against actual TypeScript/React code, not other .org files
+- Follow Present-State-Only principle
+- Keep compact format (tables, bullets)
+- Update "Last Updated" date if making changes
+- Only edit the file(s) specified — don't touch other files
+
+* Documentation Maintenance
+
+** When to Update
+
+Documentation updates are needed when:
+- Code changes affect documented behavior
+- Line numbers have drifted
+- New features/components are added
+- Existing features are removed (delete from docs, don't mark as "REMOVED")
+
+** Maintenance Workflow
+
+The recommended approach uses =git diff= to identify what changed:
+
+#+BEGIN_EXAMPLE
+1. Complete code changes
+2. Run: git diff -- '*.tsx' '*.ts'
+3. Identify affected modules (features, components, lib)
+4. Deploy sub-agents to update relevant quick_reference.org files
+5. If architectural changes: update root-level .org files
+6. Commit documentation with code
+#+END_EXAMPLE
+
+** Batch Maintenance Process
+
+For large refactors or periodic sync, use parallel sub-agents:
+
+*Phase 1: Quick References (Sonnet sub-agents, parallel)*
+- Deploy one agent per quick_reference.org file
+- Each agent performs hygiene checks AND content validation
+- Agents work independently (no file conflicts)
+
+Per-agent tasks:
+1. *Hygiene checks* (all files):
+   - Remove "Recent Changes" sections or time-relative phrasing
+   - Ensure present-state-only language
+   - Flag unclear sections or missing links
+2. *Content validation* (all files):
+   - Verify line numbers against actual code
+   - Fix stale component/hook names or descriptions
+3. *RPC function usage* (all files):
+   - Document which RPC functions each hook calls
+   - Ensure function names match FUNCTIONS.org
+
+*Phase 2: Root-Level Files (Sonnet sub-agents)*
+- Update ARCHITECTURE.org, DATABASE.org, FUNCTIONS.org after quick_refs are accurate
+- Can trust quick_references as source of truth
+
+*Phase 3: Navigation (Main agent + human)*
+- Update README.org links and tables
+- Verify all references are correct
+- README.org is the pyramid tip — created last, reviewed together
+
+** Sub-Agent Prompt Template for Doc Updates
+
+#+BEGIN_EXAMPLE
+Validate and update `src/{module}/quick_reference.org`.
+
+IMPORTANT:
+- Only edit the specified file
+- Verify against actual TypeScript/React code, not other .org files
+- Follow Present-State-Only principle (no historical language)
+- Keep compact format (tables, bullets, 5-10 word descriptions)
+
+Tasks:
+1. HYGIENE: Remove any "Recent Changes" sections or time-relative language
+2. HYGIENE: Ensure all content is present-tense, describing what EXISTS now
+3. VALIDATE: For each code reference (File.tsx:line), verify line numbers against actual code
+4. VALIDATE: Fix any inaccuracies (line numbers, component/hook names, descriptions)
+5. RPC: Document which Supabase RPC functions each hook calls
+6. Update "Last Updated" date if changes made
+
+Return artifact:
+- Summary of changes made (or "No changes needed")
+- Any unresolved ambiguities or items needing human review
+#+END_EXAMPLE
+
+* Common Violations to Avoid
+
+| Violation | Example | Fix |
+|-----------|---------|-----|
+| Change logs | "Recent Changes (2026-01-14): Added X" | Delete the section entirely |
+| Tombstone markers | "OldComponent - REMOVED in refactor" | Delete the row entirely |
+| Historical language | "We migrated from class components to hooks" | Rewrite in present tense or delete |
+| Layer bleed | 100-line hook implementation in ARCHITECTURE.org | Move to quick_reference, add link |
+| Stale references | Link to deleted component or removed feature | Delete the reference |
+| Verbose prose | Paragraph explaining a component | Convert to table row |
+| Duplicating SQL | Copying full function code into FUNCTIONS.org | Reference the SQL file, summarize params/returns |
+
+* Quick Checklist
+
+Before committing documentation changes:
+
+- [ ] No "Recent Changes" or historical sections
+- [ ] No "REMOVED" or "deprecated" markers for deleted features
+- [ ] Present-tense language throughout
+- [ ] Strategic docs are lean (details in quick_refs)
+- [ ] Line numbers verified against actual code (File.tsx:123 format)
+- [ ] Tables used instead of prose where possible
+- [ ] RPC function usage documented in quick_references
+- [ ] SQL files referenced, not duplicated
+- [ ] "Last Updated" date is current
+
+---
+/Last Updated/: 2026-01-29

@@ -1,0 +1,316 @@
+#+TITLE: TenderRender Frontend - RPC Functions Reference
+#+DATE: 2026-01-29
+
+* Overview
+
+This document describes the Supabase RPC functions called by the frontend. All functions are defined in =context_files/005_frontend_functions.sql=.
+
+* Function Summary
+
+| Function | Purpose | Used By |
+|----------|---------|---------|
+| get_dashboard_stats | Dashboard counts and metrics | useDashboardStats |
+| get_tenders_paginated | Main tender list with filters | useTenders, useRelevantTenders |
+| get_tender_detail | Single tender with docs/changes | useTenderDetail |
+| get_activity_feed | Recent changes timeline | useDashboardStats (future) |
+| get_filter_options | Dynamic dropdown options | useFilterOptions |
+| get_tender_change_summary | Aggregated change stats | (embedded in detail) |
+| get_client_rubric | Client rubric by rubric_pk | useClientRubric |
+| get_active_client_rubric | Active rubric by client_code | useActiveClientRubric |
+
+* Function Details
+
+** get_dashboard_stats
+
+Returns summary statistics for a client's dashboard.
+
+*** Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| p_client_code | VARCHAR | Yes | Client identifier |
+
+*** Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| total_active | INTEGER | Total active tenders |
+| total_relevant | INTEGER | Tenders with relevant recommendation |
+| total_not_relevant | INTEGER | Tenders marked not_recommended |
+| excellent_count | INTEGER | Count of excellent_fit |
+| good_count | INTEGER | Count of good_fit |
+| worth_reviewing_count | INTEGER | Count of worth_reviewing |
+| briefings_next_7_days | INTEGER | Compulsory briefings upcoming |
+| closing_next_7_days | INTEGER | Tenders closing soon |
+| high_importance_changes_24h | INTEGER | High importance changes in last 24h |
+
+** get_tenders_paginated
+
+Paginated tender listing with comprehensive filters.
+
+*** Parameters
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| p_client_code | VARCHAR | Yes | - | Client identifier |
+| p_is_relevant | BOOLEAN | No | NULL | Filter by relevance |
+| p_province_id | INTEGER | No | NULL | Filter by province |
+| p_department_id | INTEGER | No | NULL | Filter by department |
+| p_category_id | INTEGER | No | NULL | Filter by category |
+| p_closing_from | DATE | No | NULL | Closing date range start |
+| p_closing_to | DATE | No | NULL | Closing date range end |
+| p_has_compulsory_briefing | BOOLEAN | No | NULL | Filter by briefing requirement |
+| p_search_text | TEXT | No | NULL | Full-text search |
+| p_sort_by | VARCHAR | No | 'recommendation' | Sort field |
+| p_sort_desc | BOOLEAN | No | FALSE | Sort direction |
+| p_limit | INTEGER | No | 25 | Page size |
+| p_offset | INTEGER | No | 0 | Page offset |
+
+*** Sort Options
+
+| Value | Behavior |
+|-------|----------|
+| recommendation | Ordered by tier: excellent → good → worth_reviewing → not_recommended |
+| closing_date | By closing date |
+| score | By evaluation score percentage |
+| published_date | By date published |
+
+*** Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| tender_pk | INTEGER | Primary key |
+| tender_no | VARCHAR | Tender number |
+| description | TEXT | Full description |
+| generated_title | TEXT | AI-generated title |
+| current_status | VARCHAR | Tender status |
+| date_published | TIMESTAMPTZ | Publication date |
+| closing_date | TIMESTAMPTZ | Closing date |
+| days_until_close | INTEGER | Days remaining |
+| category_id | INTEGER | Category ID |
+| category_name | VARCHAR | Category name |
+| province_id | INTEGER | Province ID |
+| province_name | VARCHAR | Province name |
+| department_id | INTEGER | Department ID |
+| department_name | VARCHAR | Department name |
+| briefing_datetime | TIMESTAMPTZ | Briefing date/time |
+| is_briefing_compulsory | BOOLEAN | Briefing required |
+| allows_esubmission | BOOLEAN | Electronic submission allowed |
+| contact_person | VARCHAR | Contact name |
+| contact_email | VARCHAR | Contact email |
+| evaluation_pk | INTEGER | Evaluation primary key |
+| recommendation | VARCHAR | Recommendation level |
+| score_percentage | DECIMAL | Score as percentage |
+| knockout_passed | BOOLEAN | Passed all knockouts |
+| llm_notes | TEXT | Evaluation notes from LLM analysis |
+| quality_score | INTEGER | Synthesis quality score |
+| is_relevant | BOOLEAN | Computed relevance flag |
+| total_count | BIGINT | Total matching records (for pagination) |
+
+** get_tender_detail
+
+Full tender detail for single tender view.
+
+*** Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| p_tender_pk | INTEGER | Yes | Tender primary key |
+| p_client_code | VARCHAR | Yes | Client identifier |
+
+*** Returns
+
+All fields from get_tenders_paginated, plus:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| source_tender_id | VARCHAR | Original eTenders ID |
+| tender_type | VARCHAR | Tender type |
+| organ_of_state | VARCHAR | Issuing organization |
+| contact_phone | VARCHAR | Contact phone |
+| town | VARCHAR | Location town |
+| delivery_address | TEXT | Delivery address |
+| briefing_venue | TEXT | Briefing location |
+| has_briefing_session | BOOLEAN | Has any briefing |
+| structured_data | JSONB | Additional structured data |
+| synthesis_pk | INTEGER | Synthesis primary key |
+| final_report_text | TEXT | AI analysis report |
+| quality_explanation | TEXT | Quality score explanation |
+| rubric_pk | INTEGER | Rubric used for evaluation |
+| score_earned | INTEGER | Points earned |
+| score_possible | INTEGER | Maximum points |
+| knockout_results | JSONB | Knockout question results |
+| criteria_results | JSONB | Criteria scoring results |
+| llm_notes | TEXT | AI evaluation notes |
+| documents | JSONB | Array of document objects |
+| recent_changes | JSONB | Array of recent changes |
+
+*** documents Array Structure
+
+#+BEGIN_EXAMPLE
+[
+  {
+    "document_pk": 123,
+    "file_name": "specs.pdf",
+    "file_extension": "pdf",
+    "file_size": 1048576,
+    "document_type": "specification",
+    "download_url": "https://...",
+    "processing_status": "completed",
+    "date_created": "2026-01-15T10:00:00Z",
+    "date_modified": "2026-01-15T10:00:00Z"
+  }
+]
+#+END_EXAMPLE
+
+*** recent_changes Array Structure
+
+#+BEGIN_EXAMPLE
+[
+  {
+    "change_pk": 456,
+    "observed_at": "2026-01-20T14:30:00Z",
+    "change_type": "metadata",
+    "highest_importance": "high",
+    "changes_json": { ... }
+  }
+]
+#+END_EXAMPLE
+
+** get_activity_feed
+
+Recent changes for client's evaluated tenders.
+
+*** Parameters
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| p_client_code | VARCHAR | Yes | - | Client identifier |
+| p_min_importance | VARCHAR | No | NULL | Minimum importance filter |
+| p_limit | INTEGER | No | 50 | Page size |
+| p_offset | INTEGER | No | 0 | Page offset |
+
+*** Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| change_pk | INTEGER | Change primary key |
+| tender_pk | INTEGER | Associated tender |
+| tender_no | VARCHAR | Tender number |
+| description_preview | TEXT | First 200 chars of description |
+| change_type | VARCHAR | metadata or document |
+| highest_importance | VARCHAR | high/medium/low |
+| changes_json | JSONB | Full change details |
+| observed_at | TIMESTAMPTZ | When change was observed |
+| recommendation | VARCHAR | Tender's recommendation |
+| score_percentage | DECIMAL | Tender's score |
+
+** get_filter_options
+
+Dynamic filter options based on available data.
+
+*** Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| p_client_code | VARCHAR | Yes | Client identifier |
+
+*** Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| provinces | JSONB | Array of {id, name, count} |
+| departments | JSONB | Array of {id, name, count} |
+| categories | JSONB | Array of {id, name, count} |
+
+*** Option Array Structure
+
+#+BEGIN_EXAMPLE
+[
+  { "id": 1, "name": "Gauteng", "count": 45 },
+  { "id": 2, "name": "Western Cape", "count": 23 }
+]
+#+END_EXAMPLE
+
+** get_tender_change_summary
+
+Aggregated change statistics for a single tender.
+
+*** Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| p_tender_pk | INTEGER | Yes | Tender primary key |
+
+*** Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| total_changes | INTEGER | Total change count |
+| high_importance_count | INTEGER | High importance changes |
+| medium_importance_count | INTEGER | Medium importance changes |
+| low_importance_count | INTEGER | Low importance changes |
+| last_change_at | TIMESTAMPTZ | Most recent change |
+| documents_added | INTEGER | Documents added count |
+| documents_removed | INTEGER | Documents removed count |
+
+** get_client_rubric
+
+Get client rubric details by rubric primary key.
+
+*** Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| p_rubric_pk | INTEGER | Yes | Rubric primary key |
+
+*** Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| rubric_pk | INTEGER | Rubric primary key |
+| client_pk | INTEGER | Client primary key |
+| client_name | VARCHAR | Client name |
+| version | INTEGER | Rubric version number |
+| is_active | BOOLEAN | Currently active |
+| description | TEXT | Rubric description |
+| knockouts | JSONB | Knockout question definitions |
+| criteria | JSONB | Scoring criteria definitions |
+| scoring_config | JSONB | Scoring configuration |
+| created_at | TIMESTAMPTZ | Creation timestamp |
+| updated_at | TIMESTAMPTZ | Last update timestamp |
+
+** get_active_client_rubric
+
+Get the active rubric for a client by client code.
+
+*** Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| p_client_code | VARCHAR | Yes | Client identifier |
+
+*** Returns
+
+Same fields as get_client_rubric.
+
+* Error Handling
+
+All functions raise exceptions for invalid client codes:
+
+#+BEGIN_EXAMPLE
+RAISE EXCEPTION 'Client not found or inactive: %', p_client_code;
+#+END_EXAMPLE
+
+Frontend hooks should catch and display these errors appropriately.
+
+* Related Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [[file:DATABASE.org][DATABASE.org]] | Schema tables, enums, JSONB structures |
+| [[file:context_files/005_frontend_functions.sql][context_files/005_frontend_functions.sql]] | Full function implementations |
+| [[file:context_files/frontend.md][context_files/frontend.md]] | Detailed API documentation |
+
+---
+/Last Updated/: 2026-01-29

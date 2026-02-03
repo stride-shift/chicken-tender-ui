@@ -1,0 +1,94 @@
+#+TITLE: Tenders Feature - Quick Reference
+#+DATE: 2026-01-31
+
+* Overview
+
+Primary feature module for viewing and filtering tenders. Contains list/detail components and data fetching hooks.
+
+* Components
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| TenderListPanel | TenderListPanel.tsx:26 | Container managing filters, pagination, tender list |
+| TenderListItem | TenderListItem.tsx:10 | Single tender row with recommendation badge |
+| TenderListFilters | TenderListFilters.tsx:24 | Search and dropdown filter controls |
+| TenderDetailPanel | TenderDetailPanel.tsx:15 | Main detail panel with tabs and content |
+| TenderDetailHeader | TenderDetailHeader.tsx:10 | Header with title, recommendation, key stats |
+| TenderDetailTabs | TenderDetailTabs.tsx:8 | Four-tab navigation bar |
+| TenderDetailOverview | TenderDetailOverview.tsx:7 | Overview tab with description and metadata |
+| TenderDetailDocs | TenderDetailDocs.tsx:7 | Documents tab listing files and downloads |
+| TenderDetailChanges | TenderDetailChanges.tsx:9 | Change history tab with field diffs |
+| TenderDetailContact | TenderDetailContact.tsx:8 | Contact information and briefing details |
+| TenderDetailEval | TenderDetailEval.tsx:22 | Evaluation tab displaying rubric scores |
+| TenderOpportunityTab | TenderOpportunityTab.tsx:10 | Opportunity tab with AI summary, description, metadata |
+| TenderRubricTab | TenderRubricTab.tsx:9 | Rubric definition display tab |
+
+* Hooks
+
+| Hook | File | RPC Function | Purpose |
+|------|------|--------------|---------|
+| useTenders | hooks/useTenders.ts:30 | get_tenders_paginated | Fetches paginated tender list with filters |
+| useTenderDetail | hooks/useTenderDetail.ts:15 | get_tender_detail | Fetches single tender detail by PK |
+| useFilterOptions | hooks/useFilterOptions.ts:13 | get_filter_options | Fetches province, department, category filter options |
+| useClientRubric | hooks/useClientRubric.ts:5 | get_client_rubric | Fetches rubric definition by rubric PK |
+| useActiveClientRubric | hooks/useActiveClientRubric.ts:9 | get_active_client_rubric | Fetches active rubric for current client |
+
+* RPC Function Usage
+
+| Function Called | Used By | Purpose |
+|-----------------|---------|---------|
+| get_tenders_paginated | useTenders | Fetch paginated tender list with filters |
+| get_tender_detail | useTenderDetail | Fetch full tender detail |
+| get_filter_options | useFilterOptions | Fetch dynamic filter options |
+| get_client_rubric | useClientRubric | Fetch rubric definition |
+| get_active_client_rubric | useActiveClientRubric | Fetch active rubric for client |
+
+* Component Hierarchy
+
+TenderListPanel
+├─ TenderListFilters (search, filter dropdowns)
+└─ TenderListItem[] (list of tender cards)
+
+TenderDetailPanel
+├─ TenderDetailHeader (title, recommendation, days/briefing/score cards)
+├─ TenderDetailTabs (tab navigation: Opportunity, Evaluation, Documents, Changes)
+└─ Tab Content:
+   ├─ TenderOpportunityTab (AI summary, description, metadata, contact)
+   ├─ TenderDetailEval (rubric evaluation with knockouts/criteria)
+   ├─ TenderDetailDocs (document list with download links)
+   └─ TenderDetailChanges (change history with field diffs)
+
+* Filter State
+
+Filters managed in TenderListPanel component state:
+- isRelevant: boolean | null (all, relevant, not recommended)
+- provinceId: number | null
+- departmentId: number | null
+- categoryId: number | null
+- searchText: string | null
+- sortBy: recommendation | closing_date | score | published_date
+- sortDesc: boolean
+- page: number
+- limit: number (default 25)
+
+Filters reset page to 1 on change.
+
+* Tab Navigation
+
+Four tabs in TenderDetailPanel:
+1. Opportunity: AI summary (FormattedSummary), description, metadata, contact
+2. Evaluation: Rubric-based scoring with knockouts and criteria
+3. Documents: File list with download links
+4. Changes: Change history with field-level diffs
+
+Tab state managed locally in TenderDetailPanel component.
+
+* Document Change Rendering
+
+TenderDetailChanges handles document changes with =normalizeDocument= helper:
+- Supports both string (legacy) and object formats for backwards compatibility
+- Extracts =file_name= and =source_document_id= from document objects
+- Displays source ID in muted text below filename
+
+---
+/Last Updated/: 2026-01-31

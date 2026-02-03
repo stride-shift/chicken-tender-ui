@@ -1,0 +1,111 @@
+#+TITLE: Dashboard Feature - Quick Reference
+#+DATE: 2026-01-31
+
+* Overview
+
+Overview and monitoring feature. Displays stats, alerts, and recent activity for the client's tenders.
+
+* Components
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| StatsGrid | components/StatsGrid.tsx:19 | Grid of six tender count cards |
+| StatCard | components/StatCard.tsx:14 | Single metric card with label and LED number |
+| AlertCard | components/AlertCard.tsx:13 | Inline alert with urgent styling option |
+| AlertsRow | components/AlertsRow.tsx:9 | Row showing briefings, closing deadlines, and changes |
+| RecentChanges | components/RecentChanges.tsx:8 | Displays high-importance changes count preview |
+| TenderCarousel | components/TenderCarousel.tsx:11 | Auto-scrolling carousel of featured tenders |
+| TenderCarouselCard | components/TenderCarouselCard.tsx:9 | Individual card for carousel display |
+| ScoreDistributionChart | components/ScoreDistributionChart.tsx:18 | Recharts donut chart showing score breakdown |
+| DepartmentTreemap | components/DepartmentTreemap.tsx:122 | Recharts treemap of tenders by department |
+
+* Hooks
+
+| Hook | File | RPC Function | Purpose |
+|------|------|--------------|---------|
+| useDashboardStats | hooks/useDashboardStats.ts:9 | get_dashboard_stats | Fetches dashboard statistics for current client |
+| useRelevantTenders | hooks/useRelevantTenders.ts:21 | get_tenders_paginated | Fetches relevant tenders for carousel display |
+| useFilterOptions | @/features/tenders/hooks/useFilterOptions.ts:13 | get_filter_options | Fetches provinces, departments, categories (used by DepartmentTreemap) |
+
+* RPC Function Usage
+
+| Function Called | Used By | Purpose |
+|-----------------|---------|---------|
+| get_dashboard_stats | useDashboardStats | Fetch dashboard counts and metrics |
+| get_tenders_paginated | useRelevantTenders | Fetch relevant tenders for carousel display |
+| get_filter_options | useFilterOptions | Fetch department counts for treemap visualization |
+
+* Stats Displayed
+
+| Stat | Field Name | Description |
+|------|------------|-------------|
+| Total Active | total_active | All active tenders count |
+| Relevant Tenders | total_relevant | Total tenders matching client criteria |
+| Not Relevant | total_not_relevant | Filtered out tenders count |
+| Excellent Fit | excellent_count | High priority tender count |
+| Good Fit | good_count | Worth pursuing tender count |
+| Worth Reviewing | worth_reviewing_count | Needs review tender count |
+
+* Alert Types
+
+| Alert | Field Name | Threshold | Purpose |
+|-------|------------|-----------|---------|
+| Briefings | briefings_next_7_days | >0 triggers urgent | Briefings due in next 7 days |
+| Closing Soon | closing_next_7_days | >0 triggers urgent | Tenders closing in next 7 days |
+| Recent Changes | high_importance_changes_24h | >0 triggers urgent | High-importance changes in last 24 hours |
+
+* Component Features
+
+** TenderCarousel
+
+| Feature | Implementation |
+|---------|----------------|
+| Auto-scroll | 5000ms interval (configurable via autoScrollInterval prop) |
+| Pause behavior | Mouse hover pauses auto-scrolling |
+| Responsive | 1 card (mobile), 2 cards (tablet), 3 cards (desktop) |
+| Navigation | Prev/Next buttons and progress dots |
+| Data source | useRelevantTenders hook (limit: 8) |
+| Card navigation | Clicking card navigates to /tenders/:tender_pk |
+| Expand/Collapse | Toggle button switches between carousel and responsive grid view |
+| View modes | Carousel view (default) or expanded responsive grid layout |
+
+** ScoreDistributionChart
+
+| Feature | Implementation |
+|---------|----------------|
+| Chart type | Recharts donut chart (PieChart with innerRadius) |
+| Data source | useDashboardStats hook |
+| Categories | Excellent Fit (emerald), Good Fit (blue), Worth Reviewing (amber) |
+| Labels | Percentage shown in center of segments if >5% |
+| Legend | Custom legend with counts below chart |
+
+** DepartmentTreemap
+
+| Feature | Implementation |
+|---------|----------------|
+| Chart type | Recharts Treemap |
+| Data source | useFilterOptions hook (departments) |
+| Display limit | Top 12 departments by count |
+| Colors | 10-color palette rotation |
+| Labels | Department name and count (if space allows) |
+
+** StatCard Props
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| label | string | Metric label text |
+| value | number or string | Metric value displayed as LED number |
+| color | string (optional) | LED number color (default: #2d8f8f) |
+| bgColor | string (optional) | Background color for card (default: #f0fdfa) |
+
+* Dashboard Page Layout
+
+DashboardPage.tsx displays components in this order:
+1. StatsGrid + AlertsRow (flex row on large screens)
+2. TenderCarousel
+3. ScoreDistributionChart + DepartmentTreemap (2-column grid)
+
+Note: ClosingTimelineChart exists but is not currently used in DashboardPage.
+
+---
+/Last Updated/: 2026-01-31
