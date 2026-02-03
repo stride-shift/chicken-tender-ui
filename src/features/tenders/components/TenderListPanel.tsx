@@ -130,7 +130,7 @@ export function TenderListPanel({ selectedTenderId, onSelectTender }: TenderList
                   key={tender.tender_pk}
                   tender={tender}
                   isSelected={selectedTenderId === tender.tender_pk}
-                  onClick={() => onSelectTender(tender.tender_pk)}
+                  onClick={onSelectTender}
                 />
               ))}
             </div>

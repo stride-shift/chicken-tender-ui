@@ -1,13 +1,14 @@
+import { memo } from 'react'
 import type { TenderListItem as TenderListItemType } from '@/lib/types'
 import { RecommendationBadge } from '@/components/shared/RecommendationBadge'
 
 interface TenderListItemProps {
   tender: TenderListItemType
   isSelected: boolean
-  onClick: () => void
+  onClick: (id: number) => void
 }
 
-export function TenderListItem({ tender, isSelected, onClick }: TenderListItemProps) {
+export const TenderListItem = memo(function TenderListItem({ tender, isSelected, onClick }: TenderListItemProps) {
   // Use generated_title if available, otherwise truncate description
   const displayTitle = tender.generated_title || truncateText(tender.description, 80)
 
@@ -22,7 +23,7 @@ export function TenderListItem({ tender, isSelected, onClick }: TenderListItemPr
 
   return (
     <div
-      onClick={onClick}
+      onClick={() => onClick(tender.tender_pk)}
       className={`
         p-3 cursor-pointer border-l-4 transition-all border-b border-stone-200
         ${isSelected
@@ -35,7 +36,7 @@ export function TenderListItem({ tender, isSelected, onClick }: TenderListItemPr
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
-          onClick()
+          onClick(tender.tender_pk)
         }
       }}
     >
@@ -78,7 +79,7 @@ export function TenderListItem({ tender, isSelected, onClick }: TenderListItemPr
       </div>
     </div>
   )
-}
+})
 
 function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text

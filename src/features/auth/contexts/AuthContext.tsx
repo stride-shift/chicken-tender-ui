@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import type { AuthContextValue, UserProfile, Client } from '../types';
@@ -86,7 +86,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setAvailableClients([]);
       setIsStrideShift(false);
       setIsAuthenticated(false);
-      throw error;
+      // Sanitize error message for users
+      const message = error instanceof Error
+        ? 'Failed to load user data. Please try logging in again.'
+        : 'Failed to load user data. Please try logging in again.';
+      throw new Error(message);
     }
   };
 
@@ -165,7 +169,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       await fetchUserData(data.user.id);
     } catch (error) {
       console.error('Login error:', error);
-      throw error;
+      // Sanitize error message for users
+      const message = error instanceof Error
+        ? (error.message.toLowerCase().includes('invalid') || error.message.toLowerCase().includes('credentials')
+          ? 'Invalid email or password'
+          : 'Login failed. Please try again.')
+        : 'Login failed. Please try again.';
+      throw new Error(message);
     } finally {
       setIsLoading(false);
     }
@@ -186,7 +196,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       localStorage.removeItem(STORAGE_KEY);
     } catch (error) {
       console.error('Logout error:', error);
-      throw error;
+      // Sanitize error message for users
+      const message = 'Logout failed. Please try again.';
+      throw new Error(message);
     }
   };
 
@@ -212,7 +224,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (error) throw error;
     } catch (error) {
       console.error('Password update error:', error);
-      throw error;
+      // Sanitize error message for users
+      const message = error instanceof Error
+        ? (error.message.toLowerCase().includes('password')
+          ? 'Password update failed. Please ensure your new password meets the requirements.'
+          : 'Password update failed. Please try again.')
+        : 'Password update failed. Please try again.';
+      throw new Error(message);
     }
   };
 
@@ -225,11 +243,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (error) throw error;
     } catch (error) {
       console.error('Forgot password error:', error);
-      throw error;
+      // Sanitize error message for users
+      const message = error instanceof Error
+        ? (error.message.toLowerCase().includes('email')
+          ? 'Invalid email address.'
+          : 'Password reset request failed. Please try again.')
+        : 'Password reset request failed. Please try again.';
+      throw new Error(message);
     }
   };
 
-  const value: AuthContextValue = {
+  const value = useMemo((): AuthContextValue => ({
     user,
     profile,
     clientCode,
@@ -242,7 +266,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setActiveClient,
     updatePassword,
     forgotPassword,
-  };
+  }), [user, profile, clientCode, availableClients, isStrideShift, isAuthenticated, isLoading, login, logout, setActiveClient, updatePassword, forgotPassword]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
