@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { supabase, getClientCode } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/features/auth'
 import type { TenderDetail } from '@/lib/types'
 
 interface UseTenderDetailOptions {
@@ -13,12 +14,13 @@ interface UseTenderDetailResult {
 }
 
 export function useTenderDetail({ tenderId }: UseTenderDetailOptions): UseTenderDetailResult {
-  const clientCode = getClientCode()
+  const { clientCode } = useAuth()
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['tenderDetail', tenderId, clientCode],
     queryFn: async () => {
       if (!tenderId) return null
+      if (!clientCode) throw new Error('No client selected')
 
       const { data, error } = await supabase.rpc('get_tender_detail', {
         p_tender_pk: tenderId,
@@ -31,7 +33,7 @@ export function useTenderDetail({ tenderId }: UseTenderDetailOptions): UseTender
       if (!data || data.length === 0) return null
       return data[0] as TenderDetail
     },
-    enabled: tenderId !== null,
+    enabled: tenderId !== null && !!clientCode,
   })
 
   return {

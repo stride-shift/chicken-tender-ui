@@ -105,8 +105,12 @@ export function ScoreDistributionChart() {
         fill="white"
         textAnchor="middle"
         dominantBaseline="central"
-        className="text-xs font-black font-mono"
-        style={{ textShadow: '2px 2px 0 rgba(0,0,0,0.5)' }}
+        fontSize={12}
+        fontWeight="bold"
+        fontFamily="monospace"
+        stroke="rgba(0,0,0,0.3)"
+        strokeWidth={0.5}
+        paintOrder="stroke"
       >
         {`${(percent * 100).toFixed(0)}%`}
       </text>

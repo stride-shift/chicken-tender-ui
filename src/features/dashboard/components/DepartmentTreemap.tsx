@@ -2,18 +2,20 @@ import { Treemap, ResponsiveContainer, Tooltip } from 'recharts'
 import { useFilterOptions } from '@/features/tenders/hooks/useFilterOptions'
 import { PixelBox } from '@/components/ui'
 
-// Arcade color palette for departments with gradients
+// Muted, professional color palette that fits the app's style
 const DEPARTMENT_COLORS = [
-  { gradient: 'linear-gradient(135deg, #fb923c 0%, #c75d32 50%, #9a3412 100%)', solid: '#fb923c' },
-  { gradient: 'linear-gradient(135deg, #4ecdc4 0%, #2d8f8f 100%)', solid: '#4ecdc4' },
-  { gradient: 'linear-gradient(135deg, #c084fc 0%, #9333ea 100%)', solid: '#c084fc' },
-  { gradient: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)', solid: '#4ade80' },
-  { gradient: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)', solid: '#60a5fa' },
-  { gradient: 'linear-gradient(135deg, #f472b6 0%, #ec4899 100%)', solid: '#f472b6' },
-  { gradient: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)', solid: '#fbbf24' },
-  { gradient: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)', solid: '#a78bfa' },
-  { gradient: 'linear-gradient(135deg, #34d399 0%, #10b981 100%)', solid: '#34d399' },
-  { gradient: 'linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%)', solid: '#38bdf8' },
+  '#2a9d8f', // teal (primary)
+  '#457b9d', // steel blue
+  '#6b7280', // gray
+  '#e76f51', // coral (accent)
+  '#8b5cf6', // violet
+  '#059669', // emerald
+  '#0891b2', // cyan
+  '#d97706', // amber
+  '#7c3aed', // purple
+  '#dc2626', // red
+  '#2563eb', // blue
+  '#65a30d', // lime
 ]
 
 interface TreemapContentProps {
@@ -27,74 +29,60 @@ interface TreemapContentProps {
 }
 
 function TreemapContent({ x, y, width, height, index, name, value }: TreemapContentProps) {
-  const colorSet = DEPARTMENT_COLORS[index % DEPARTMENT_COLORS.length]
-  const showLabel = width > 60 && height > 40
-  const showValue = width > 40 && height > 30
-  const gradientId = `dept-gradient-${index}`
+  const color = DEPARTMENT_COLORS[index % DEPARTMENT_COLORS.length]
+  const showLabel = width > 55 && height > 35
+  const showValue = width > 45 && height > 45
+  const gap = 3
+
+  // Truncate name based on available width
+  const getDisplayName = () => {
+    const maxChars = Math.floor((width - 16) / 7)
+    if (name.length <= maxChars) return name
+    return name.substring(0, Math.max(3, maxChars - 3)) + '...'
+  }
 
   return (
     <g>
-      <defs>
-        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor={colorSet.solid} stopOpacity={1} />
-          <stop offset="50%" stopColor={colorSet.solid} stopOpacity={0.8} />
-          <stop offset="100%" stopColor={colorSet.solid} stopOpacity={0.6} />
-        </linearGradient>
-        <filter id={`glow-${index}`}>
-          <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
-          <feMerge>
-            <feMergeNode in="coloredBlur"/>
-            <feMergeNode in="SourceGraphic"/>
-          </feMerge>
-        </filter>
-      </defs>
+      {/* Cell with border */}
       <rect
-        x={x + 1}
-        y={y + 1}
-        width={Math.max(0, width - 2)}
-        height={Math.max(0, height - 2)}
-        fill={`url(#${gradientId})`}
-        stroke="#0a0a0a"
+        x={x + gap}
+        y={y + gap}
+        width={Math.max(0, width - gap * 2)}
+        height={Math.max(0, height - gap * 2)}
+        fill={color}
+        stroke="#ffffff"
         strokeWidth={2}
-        className="transition-opacity hover:opacity-90"
-        style={{ filter: `url(#glow-${index})` }}
+        rx={4}
+        className="transition-all duration-150 hover:brightness-110"
       />
-      {/* Scanline effect overlay */}
-      <rect
-        x={x + 1}
-        y={y + 1}
-        width={Math.max(0, width - 2)}
-        height={Math.max(0, height - 2)}
-        fill="url(#scanlinePattern)"
-        opacity={0.1}
-        className="pointer-events-none"
-      />
+      {/* Name label */}
       {showLabel && (
         <text
           x={x + width / 2}
-          y={y + height / 2 - (showValue ? 8 : 0)}
+          y={y + height / 2 - (showValue ? 7 : 0)}
           textAnchor="middle"
-          fill="#fff"
-          fontSize={width > 100 ? 11 : 9}
-          fontWeight="900"
-          fontFamily="monospace"
-          className="pointer-events-none"
-          style={{ textShadow: '2px 2px 0 rgba(0,0,0,0.5)' }}
+          dominantBaseline="middle"
+          fill="#ffffff"
+          fontSize={10}
+          fontWeight="600"
+          fontFamily="system-ui, sans-serif"
+          className="pointer-events-none select-none"
         >
-          {name.length > 12 ? name.substring(0, 12) + '...' : name}
+          {getDisplayName()}
         </text>
       )}
-      {showValue && showLabel && (
+      {/* Value label */}
+      {showValue && (
         <text
           x={x + width / 2}
-          y={y + height / 2 + 12}
+          y={y + height / 2 + 10}
           textAnchor="middle"
-          fill="rgba(255,255,255,0.95)"
-          fontSize={14}
-          fontWeight="900"
-          fontFamily="monospace"
-          className="pointer-events-none"
-          style={{ textShadow: '2px 2px 0 rgba(0,0,0,0.4)' }}
+          dominantBaseline="middle"
+          fill="rgba(255,255,255,0.9)"
+          fontSize={13}
+          fontWeight="700"
+          fontFamily="system-ui, sans-serif"
+          className="pointer-events-none select-none"
         >
           {value}
         </text>
@@ -110,10 +98,13 @@ const CustomTooltip = ({ active, payload }: any) => {
   const data = payload[0].payload
 
   return (
-    <div className="bg-stone-900 border-2 border-purple-500 px-3 py-2" style={{ boxShadow: '4px 4px 0 rgba(168, 85, 247, 0.3)' }}>
-      <p className="text-sm font-black text-purple-400 font-mono">{data.name}</p>
-      <p className="text-sm text-stone-300 font-mono">
-        <span className="font-bold text-stone-100">{data.value}</span> tender{data.value !== 1 ? 's' : ''}
+    <div
+      className="bg-white px-3 py-2 rounded shadow-lg"
+      style={{ border: '2px solid #2a9d8f' }}
+    >
+      <p className="text-sm font-semibold text-stone-800">{data.name}</p>
+      <p className="text-sm text-stone-600">
+        <span className="font-bold text-teal-600">{data.value}</span> tender{data.value !== 1 ? 's' : ''}
       </p>
     </div>
   )
@@ -124,15 +115,15 @@ export function DepartmentTreemap() {
 
   if (isLoading) {
     return (
-      <PixelBox color="#a855f7" bgColor="#ffffff">
+      <PixelBox color="#2a9d8f" bgColor="#ffffff">
         <div className="p-4 border-b border-stone-200 bg-white">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-purple-500" />
-            <span className="text-xs tracking-widest font-black text-purple-600">TENDERS BY DEPARTMENT</span>
+            <div className="w-3 h-3 bg-teal-500" />
+            <span className="text-xs tracking-widest font-black text-teal-600">TENDERS BY DEPARTMENT</span>
           </div>
         </div>
-        <div className="h-56 flex items-center justify-center bg-stone-100">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-300 border-t-purple-500" />
+        <div className="h-56 flex items-center justify-center bg-stone-50">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-teal-500" />
         </div>
       </PixelBox>
     )
@@ -140,15 +131,15 @@ export function DepartmentTreemap() {
 
   if (error) {
     return (
-      <PixelBox color="#a855f7" bgColor="#ffffff">
+      <PixelBox color="#2a9d8f" bgColor="#ffffff">
         <div className="p-4 border-b border-stone-200 bg-white">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-purple-500" />
-            <span className="text-xs tracking-widest font-black text-purple-600">TENDERS BY DEPARTMENT</span>
+            <div className="w-3 h-3 bg-teal-500" />
+            <span className="text-xs tracking-widest font-black text-teal-600">TENDERS BY DEPARTMENT</span>
           </div>
         </div>
         <div className="p-4 bg-stone-50">
-          <div className="bg-red-50 border border-red-300 text-red-600 px-4 py-3">
+          <div className="bg-red-50 border border-red-300 text-red-600 px-4 py-3 rounded">
             <p className="text-sm font-mono">{error.message}</p>
           </div>
         </div>
@@ -166,14 +157,14 @@ export function DepartmentTreemap() {
 
   if (sortedDepartments.length === 0) {
     return (
-      <PixelBox color="#a855f7" bgColor="#ffffff">
+      <PixelBox color="#2a9d8f" bgColor="#ffffff">
         <div className="p-4 border-b border-stone-200 bg-white">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-purple-500" />
-            <span className="text-xs tracking-widest font-black text-purple-600">TENDERS BY DEPARTMENT</span>
+            <div className="w-3 h-3 bg-teal-500" />
+            <span className="text-xs tracking-widest font-black text-teal-600">TENDERS BY DEPARTMENT</span>
           </div>
         </div>
-        <div className="h-56 flex items-center justify-center bg-stone-100 text-stone-500">
+        <div className="h-56 flex items-center justify-center bg-stone-50 text-stone-500">
           <p className="font-mono text-sm">NO DEPARTMENT DATA</p>
         </div>
       </PixelBox>
@@ -187,21 +178,24 @@ export function DepartmentTreemap() {
   }))
 
   return (
-    <PixelBox color="#a855f7" bgColor="#ffffff">
-      {/* Header - light */}
+    <PixelBox color="#2a9d8f" bgColor="#ffffff">
+      {/* Header */}
       <div className="p-4 border-b border-stone-200 bg-white">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-purple-500" />
-          <span className="text-xs tracking-widest font-black text-purple-600">TENDERS BY DEPARTMENT</span>
+          <div className="w-3 h-3 bg-teal-500" />
+          <span className="text-xs tracking-widest font-black text-teal-600">TENDERS BY DEPARTMENT</span>
         </div>
         <div className="text-stone-500 text-sm mt-1 font-mono">
           {total} tender{total !== 1 ? 's' : ''} across {sortedDepartments.length} department{sortedDepartments.length !== 1 ? 's' : ''}
         </div>
       </div>
 
-      {/* Treemap area - light bg with colorful cells */}
-      <div className="relative bg-stone-100 p-4">
-        <div className="h-56 relative z-0">
+      {/* Treemap area */}
+      <div className="bg-stone-100 p-3">
+        <div
+          className="h-56 rounded overflow-hidden"
+          style={{ backgroundColor: '#e7e5e4' }}
+        >
           <ResponsiveContainer width="100%" height="100%">
             <Treemap
               data={treemapData}
@@ -209,11 +203,6 @@ export function DepartmentTreemap() {
               nameKey="name"
               content={<TreemapContent x={0} y={0} width={0} height={0} index={0} name="" value={0} />}
             >
-              <defs>
-                <pattern id="scanlinePattern" patternUnits="userSpaceOnUse" width="4" height="4">
-                  <line x1="0" y1="0" x2="4" y2="0" stroke="rgba(0,0,0,0.1)" strokeWidth="1"/>
-                </pattern>
-              </defs>
               <Tooltip content={<CustomTooltip />} />
             </Treemap>
           </ResponsiveContainer>

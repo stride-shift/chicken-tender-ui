@@ -27,11 +27,11 @@ export function TenderCarouselCard({ tender }: TenderCarouselCardProps) {
     return { from: '#fbbf24', to: '#f59e0b', shadow: '#d97706' } // amber
   }
 
-  // Determine urgency color for closing date
-  const getUrgencyColor = (days: number): string => {
-    if (days < 7) return '#ef4444' // red
-    if (days < 14) return '#f59e0b' // amber
-    return '#4ecdc4' // teal
+  // Determine urgency styling for closing date badge
+  const getUrgencyStyle = (days: number): { bg: string; text: string } => {
+    if (days < 7) return { bg: '#ef4444', text: '#ffffff' } // red bg, white text
+    if (days < 14) return { bg: '#fbbf24', text: '#1a1a1a' } // amber bg, dark text
+    return { bg: '#ffffff', text: '#2d8f8f' } // white bg, teal text
   }
 
   const scoreColors = getScoreGradient(tender.score_percentage)
@@ -55,10 +55,10 @@ export function TenderCarouselCard({ tender }: TenderCarouselCardProps) {
             </span>
           </div>
           <span
-            className="text-xs font-mono font-bold flex-shrink-0 px-1.5 py-0.5 rounded"
+            className="text-xs font-mono font-bold flex-shrink-0 px-2 py-0.5 rounded"
             style={{
-              color: getUrgencyColor(tender.days_until_close),
-              backgroundColor: 'rgba(255,255,255,0.15)',
+              color: getUrgencyStyle(tender.days_until_close).text,
+              backgroundColor: getUrgencyStyle(tender.days_until_close).bg,
             }}
           >
             {formatDaysUntilClose(tender.days_until_close)}

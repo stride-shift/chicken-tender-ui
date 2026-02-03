@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { supabase, getClientCode } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/features/auth'
 import type { TenderListItem } from '@/lib/types'
 
 export interface TenderFilters {
@@ -28,7 +29,7 @@ export interface UseTendersResult {
 const DEFAULT_LIMIT = 25
 
 export function useTenders(params: Partial<UseTendersParams> = {}): UseTendersResult {
-  const clientCode = getClientCode()
+  const { clientCode } = useAuth()
 
   const {
     isRelevant = null,
@@ -59,6 +60,8 @@ export function useTenders(params: Partial<UseTendersParams> = {}): UseTendersRe
       limit,
     ],
     queryFn: async () => {
+      if (!clientCode) throw new Error('No client selected')
+
       const { data, error } = await supabase.rpc('get_tenders_paginated', {
         p_client_code: clientCode,
         p_is_relevant: isRelevant,
@@ -78,6 +81,7 @@ export function useTenders(params: Partial<UseTendersParams> = {}): UseTendersRe
       if (error) throw error
       return data as TenderListItem[]
     },
+    enabled: !!clientCode,
   })
 
   const tenders = data ?? []

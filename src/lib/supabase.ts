@@ -10,8 +10,3 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
-
-// Dev mode: get client code from environment
-export function getClientCode(): string {
-  return import.meta.env.VITE_DEV_CLIENT_CODE || 'pragma'
-}

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { supabase, getClientCode } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/features/auth'
 import type { ClientRubric } from '@/lib/types'
 
 /**
@@ -7,11 +8,13 @@ import type { ClientRubric } from '@/lib/types'
  * Used on the Rubric page to display the client's base rubric definition.
  */
 export function useActiveClientRubric() {
-  const clientCode = getClientCode()
+  const { clientCode } = useAuth()
 
   return useQuery({
     queryKey: ['activeClientRubric', clientCode],
     queryFn: async () => {
+      if (!clientCode) throw new Error('No client selected')
+
       const { data, error } = await supabase.rpc('get_active_client_rubric', {
         p_client_code: clientCode,
       })
@@ -19,5 +22,6 @@ export function useActiveClientRubric() {
       if (!data || data.length === 0) return null
       return data[0] as ClientRubric
     },
+    enabled: !!clientCode,
   })
 }

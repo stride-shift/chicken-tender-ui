@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { supabase, getClientCode } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/features/auth'
 import type { FilterOptions, FilterOption } from '@/lib/types'
 
 export interface UseFilterOptionsResult {
@@ -11,11 +12,13 @@ export interface UseFilterOptionsResult {
 }
 
 export function useFilterOptions(): UseFilterOptionsResult {
-  const clientCode = getClientCode()
+  const { clientCode } = useAuth()
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['filterOptions', clientCode],
     queryFn: async () => {
+      if (!clientCode) throw new Error('No client selected')
+
       const { data, error } = await supabase.rpc('get_filter_options', {
         p_client_code: clientCode,
       })
@@ -26,6 +29,7 @@ export function useFilterOptions(): UseFilterOptionsResult {
       const row = data?.[0] as FilterOptions | undefined
       return row ?? { provinces: [], departments: [], categories: [] }
     },
+    enabled: !!clientCode,
     staleTime: 5 * 60 * 1000, // 5 minutes - filter options don't change frequently
   })
 

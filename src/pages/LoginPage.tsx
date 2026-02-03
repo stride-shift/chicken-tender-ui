@@ -13,21 +13,22 @@ export function LoginPage() {
   const auth = useAuth();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleLogin = useCallback(
     async (username: string, password: string) => {
       if (isLoading) return;
 
       setIsLoading(true);
+      setError(null);
 
       try {
-        // Call auth login (has built-in delay ~2 seconds)
         await auth.login(username, password);
-
-        // Navigate to dashboard
         navigate('/');
-      } catch (error) {
-        console.error('Login failed:', error);
+      } catch (err) {
+        console.error('Login failed:', err);
+        const message = err instanceof Error ? err.message : 'Login failed';
+        setError(message);
         setIsLoading(false);
       }
     },
@@ -40,12 +41,31 @@ export function LoginPage() {
         minHeight: '100vh',
         background: theme.bg,
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         padding: 24,
+        gap: 16,
       }}
     >
       <LoginCard onLogin={handleLogin} isLoading={isLoading} />
+      {error && (
+        <div
+          style={{
+            fontFamily: '"Press Start 2P", monospace',
+            fontSize: 8,
+            color: '#dc2626',
+            background: '#fef2f2',
+            border: '3px solid #dc2626',
+            padding: '12px 16px',
+            maxWidth: 380,
+            textAlign: 'center',
+            lineHeight: 1.6,
+          }}
+        >
+          {error}
+        </div>
+      )}
     </div>
   );
 }

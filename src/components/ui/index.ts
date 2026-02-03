@@ -6,3 +6,4 @@ export { HealthBar } from './HealthBar';
 export { Scanlines } from './Scanlines';
 export { PixelStrip } from './PixelStrip';
 export { ArcadeButton } from './ArcadeButton';
+export { Logo } from './Logo';

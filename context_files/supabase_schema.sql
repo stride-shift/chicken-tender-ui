@@ -261,6 +261,7 @@ CREATE TABLE public.user_profiles (
     email_notifications BOOLEAN DEFAULT true,
     notification_threshold VARCHAR(30) DEFAULT 'good_fit'
         CHECK (notification_threshold IN ('excellent_fit', 'good_fit', 'worth_reviewing', 'not_recommended')),
+    is_strideshift BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -268,6 +269,27 @@ CREATE TABLE public.user_profiles (
 CREATE INDEX idx_user_profiles_client ON public.user_profiles(client_pk);
 
 COMMENT ON TABLE public.user_profiles IS 'Extended user profiles linking Supabase auth to clients';
+COMMENT ON COLUMN public.user_profiles.is_strideshift IS 'Flag indicating StrideShift employees (@strideshift.ai) with super-admin access';
+
+-- HELPER FUNCTIONS
+
+CREATE OR REPLACE FUNCTION public.get_user_client_pk()
+RETURNS INTEGER AS $$
+BEGIN
+    RETURN (SELECT client_pk FROM public.user_profiles WHERE user_id = auth.uid());
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+COMMENT ON FUNCTION public.get_user_client_pk() IS 'Returns the client_pk for the authenticated user';
+
+CREATE OR REPLACE FUNCTION public.is_strideshift_user()
+RETURNS BOOLEAN AS $$
+BEGIN
+    RETURN COALESCE((SELECT is_strideshift FROM public.user_profiles WHERE user_id = auth.uid()), false);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+COMMENT ON FUNCTION public.is_strideshift_user() IS 'Returns true if authenticated user is a StrideShift super-admin';
 
 -- TRIGGERS
 
@@ -303,6 +325,45 @@ CREATE TRIGGER update_user_profiles_updated_at
     BEFORE UPDATE ON public.user_profiles
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_display_name VARCHAR(255);
+    v_is_strideshift BOOLEAN;
+BEGIN
+    -- Parse display name from email (extract part before @)
+    v_display_name := SPLIT_PART(NEW.email, '@', 1);
+
+    -- Detect if user is a StrideShift employee
+    v_is_strideshift := NEW.email LIKE '%@strideshift.ai';
+
+    -- Create user profile with auto-detected values
+    INSERT INTO public.user_profiles (
+        user_id,
+        display_name,
+        is_strideshift,
+        email_notifications,
+        notification_threshold,
+        role
+    ) VALUES (
+        NEW.id,
+        v_display_name,
+        v_is_strideshift,
+        true,
+        'good_fit',
+        CASE WHEN v_is_strideshift THEN 'admin' ELSE 'viewer' END
+    );
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+COMMENT ON FUNCTION public.handle_new_user() IS 'Auto-creates user_profile when new user signs up, parses name from email, detects StrideShift employees';
+
+CREATE TRIGGER on_auth_user_created
+    AFTER INSERT ON auth.users
+    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
 -- ROW LEVEL SECURITY
 
 -- Tenders
@@ -323,19 +384,23 @@ ALTER TABLE public.tender_changes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Changes are viewable by authenticated users" ON public.tender_changes FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Changes are insertable by service role" ON public.tender_changes FOR INSERT TO service_role WITH CHECK (true);
 
--- Clients
+-- Clients (with client isolation via user_profiles)
 ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view their own client" ON public.clients FOR SELECT TO authenticated
     USING (client_pk IN (SELECT client_pk FROM public.user_profiles WHERE user_id = auth.uid()));
+CREATE POLICY "StrideShift super-admins can view all clients" ON public.clients FOR SELECT TO authenticated
+    USING (public.is_strideshift_user());
 CREATE POLICY "Clients are manageable by service role" ON public.clients FOR ALL TO service_role USING (true);
 
--- Rubrics
+-- Rubrics (with client isolation via client_pk join)
 ALTER TABLE public.client_rubrics ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view their client rubrics" ON public.client_rubrics FOR SELECT TO authenticated
     USING (client_pk IN (SELECT client_pk FROM public.user_profiles WHERE user_id = auth.uid()));
+CREATE POLICY "StrideShift super-admins can view all rubrics" ON public.client_rubrics FOR SELECT TO authenticated
+    USING (public.is_strideshift_user());
 CREATE POLICY "Rubrics are manageable by service role" ON public.client_rubrics FOR ALL TO service_role USING (true);
 
--- Evaluations
+-- Evaluations (with client isolation via rubric ownership)
 ALTER TABLE public.tender_evaluations ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view evaluations for their rubrics" ON public.tender_evaluations FOR SELECT TO authenticated
     USING (rubric_pk IN (
@@ -343,6 +408,8 @@ CREATE POLICY "Users can view evaluations for their rubrics" ON public.tender_ev
         JOIN public.user_profiles up ON cr.client_pk = up.client_pk
         WHERE up.user_id = auth.uid()
     ));
+CREATE POLICY "StrideShift super-admins can view all evaluations" ON public.tender_evaluations FOR SELECT TO authenticated
+    USING (public.is_strideshift_user());
 CREATE POLICY "Evaluations are manageable by service role" ON public.tender_evaluations FOR ALL TO service_role USING (true);
 
 -- User profiles

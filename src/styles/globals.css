@@ -26,12 +26,27 @@ body {
 
 /* ===== ARCADE DESIGN SYSTEM ===== */
 
-/* Brand Colors */
+/* Brand Colors - StrideShift / TenderRender */
 :root {
-  --brand-teal: #2d8f8f;
+  /* Primary palette */
+  --brand-teal: #2a9d8f;
+  --brand-teal-light: #3dbdad;
+  --brand-coral: #e76f51;
+  --brand-coral-light: #f4a460;
   --brand-navy: #1a3a4a;
-  --brand-orange: #c75d32;
-  --brand-cream: #e8e4dc;
+  --brand-cream: #faf8f5;
+  --brand-cream-dark: #f5f3f0;
+
+  /* Legacy aliases */
+  --brand-orange: #e76f51;
+
+  /* Text colors */
+  --text-primary: #2d3436;
+  --text-muted: #6b7c8a;
+  --text-body: #4a5568;
+
+  /* Border colors */
+  --border-default: #d4cfc5;
 
   /* Semantic */
   --color-excellent: #22c55e;

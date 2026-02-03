@@ -1,5 +1,5 @@
 #+TITLE: Components - Quick Reference
-#+DATE: 2026-01-31
+#+DATE: 2026-02-03
 
 * Overview
 
@@ -12,7 +12,7 @@ Located in =components/layout/=:
 | Component | File | Purpose |
 |-----------|------|---------|
 | AppShell | layout/AppShell.tsx:10 | Main layout wrapper managing sidebar toggle state |
-| Header | layout/Header.tsx:10 | Top navigation bar with arcade branding, client code, and logout |
+| Header | layout/Header.tsx:10 | Top nav with profile dropdown, client selector, logout |
 | Sidebar | layout/Sidebar.tsx:53 | Collapsible navigation menu with route links |
 
 * Shared Components
@@ -157,10 +157,14 @@ Header (=layout/Header.tsx:10=) provides:
 - Burger menu button triggering sidebar toggle
 - Application branding with gradient (TENDER in dark, RENDER in cream)
 - Current page indicator with arcade button styling
-- Client code indicator badge
-- Uses useAuth hook for logout
-- Uses useNavigate for redirect to /login
-- Logout button (ArcadeButton danger variant) in right section
+- Current client badge with status dot indicator
+- Profile dropdown button with user icon and dropdown arrow
+- Profile dropdown contains:
+  - User display name and admin status (StrideShift only)
+  - Client selector list (StrideShift admin only)
+  - Logout button with red arcade styling
+- Click-outside handler (useRef, useEffect) closes dropdown
+- Uses useAuth for: availableClients, clientCode, setActiveClient, isStrideShift, profile, logout
 
 Sidebar (=layout/Sidebar.tsx:53=) manages navigation:
 
@@ -202,4 +206,4 @@ Toast system (=ui/Toast.tsx:43=, =ui/Toaster.tsx:4=) for transient messages:
 - Managed via ToastContext
 
 ---
-/Last Updated/: 2026-01-31
+/Last Updated/: 2026-02-03

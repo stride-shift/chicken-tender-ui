@@ -1,113 +1,112 @@
 #+TITLE: Auth Feature - Quick Reference
-#+DATE: 2026-01-31
+#+DATE: 2026-02-03
 
 * Overview
 
-Authentication feature module for TenderRender. Provides login UI with retro arcade styling, auth state management via React Context, and a dev bypass mode for local development.
+Authentication via Supabase Auth with user profiles and multi-client support. Provides arcade-styled login UI, real auth state management, and client switching for StrideShift admins.
 
 * Components
 
 | Component | File | Purpose |
 |-----------|------|---------|
-| LoginCard | components/LoginCard.tsx:23 | Login form with username/password inputs and arcade styling |
-| CombinedLogo | components/CombinedLogo.tsx:19 | Branded logo showing StrideShift Global + TenderRender text |
-| PixelBootLoader | components/PixelBootLoader.tsx:33 | Animated 10x10 pixel grid loader shown during auth |
+| LoginCard | LoginCard.tsx:23 | Login form with email/password inputs and arcade styling |
+| CombinedLogo | CombinedLogo.tsx:19 | Logo showing StrideShift Global + TenderRender |
+| PixelBootLoader | PixelBootLoader.tsx:33 | Animated 10x10 pixel grid loader with reveal animation |
 
-* Hooks
+* Contexts & Hooks
 
-| Hook | File | Purpose |
+| Item | File | Purpose |
 |------|------|---------|
-| useAuth | contexts/AuthContext.tsx:73 | Access auth state and login/logout functions from context |
-
-* Context
-
-| Context | File | Purpose |
-|---------|------|---------|
-| AuthContext | contexts/AuthContext.tsx:9 | React context holding auth state and methods |
-| AuthProvider | contexts/AuthContext.tsx:15 | Provider component wrapping app with auth state |
+| AuthProvider | AuthContext.tsx:14 | Provider component wrapping app with Supabase auth |
+| useAuth | AuthContext.tsx:236 | Hook to access auth state and methods |
 
 * Types
 
-| Type | File | Purpose |
-|------|------|---------|
-| User | types.ts:1 | User object with id and email fields |
-| AuthState | types.ts:6 | Auth state shape: user, clientCode, isAuthenticated, isLoading |
-| AuthContextValue | contexts/AuthContext.tsx:4 | AuthState extended with login/logout methods |
+| Type | File | Key Fields |
+|------|------|-----------|
+| AuthState | types.ts:17 | user, profile, clientCode, availableClients, isStrideShift, isAuthenticated, isLoading |
+| AuthContextValue | types.ts:27 | AuthState + login(), logout(), setActiveClient(), updatePassword() |
+| UserProfile | types.ts:9 | user_id, client_pk (nullable), display_name, role, is_strideshift |
+| Client | types.ts:3 | client_pk, client_code, client_name |
 
-* Component Hierarchy
+* AuthProvider Methods
 
-LoginCard
-├─ CombinedLogo (logo with optional loading animation)
-│  └─ PixelBootLoader (animated pixel grid, shown when loading)
-└─ Form
-   ├─ Username input
-   ├─ Password input
-   └─ ArcadeButton (submit)
+| Method | Signature | Behavior |
+|--------|-----------|----------|
+| login | (email: string, password: string) => Promise<void> | Sign in via Supabase Auth, fetch user profile and clients |
+| logout | () => Promise<void> | Sign out via Supabase, clear all state and localStorage |
+| setActiveClient | (clientCode: string) => void | Switch active client, validate against availableClients |
+| updatePassword | (newPassword: string) => Promise<void> | Update user password via Supabase Auth |
 
-* Login Flow
+* AuthProvider State
 
-1. User enters username and password in LoginCard form
-2. Form submit calls onLogin callback (passed from parent)
-3. Parent calls auth.login(email, password) from useAuth hook
-4. AuthProvider.login sets isLoading=true, triggers 2s simulated delay
-5. On success: user, clientCode, isAuthenticated are set; isLoading=false
-6. LoginCard shows PixelBootLoader animation via CombinedLogo during loading
+| Property | Type | Purpose |
+|----------|------|---------|
+| user | SupabaseUser \vert null | Raw Supabase user object from auth.getSession() |
+| profile | UserProfile \vert null | User profile from user_profiles table |
+| clientCode | string \vert null | Active client code for scoping queries |
+| availableClients | Client[] | List of clients user has access to |
+| isStrideShift | boolean | True if user.is_strideshift in profile |
+| isAuthenticated | boolean | True after successful fetchUserData |
+| isLoading | boolean | True during login or initial auth check |
 
-* Dev Bypass Mode
-
-When VITE_DEV_CLIENT_CODE env var is set:
-- AuthProvider auto-authenticates on mount
-- Creates mock user: id="dev-user-001", email="dev@tenderrender.local"
-- Sets clientCode from env var
-- Skips login screen entirely
-
-* Component Props
-
-** LoginCard
+* LoginCard Props
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| onLogin | (username: string, password: string) => void | Yes | Callback when form is submitted |
-| isLoading | boolean | Yes | Shows loading state, disables inputs |
+| onLogin | (username: string, password: string) => void | Yes | Called when form submitted |
+| isLoading | boolean | Yes | Disables inputs, shows "LOGGING IN..." state |
 
-** CombinedLogo
-
-| Prop | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| size | 'medium' \vert 'large' \vert 'xlarge' | No | 'large' | Logo size preset |
-| showPixelBoot | boolean | No | false | Show PixelBootLoader instead of static logo |
-
-** PixelBootLoader
+* CombinedLogo Props
 
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
-| size | 'small' \vert 'medium' \vert 'large' | No | 'medium' | Pixel size preset |
-| color | string | No | '#2a9d8f' | Color for active pixels |
+| size | 'medium' \vert 'large' \vert 'xlarge' | No | 'large' | Logo size |
+| showPixelBoot | boolean | No | false | Show PixelBootLoader animation |
 
-* useAuth Return Value
+* PixelBootLoader Props
 
-| Property | Type | Description |
-|----------|------|-------------|
-| user | User \vert null | Current authenticated user |
-| clientCode | string \vert null | Client code for data scoping |
-| isAuthenticated | boolean | Whether user is logged in |
-| isLoading | boolean | Auth operation in progress |
-| login | (email: string, password: string) => Promise<void> | Trigger login |
-| logout | () => void | Clear auth state |
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| size | 'small' \vert 'medium' \vert 'large' | No | 'medium' | Pixel size |
+| color | string | No | '#2a9d8f' | Pixel color |
+
+* Authentication Flow
+
+1. AuthProvider checks for existing session on mount via supabase.auth.getSession()
+2. If session exists, sets user and calls fetchUserData(userId)
+3. fetchUserData fetches user_profiles row, checks is_strideshift flag
+4. If StrideShift: fetches all active clients from clients table
+5. If regular user: fetches their single client via client_pk
+6. Sets clientCode from localStorage or defaults to first available client
+7. onAuthStateChange listens for SIGNED_IN, SIGNED_OUT, TOKEN_REFRESHED events
+8. login() calls supabase.auth.signInWithPassword() then fetchUserData()
+
+* Client Switching (StrideShift Only)
+
+- setActiveClient(newClientCode) validates client in availableClients
+- Stores choice in localStorage at STORAGE_KEY='tenderrender_active_client'
+- Regular users have single client, cannot switch
+- StrideShift users see all active clients from clients table
 
 * Theme Colors
 
-Light mode palette used across auth components:
+| Color | Hex | Used For |
+|-------|-----|----------|
+| primary | #2a9d8f | Borders, logos, labels, primary text |
+| accent | #e76f51 | Racing stripes, secondary highlights |
+| bg | #faf8f5 | Page background |
+| bgCard | #ffffff | Card background |
+| textMuted | #6b7c8a | Secondary text, muted labels |
+| text | #2d3436 | Primary text |
+| border | #d4cfc5 | Input borders |
 
-| Color | Hex | Usage |
-|-------|-----|-------|
-| primary | #2a9d8f | Teal - borders, logo, text accents |
-| accent | #e76f51 | Coral - racing stripes, secondary highlights |
-| bg | #faf8f5 | Cream - page background |
-| bgCard | #ffffff | White - card background |
-| textMuted | #6b7c8a | Gray - labels, secondary text |
-| text | #2d3436 | Dark gray - primary text |
-| border | #d4cfc5 | Light brown - input borders |
+* Database Tables Accessed
+
+| Table | Query Type | Purpose |
+|-------|-----------|---------|
+| user_profiles | SELECT by user_id | Fetch user profile, is_strideshift flag |
+| clients | SELECT active by is_active or client_pk | Fetch available clients for user |
 
 ---
-/Last Updated/: 2026-01-31
+/Last Updated/: 2026-02-03

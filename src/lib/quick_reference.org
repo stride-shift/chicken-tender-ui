@@ -12,7 +12,6 @@ Core utilities, type definitions, page components, global hooks, and React conte
 | File | Purpose |
 |------|---------|
 | supabase.ts:12 | Exports configured Supabase client instance |
-| supabase.ts:15-16 | getClientCode() function, defaults to 'pragma' |
 
 *** Configuration
 
@@ -20,7 +19,6 @@ Core utilities, type definitions, page components, global hooks, and React conte
 |------|---------|
 | supabase.ts:3-4 | Reads VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY |
 | supabase.ts:6-10 | Throws error if environment variables missing |
-| supabase.ts:16 | Defaults to 'pragma' if VITE_DEV_CLIENT_CODE unset |
 
 ** Types
 
@@ -159,7 +157,7 @@ React Router v6 setup with nested routes and URL parameters.
 |----------|---------|---------|
 | VITE_SUPABASE_URL | supabase.ts:3 | Supabase project URL |
 | VITE_SUPABASE_ANON_KEY | supabase.ts:4 | Supabase anonymous key |
-| VITE_DEV_CLIENT_CODE | supabase.ts:16 | Development client code (defaults to 'pragma') |
+| VITE_DEV_CLIENT_CODE | AuthContext.tsx:23 | Development client code for auto-authentication |
 
 ---
-/Last Updated/: 2026-01-31
+/Last Updated/: 2026-02-03

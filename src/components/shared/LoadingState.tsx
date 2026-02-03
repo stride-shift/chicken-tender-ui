@@ -4,7 +4,7 @@ interface LoadingStateProps {
   message?: string;
 }
 
-export function LoadingState({ variant = 'card', message = 'LOADING...' }: LoadingStateProps) {
+export function LoadingState({ variant: _variant = 'card', message = 'LOADING...' }: LoadingStateProps) {
   // All variants now use the arcade loading animation
   return (
     <div className="flex flex-col items-center justify-center p-8">

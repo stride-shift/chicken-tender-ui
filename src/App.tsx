@@ -12,21 +12,23 @@ import { Toaster } from '@/components/ui/Toaster'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth()
-  const devClientCode = import.meta.env.VITE_DEV_CLIENT_CODE
 
   // Show nothing while loading auth state
   if (isLoading) {
     return null
   }
 
-  // Allow access if dev mode OR authenticated
-  if (devClientCode || isAuthenticated) {
+  // Allow access only if authenticated
+  if (isAuthenticated) {
     return <>{children}</>
   }
 
-  // Not authenticated and no dev code - redirect to login
+  // Not authenticated - redirect to login
   return <Navigate to="/login" replace />
 }
+
+// Dev bypass removed: All authentication now goes through Supabase Auth.
+// Previous dev mode used VITE_DEV_CLIENT_CODE environment variable.
 
 export default function App() {
   return (
