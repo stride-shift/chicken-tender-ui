@@ -21,7 +21,7 @@ Primary feature module for viewing and filtering tenders. Contains list/detail c
 | TenderDetailChanges | TenderDetailChanges.tsx:9 | Change history tab with field diffs |
 | TenderDetailContact | TenderDetailContact.tsx:8 | Contact information and briefing details |
 | TenderDetailEval | TenderDetailEval.tsx:22 | Evaluation tab displaying rubric scores |
-| TenderOpportunityTab | TenderOpportunityTab.tsx:10 | Opportunity tab with AI summary, description, metadata |
+| TenderOpportunityTab | TenderOpportunityTab.tsx:10 | Opportunity tab with evaluator notes, AI summary, description, metadata |
 | TenderRubricTab | TenderRubricTab.tsx:9 | Rubric definition display tab |
 
 * Hooks
@@ -82,7 +82,7 @@ Filters reset page to 1 on change.
 * Tab Navigation
 
 Four tabs in TenderDetailPanel:
-1. Opportunity: AI summary (FormattedSummary), description, metadata, contact
+1. Opportunity: Evaluator notes (llm_notes), AI summary (FormattedSummary), description, metadata, contact
 2. Evaluation: Rubric-based scoring with knockouts and criteria
 3. Documents: File list with download links
 4. Changes: Change history with field-level diffs

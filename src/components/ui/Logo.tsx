@@ -1,6 +1,6 @@
 interface LogoProps {
   /** Size variant for different contexts */
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   /** Whether to show STRIDESHIFT GLOBAL text */
   showParentBrand?: boolean;
 }
@@ -10,28 +10,37 @@ const sizes = {
     icon: 28,
     iconBorder: 2,
     iconDot: 10,
-    strideshift: 8,
-    global: 5,
-    tenderrender: 7,
+    strideshift: 11,
+    global: 9,
+    tenderrender: 10,
     gap: 8,
   },
   md: {
     icon: 36,
     iconBorder: 3,
     iconDot: 14,
-    strideshift: 10,
-    global: 6,
-    tenderrender: 8,
+    strideshift: 13,
+    global: 10,
+    tenderrender: 12,
     gap: 12,
   },
   lg: {
-    icon: 48,
+    icon: 44,
     iconBorder: 3,
-    iconDot: 18,
-    strideshift: 12,
-    global: 7,
-    tenderrender: 10,
+    iconDot: 16,
+    strideshift: 15,
+    global: 11,
+    tenderrender: 14,
     gap: 14,
+  },
+  xl: {
+    icon: 52,
+    iconBorder: 4,
+    iconDot: 20,
+    strideshift: 18,
+    global: 13,
+    tenderrender: 16,
+    gap: 16,
   },
 };
 
@@ -65,33 +74,37 @@ export function Logo({ size = 'md', showParentBrand = true }: LogoProps) {
           <>
             <div
               style={{
-                fontFamily: '"Press Start 2P", monospace',
+                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                 fontSize: s.strideshift,
+                fontWeight: 700,
                 color: '#2a9d8f',
-                letterSpacing: '1px',
+                letterSpacing: '0.5px',
+                lineHeight: 1.1,
               }}
             >
               STRIDESHIFT
             </div>
             <div
               className="flex items-center"
-              style={{ gap: 8, marginTop: 2 }}
+              style={{ gap: 6, marginTop: 1 }}
             >
               <span
                 style={{
-                  fontFamily: '"Press Start 2P", monospace',
+                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   fontSize: s.global,
+                  fontWeight: 500,
                   color: '#6b7c8a',
-                  letterSpacing: '2px',
+                  letterSpacing: '1px',
                 }}
               >
                 GLOBAL
               </span>
               <span
                 style={{
-                  fontFamily: '"Press Start 2P", monospace',
+                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   fontSize: s.tenderrender,
-                  letterSpacing: '1px',
+                  fontWeight: 700,
+                  letterSpacing: '0.5px',
                 }}
               >
                 <span style={{ color: '#2a9d8f' }}>TENDER</span>
@@ -103,9 +116,10 @@ export function Logo({ size = 'md', showParentBrand = true }: LogoProps) {
         {!showParentBrand && (
           <span
             style={{
-              fontFamily: '"Press Start 2P", monospace',
+              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               fontSize: s.tenderrender,
-              letterSpacing: '1px',
+              fontWeight: 700,
+              letterSpacing: '0.5px',
             }}
           >
             <span style={{ color: '#2a9d8f' }}>TENDER</span>

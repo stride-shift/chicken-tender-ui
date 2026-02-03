@@ -152,17 +152,20 @@ AppShell (=layout/AppShell.tsx:10=) orchestrates the overall layout:
 
 Header (=layout/Header.tsx:10=) provides:
 
-- Wrapped in PixelBox with coral border
-- Contains PixelStrip with coral/teal colors
+- Clean white background with subtle border and shadow
+- Uses Inter font family (modern, readable)
 - Burger menu button triggering sidebar toggle
-- Application branding with gradient (TENDER in dark, RENDER in cream)
-- Current page indicator with arcade button styling
-- Current client badge with status dot indicator
-- Profile dropdown button with user icon and dropdown arrow
-- Profile dropdown contains:
+- Logo component at size "lg" with STRIDESHIFT / TENDERRENDER branding
+- Breadcrumb showing current page name with "/" separator
+- Pill-shaped profile button displaying:
+  - User avatar (initial letter in teal circle)
+  - User display name
+  - Current client name
+  - Dropdown arrow
+- Profile dropdown (modern rounded design) contains:
   - User display name and admin status (StrideShift only)
-  - Client selector list (StrideShift admin only)
-  - Logout button with red arcade styling
+  - Client selector list with checkmark for active (StrideShift admin only)
+  - Sign Out button with red styling
 - Click-outside handler (useRef, useEffect) closes dropdown
 - Uses useAuth for: availableClients, clientCode, setActiveClient, isStrideShift, profile, logout
 

@@ -14,6 +14,38 @@ export function TenderOpportunityTab({ tender }: TenderOpportunityTabProps) {
 
   return (
     <div className="space-y-6">
+      {/* TODO: Extract this Evaluator Notes section into a shared <EvaluatorNotes /> component
+          to be reused here and in TenderDetailEval.tsx */}
+      {/* Evaluator Notes - duplicated from TenderDetailEval */}
+      {tender.llm_notes && (
+        <section>
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-3 h-3 bg-blue-500" />
+            <span className="text-sm font-black text-blue-700 uppercase tracking-wider">
+              EVALUATOR NOTES
+            </span>
+          </div>
+          <div
+            className="bg-blue-50 p-4 rounded"
+            style={{
+              border: '2px solid #bfdbfe',
+              boxShadow: '3px 3px 0 #93c5fd'
+            }}
+          >
+            <div className="flex gap-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded flex items-center justify-center border-2 border-blue-300">
+                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="text-sm text-blue-800 leading-relaxed whitespace-pre-wrap">
+                {tender.llm_notes}
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* AI Summary */}
       {tender.final_report_text && (
         <section>

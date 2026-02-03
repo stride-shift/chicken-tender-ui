@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { PixelBox, PixelStrip, Logo } from '@/components/ui'
+import { Logo } from '@/components/ui'
 import { useAuth } from '@/features/auth'
 
 interface HeaderProps {
@@ -48,20 +48,23 @@ export function Header({ onMenuClick }: HeaderProps) {
 
   const pageName = getPageName()
 
-  return (
-    <PixelBox color="#2a9d8f" bgColor="#ffffff" className="sticky top-0 z-40">
-      {/* Racing stripe - coral/cream pattern */}
-      <PixelStrip colors={['#e76f51', '#faf8f5']} segments={80} />
+  const currentClientName = availableClients.find((c) => c.client_code === clientCode)?.client_name || 'Select Client'
+  const displayName = profile?.display_name || 'User'
 
-      <header className="h-16 flex items-center px-4">
+  return (
+    <header
+      className="sticky top-0 z-40 bg-white border-b border-gray-200"
+      style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
+    >
+      <div className="h-16 flex items-center px-4">
         {/* Burger menu */}
         <button
           onClick={onMenuClick}
-          className="p-2 hover:bg-[#2a9d8f22] transition-colors rounded"
+          className="p-2.5 hover:bg-gray-100 transition-colors rounded-lg"
           aria-label="Toggle sidebar"
         >
           <svg
-            className="w-5 h-5 text-[#1a3a4a]"
+            className="w-6 h-6 text-gray-700"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -77,7 +80,7 @@ export function Header({ onMenuClick }: HeaderProps) {
 
         {/* Logo */}
         <div className="ml-4">
-          <Logo size="md" showParentBrand={true} />
+          <Logo size="lg" showParentBrand={true} />
         </div>
 
         {/* Breadcrumb - current page */}
@@ -85,25 +88,25 @@ export function Header({ onMenuClick }: HeaderProps) {
           <div className="ml-6 flex items-center gap-2">
             <span
               style={{
-                fontFamily: '"Press Start 2P", monospace',
-                fontSize: 10,
-                color: '#6b7c8a',
+                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+                fontSize: 14,
+                color: '#9ca3af',
               }}
             >
-              {'>'}
+              /
             </span>
             <span
-              className="px-3 py-1"
+              className="px-3 py-1.5 rounded-md"
               style={{
-                fontFamily: '"Press Start 2P", monospace',
-                fontSize: 9,
+                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+                fontSize: 13,
+                fontWeight: 600,
                 color: '#ffffff',
                 background: 'linear-gradient(180deg, #3dbdad 0%, #2a9d8f 100%)',
-                boxShadow: '0 3px 0 #1a6b6b',
-                letterSpacing: '1px',
+                letterSpacing: '0.3px',
               }}
             >
-              {pageName.toUpperCase()}
+              {pageName}
             </span>
           </div>
         )}
@@ -111,87 +114,74 @@ export function Header({ onMenuClick }: HeaderProps) {
         {/* Spacer */}
         <div className="flex-1" />
 
-        {/* Current client badge */}
-        <div
-          className="flex items-center gap-2 px-3 py-1.5"
-          style={{
-            fontFamily: '"Press Start 2P", monospace',
-            fontSize: 8,
-            background: '#faf8f5',
-            border: '3px solid #d4cfc5',
-            letterSpacing: '1px',
-          }}
-        >
-          <span
-            className="w-2 h-2"
-            style={{ backgroundColor: clientCode ? '#2a9d8f' : '#e76f51' }}
-          />
-          <span style={{ color: '#2d3436' }}>
-            {availableClients.find((c) => c.client_code === clientCode)?.client_name || 'Select Client'}
-          </span>
-        </div>
-
-        {/* Profile dropdown */}
-        <div className="relative ml-3" ref={profileRef}>
+        {/* Profile pill button */}
+        <div className="relative" ref={profileRef}>
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className="flex items-center gap-2 px-3 py-2 transition-all hover:bg-[#2a9d8f22] rounded"
+            className="flex items-center gap-3 pl-1 pr-4 py-1 rounded-full transition-all hover:bg-gray-50 border border-gray-200"
             style={{
-              fontFamily: '"Press Start 2P", monospace',
-              fontSize: 8,
+              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             }}
           >
-            {/* User icon */}
+            {/* User avatar */}
             <div
-              className="w-8 h-8 rounded-full flex items-center justify-center"
+              className="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold"
               style={{
-                background: 'linear-gradient(180deg, #3dbdad 0%, #2a9d8f 100%)',
-                boxShadow: '0 2px 0 #1a6b6b',
+                background: 'linear-gradient(135deg, #3dbdad 0%, #2a9d8f 100%)',
+                fontSize: 14,
               }}
             >
-              <svg
-                className="w-4 h-4 text-white"
-                fill="currentColor"
-                viewBox="0 0 24 24"
+              {displayName.charAt(0).toUpperCase()}
+            </div>
+            {/* User name and client */}
+            <div className="text-left">
+              <div
+                className="text-gray-900 font-medium leading-tight"
+                style={{ fontSize: 14 }}
               >
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-              </svg>
+                {displayName}
+              </div>
+              <div
+                className="text-gray-500 leading-tight"
+                style={{ fontSize: 12 }}
+              >
+                {currentClientName}
+              </div>
             </div>
             {/* Dropdown arrow */}
             <svg
-              className={`w-3 h-3 text-[#2a9d8f] transition-transform ${isProfileOpen ? 'rotate-180' : ''}`}
+              className={`w-4 h-4 text-gray-400 transition-transform ml-1 ${isProfileOpen ? 'rotate-180' : ''}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
 
           {/* Dropdown menu */}
           {isProfileOpen && (
             <div
-              className="absolute right-0 mt-2 w-64 z-50"
+              className="absolute right-0 mt-2 w-72 z-50 rounded-lg overflow-hidden"
               style={{
-                background: '#faf8f5',
-                border: '4px solid #2a9d8f',
-                boxShadow: '4px 4px 0 #1a6b6b',
+                background: '#ffffff',
+                border: '1px solid #e5e7eb',
+                boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
               }}
             >
               {/* User info */}
-              <div className="px-4 py-3 border-b-2 border-[#d4cfc5]">
+              <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
                 <div
                   style={{
-                    fontFamily: '"Press Start 2P", monospace',
-                    fontSize: 8,
-                    color: '#2d3436',
-                    lineHeight: '1.6',
+                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   }}
                 >
-                  <div className="truncate">{profile?.display_name || 'User'}</div>
+                  <div className="text-gray-900 font-semibold truncate" style={{ fontSize: 14 }}>
+                    {displayName}
+                  </div>
                   {isStrideShift && (
-                    <div className="mt-1" style={{ color: '#2a9d8f', fontSize: 7 }}>
-                      STRIDESHIFT ADMIN
+                    <div className="mt-0.5 text-xs font-medium" style={{ color: '#2a9d8f' }}>
+                      StrideShift Admin
                     </div>
                   )}
                 </div>
@@ -199,18 +189,14 @@ export function Header({ onMenuClick }: HeaderProps) {
 
               {/* Client selector for StrideShift */}
               {isStrideShift && availableClients.length > 0 && (
-                <div className="px-4 py-3 border-b-2 border-[#d4cfc5]">
+                <div className="px-4 py-3 border-b border-gray-100">
                   <div
-                    style={{
-                      fontFamily: '"Press Start 2P", monospace',
-                      fontSize: 7,
-                      color: '#6b7c8a',
-                      marginBottom: 8,
-                    }}
+                    className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2"
+                    style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}
                   >
-                    SELECT CLIENT
+                    Switch Client
                   </div>
-                  <div className="space-y-1 max-h-40 overflow-y-auto">
+                  <div className="space-y-1 max-h-48 overflow-y-auto">
                     {availableClients.map((client) => (
                       <button
                         key={client.client_code}
@@ -218,21 +204,27 @@ export function Header({ onMenuClick }: HeaderProps) {
                           setActiveClient(client.client_code)
                           setIsProfileOpen(false)
                         }}
-                        className="w-full text-left px-2 py-1.5 hover:bg-[#2a9d8f22] transition-colors flex items-center gap-2"
+                        className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 transition-colors flex items-center gap-2"
                         style={{
-                          fontFamily: '"Press Start 2P", monospace',
-                          fontSize: 7,
-                          color: client.client_code === clientCode ? '#2a9d8f' : '#2d3436',
-                          background: client.client_code === clientCode ? '#2a9d8f22' : 'transparent',
+                          fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+                          fontSize: 13,
+                          color: client.client_code === clientCode ? '#2a9d8f' : '#374151',
+                          background: client.client_code === clientCode ? '#f0fdfa' : 'transparent',
+                          fontWeight: client.client_code === clientCode ? 600 : 400,
                         }}
                       >
                         <span
-                          className="w-2 h-2 flex-shrink-0"
+                          className="w-2 h-2 rounded-full flex-shrink-0"
                           style={{
-                            backgroundColor: client.client_code === clientCode ? '#2a9d8f' : '#d4cfc5',
+                            backgroundColor: client.client_code === clientCode ? '#2a9d8f' : '#d1d5db',
                           }}
                         />
                         <span className="truncate">{client.client_name}</span>
+                        {client.client_code === clientCode && (
+                          <svg className="w-4 h-4 ml-auto text-[#2a9d8f]" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -243,24 +235,21 @@ export function Header({ onMenuClick }: HeaderProps) {
               <div className="px-4 py-3">
                 <button
                   onClick={handleLogout}
-                  className="w-full px-4 py-2 font-bold tracking-wider transition-all hover:translate-y-0.5 active:translate-y-1"
+                  className="w-full px-4 py-2.5 font-medium rounded-lg transition-all hover:bg-red-600 active:scale-[0.98]"
                   style={{
-                    fontFamily: '"Press Start 2P", monospace',
-                    fontSize: 8,
+                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+                    fontSize: 14,
                     color: '#ffffff',
-                    background: 'linear-gradient(180deg, #f87171 0%, #ef4444 50%, #dc2626 100%)',
-                    boxShadow: '0 4px 0 #991b1b, inset 0 2px 0 rgba(255,255,255,0.3)',
-                    borderRadius: '4px',
-                    letterSpacing: '1px',
+                    background: '#ef4444',
                   }}
                 >
-                  LOGOUT
+                  Sign Out
                 </button>
               </div>
             </div>
           )}
         </div>
-      </header>
-    </PixelBox>
+      </div>
+    </header>
   )
 }
