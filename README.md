@@ -29,6 +29,23 @@ Quick references in `src/*/quick_reference.org` contain implementation details.
 
 Vite + React 19 • TypeScript • Tailwind CSS 4 • TanStack Query • Supabase RPC
 
-## Project ID
+## Project IDs
 
-Supabase: `weylrgoywbqgkvpndzra`
+- Supabase: `weylrgoywbqgkvpndzra`
+- GitHub: `stride-shift/chicken-tender-ui`
+
+## Deployment (Vercel)
+
+**Status:** Repo pushed, Vercel account created, awaiting Pro plan decision.
+
+**To continue deployment:**
+
+1. Resolve Pro plan requirement (team decision on public vs private repo)
+2. Import `stride-shift/chicken-tender-ui` in Vercel dashboard
+3. Set environment variables before first deploy:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+   - `VITE_DEV_CLIENT_CODE=pragma` (temporary auth bypass)
+4. Deploy
+
+**Note:** `vercel.json` already configured for React Router SPA routing. Auth system still needs implementation for production use.
