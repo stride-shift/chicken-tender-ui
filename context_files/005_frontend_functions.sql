@@ -77,6 +77,7 @@ BEGIN
             WHERE cr2.client_pk = v_client_pk
             AND e2.evaluation_status = 'completed'
             AND t2.current_status = 'active'
+            AND t2.closing_date >= NOW()
             AND tc.highest_importance = 'high'
             AND tc.observed_at >= NOW() - INTERVAL '24 hours'
         ) AS high_importance_changes_24h
@@ -85,7 +86,8 @@ BEGIN
     JOIN public.client_rubrics cr ON e.rubric_pk = cr.rubric_pk
     WHERE cr.client_pk = v_client_pk
     AND e.evaluation_status = 'completed'
-    AND t.current_status = 'active';
+    AND t.current_status = 'active'
+    AND t.closing_date >= NOW();
 END;
 $$;
 
@@ -164,6 +166,7 @@ BEGIN
     WHERE cr.client_pk = v_client_pk
     AND e.evaluation_status = 'completed'
     AND (p_status IS NULL OR t.current_status = p_status)
+    AND (p_status IS NULL OR p_status != 'active' OR t.closing_date >= NOW())
     AND (p_min_days_until_close IS NULL OR EXTRACT(DAY FROM (t.closing_date - NOW()))::INTEGER >= p_min_days_until_close)
     AND (p_is_relevant IS NULL
          OR (p_is_relevant = TRUE AND e.recommendation IN ('excellent_fit', 'good_fit', 'worth_reviewing'))
@@ -219,6 +222,7 @@ BEGIN
     WHERE cr.client_pk = v_client_pk
     AND e.evaluation_status = 'completed'
     AND (p_status IS NULL OR t.current_status = p_status)
+    AND (p_status IS NULL OR p_status != 'active' OR t.closing_date >= NOW())
     AND (p_min_days_until_close IS NULL OR EXTRACT(DAY FROM (t.closing_date - NOW()))::INTEGER >= p_min_days_until_close)
     AND (p_is_relevant IS NULL
          OR (p_is_relevant = TRUE AND e.recommendation IN ('excellent_fit', 'good_fit', 'worth_reviewing'))

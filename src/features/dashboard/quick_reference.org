@@ -1,5 +1,5 @@
 #+TITLE: Dashboard Feature - Quick Reference
-#+DATE: 2026-01-31
+#+DATE: 2026-02-03
 
 * Overview
 
@@ -24,8 +24,29 @@ Overview and monitoring feature. Displays stats, alerts, and recent activity for
 | Hook | File | RPC Function | Purpose |
 |------|------|--------------|---------|
 | useDashboardStats | hooks/useDashboardStats.ts:9 | get_dashboard_stats | Fetches dashboard statistics for current client |
-| useRelevantTenders | hooks/useRelevantTenders.ts:21 | get_tenders_paginated | Fetches relevant tenders for carousel display |
+| useRelevantTenders | hooks/useRelevantTenders.ts:22 | get_tenders_paginated | Fetches relevant tenders for carousel display |
 | useFilterOptions | @/features/tenders/hooks/useFilterOptions.ts:13 | get_filter_options | Fetches provinces, departments, categories (used by DepartmentTreemap) |
+
+** useRelevantTenders Hook Parameters
+
+The hook passes the following fixed parameters to get_tenders_paginated to ensure only active, not-yet-closed tenders appear:
+
+| Parameter | Value | Purpose |
+|-----------|-------|---------|
+| p_is_relevant | true | Filter to relevant tenders only |
+| p_status | 'active' | Explicitly filter by active status |
+| p_min_days_until_close | 0 | Ensure closing_date >= NOW() (not yet closed) |
+| p_sort_by | 'recommendation' | Sort by recommendation score (best first) |
+| p_sort_desc | false | Ascending order (best recommendations first) |
+| p_limit | limit parameter (default 12) | Control carousel display count |
+| p_offset | 0 | Start from first result |
+
+All other parameters (province_id, department_id, category_id, closing_from, closing_to, has_compulsory_briefing, search_text) are set to null to retrieve all relevant tenders without additional filtering.
+
+Hook interface parameters:
+| Parameter | Type | Default | Purpose |
+|-----------|------|---------|---------|
+| limit | number (optional) | 12 | Maximum tenders to fetch |
 
 * RPC Function Usage
 
@@ -108,4 +129,4 @@ DashboardPage.tsx displays components in this order:
 Note: ClosingTimelineChart exists but is not currently used in DashboardPage.
 
 ---
-/Last Updated/: 2026-01-31
+/Last Updated/: 2026-02-03

@@ -72,6 +72,8 @@ TenderFilters interface (useTenders.ts:6-16):
 | searchText | string \| null | null |
 | status | TenderStatus \| null | 'active' |
 | minDaysUntilClose | number \| null | null |
+
+Note: When =status='active'=, the RPC function automatically filters to only include tenders where =closing_date >= NOW()=, ensuring only truly open tenders are shown. This filter is applied server-side.
 | sortBy | 'published_date' \| 'recommendation' \| 'closing_date' \| 'score' | 'published_date' |
 | sortDesc | boolean | true |
 

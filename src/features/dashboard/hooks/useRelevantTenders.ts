@@ -40,6 +40,8 @@ export function useRelevantTenders(
         p_closing_to: null,
         p_has_compulsory_briefing: null,
         p_search_text: null,
+        p_status: 'active',
+        p_min_days_until_close: 0,
         p_sort_by: 'recommendation',
         p_sort_desc: false,
         p_limit: limit,

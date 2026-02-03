@@ -1,5 +1,5 @@
 #+TITLE: TenderRender Frontend - RPC Functions Reference
-#+DATE: 2026-01-29
+#+DATE: 2026-02-03
 
 * Overview
 
@@ -22,7 +22,7 @@ This document describes the Supabase RPC functions called by the frontend. All f
 
 ** get_dashboard_stats
 
-Returns summary statistics for a client's dashboard.
+Returns summary statistics for a client's dashboard. Counts include only tenders with =current_status = 'active'= AND =closing_date >= NOW()=, ensuring metrics reflect only truly active (not yet closed) tenders.
 
 *** Parameters
 
@@ -34,7 +34,7 @@ Returns summary statistics for a client's dashboard.
 
 | Field | Type | Description |
 |-------|------|-------------|
-| total_active | INTEGER | Total active tenders |
+| total_active | INTEGER | Total active tenders (status='active' and not closed) |
 | total_relevant | INTEGER | Tenders with relevant recommendation |
 | total_not_relevant | INTEGER | Tenders marked not_recommended |
 | excellent_count | INTEGER | Count of excellent_fit |
@@ -47,6 +47,18 @@ Returns summary statistics for a client's dashboard.
 ** get_tenders_paginated
 
 Paginated tender listing with comprehensive filters. Default sort is by published_date descending (newest first). Default status filter is 'active' (only active tenders shown by default).
+
+*** Closing Date Filtering Behavior
+
+The function applies automatic closing date filtering based on the p_status parameter:
+
+| Status | Closing Date Filter | Behavior |
+|--------|-------------------|----------|
+| 'active' | closing_date >= NOW() | Returns only tenders open for bidding |
+| 'closed' | None | Returns closed tenders regardless of closing date |
+| NULL (all) | None | Returns all tenders regardless of closing date |
+
+This ensures "active" tenders are truly open for bidding and have not yet closed.
 
 *** Parameters
 
