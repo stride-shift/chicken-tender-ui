@@ -1,5 +1,5 @@
 #+TITLE: Tenders Feature - Quick Reference
-#+DATE: 2026-01-31
+#+DATE: 2026-02-03
 
 * Overview
 
@@ -10,8 +10,9 @@ Primary feature module for viewing and filtering tenders. Contains list/detail c
 | Component | File | Purpose |
 |-----------|------|---------|
 | TenderListPanel | TenderListPanel.tsx:26 | Container managing filters, pagination, tender list |
-| TenderListItem | TenderListItem.tsx:10 | Single tender row with recommendation badge |
-| TenderListFilters | TenderListFilters.tsx:24 | Search and dropdown filter controls |
+| TenderListItem | components/TenderListItem.tsx:10 | Single tender row: title, department, published date, closing date, recommendation badge |
+| TenderListFilters | TenderListFilters.tsx:48 | Search box + Filter button (opens FilterPopup) |
+| FilterPopup | FilterPopup.tsx:57 | Modal popup for applying tender filters with Apply/Clear |
 | TenderDetailPanel | TenderDetailPanel.tsx:15 | Main detail panel with tabs and content |
 | TenderDetailHeader | TenderDetailHeader.tsx:10 | Header with title, recommendation, key stats |
 | TenderDetailTabs | TenderDetailTabs.tsx:8 | Four-tab navigation bar |
@@ -35,18 +36,19 @@ Primary feature module for viewing and filtering tenders. Contains list/detail c
 
 * RPC Function Usage
 
-| Function Called | Used By | Purpose |
-|-----------------|---------|---------|
-| get_tenders_paginated | useTenders | Fetch paginated tender list with filters |
-| get_tender_detail | useTenderDetail | Fetch full tender detail |
-| get_filter_options | useFilterOptions | Fetch dynamic filter options |
-| get_client_rubric | useClientRubric | Fetch rubric definition |
-| get_active_client_rubric | useActiveClientRubric | Fetch active rubric for client |
+| Function Called | Used By | Parameters | Purpose |
+|-----------------|---------|------------|---------|
+| get_tenders_paginated | useTenders | p_status, p_min_days_until_close, p_search_text, p_sort_by, p_sort_desc, p_is_relevant, p_province_id, p_department_id, p_category_id, p_limit, p_offset | Fetch paginated tender list with filters |
+| get_tender_detail | useTenderDetail | | Fetch full tender detail |
+| get_filter_options | useFilterOptions | | Fetch dynamic filter options |
+| get_client_rubric | useClientRubric | | Fetch rubric definition |
+| get_active_client_rubric | useActiveClientRubric | | Fetch active rubric for client |
 
 * Component Hierarchy
 
 TenderListPanel
-├─ TenderListFilters (search, filter dropdowns)
+├─ TenderListFilters (search + Filter button)
+│  └─ FilterPopup (modal, shown when Filter button clicked)
 └─ TenderListItem[] (list of tender cards)
 
 TenderDetailPanel
@@ -60,17 +62,21 @@ TenderDetailPanel
 
 * Filter State
 
-Filters managed in TenderListPanel component state:
-- isRelevant: boolean | null (all, relevant, not recommended)
-- provinceId: number | null
-- departmentId: number | null
-- categoryId: number | null
-- searchText: string | null
-- sortBy: recommendation | closing_date | score | published_date
-- sortDesc: boolean
-- page: number
-- limit: number (default 25)
+TenderFilters interface (useTenders.ts:6-16):
+| Field | Type | Default |
+|-------|------|---------|
+| isRelevant | boolean \| null | null |
+| provinceId | number \| null | null |
+| departmentId | number \| null | null |
+| categoryId | number \| null | null |
+| searchText | string \| null | null |
+| status | TenderStatus \| null | 'active' |
+| minDaysUntilClose | number \| null | null |
+| sortBy | 'published_date' \| 'recommendation' \| 'closing_date' \| 'score' | 'published_date' |
+| sortDesc | boolean | true |
 
+FilterPopup manages local filter state and applies on user click.
+TenderListFilters receives filters and passes updates via onFiltersChange (search) and onApplyFilters (popup).
 Filters reset page to 1 on change.
 
 * Tab Navigation
@@ -90,5 +96,49 @@ TenderDetailChanges handles document changes with =normalizeDocument= helper:
 - Extracts =file_name= and =source_document_id= from document objects
 - Displays source ID in muted text below filename
 
+* TenderListFilters Component Details
+
+TenderListFilters (components/TenderListFilters.tsx:48) is a simplified filter UI with:
+- Search input (controls searchText filter)
+- Filter button with active filter count badge
+- FilterPopup modal that opens on button click
+
+The component receives filter state and handler functions from parent (TenderListPanel).
+Search updates are applied immediately via onFiltersChange.
+All other filters (province, department, category, status, days, sort) are applied via FilterPopup.
+
+* FilterPopup Component Details
+
+FilterPopup (components/FilterPopup.tsx:57) is a modal dialog with:
+- Local state for filters (not applied until user clicks Apply)
+- 6 dropdown filters: Relevance, Status, Province, Department, Category, Days Until Close
+- Sort By dropdown (affects sortDesc automatically)
+- Apply Filters button (calls onApply with local state)
+- Clear All button (resets to defaults)
+
+Default sort logic: closing_date sorts ascending (sortDesc=false), all others sort descending (sortDesc=true).
+
+* TenderListItem Component Details
+
+TenderListItem (components/TenderListItem.tsx:10) displays a single tender row with:
+
+| Element | Details | Line(s) |
+|---------|---------|---------|
+| Title | Generated title or truncated description (80 chars) | 12 |
+| Department | Truncated to max-width 100px with ellipsis | 54 |
+| Published Date | "X days ago" or "today" format | 18, 95-99 |
+| Closing Date | "X days left", "today", or "Closed" with color coding | 19, 101-106 |
+| Recommendation Badge | Pushed to far right with ml-auto | 75-76 |
+| Urgent Indicator | Red text color when 1-3 days until close | 20, 68 |
+| Closed Indicator | Gray text and "Closed" label when days_until_close < 0 | 21, 68, 102 |
+
+Helper functions:
+- =calculateDaysSince()= (line 88): Computes days between published_date and now
+- =formatDaysSince()= (line 95): Formats as "today", "1d ago", or "Xd ago"
+- =formatDaysUntilClose()= (line 101): Formats as "today", "1d left", "Xd left", or "Closed"
+- =truncateText()= (line 83): Truncates with ellipsis
+
+Date display: Published text is muted (stone-400), closing text uses conditional color (urgent=red-600, normal=stone-600, closed=stone-400).
+
 ---
-/Last Updated/: 2026-01-31
+/Last Updated/: 2026-02-03

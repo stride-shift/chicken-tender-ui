@@ -46,7 +46,7 @@ Returns summary statistics for a client's dashboard.
 
 ** get_tenders_paginated
 
-Paginated tender listing with comprehensive filters.
+Paginated tender listing with comprehensive filters. Default sort is by published_date descending (newest first). Default status filter is 'active' (only active tenders shown by default).
 
 *** Parameters
 
@@ -61,8 +61,10 @@ Paginated tender listing with comprehensive filters.
 | p_closing_to | DATE | No | NULL | Closing date range end |
 | p_has_compulsory_briefing | BOOLEAN | No | NULL | Filter by briefing requirement |
 | p_search_text | TEXT | No | NULL | Full-text search |
-| p_sort_by | VARCHAR | No | 'recommendation' | Sort field |
-| p_sort_desc | BOOLEAN | No | FALSE | Sort direction |
+| p_status | VARCHAR | No | 'active' | Filter by tender status (active/closed/cancelled/awarded), NULL for all |
+| p_min_days_until_close | INTEGER | No | NULL | Minimum days until closing (filter tenders user has time to respond to) |
+| p_sort_by | VARCHAR | No | 'published_date' | Sort field |
+| p_sort_desc | BOOLEAN | No | TRUE | Sort direction |
 | p_limit | INTEGER | No | 25 | Page size |
 | p_offset | INTEGER | No | 0 | Page offset |
 
@@ -313,4 +315,4 @@ Frontend hooks should catch and display these errors appropriately.
 | [[file:context_files/frontend.md][context_files/frontend.md]] | Detailed API documentation |
 
 ---
-/Last Updated/: 2026-01-29
+/Last Updated/: 2026-02-03

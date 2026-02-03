@@ -4,7 +4,7 @@
 
 -- Drop existing functions to allow return type changes
 DROP FUNCTION IF EXISTS public.get_dashboard_stats(VARCHAR);
-DROP FUNCTION IF EXISTS public.get_tenders_paginated(VARCHAR, BOOLEAN, INTEGER, INTEGER, INTEGER, DATE, DATE, BOOLEAN, TEXT, VARCHAR, BOOLEAN, INTEGER, INTEGER);
+DROP FUNCTION IF EXISTS public.get_tenders_paginated(VARCHAR, BOOLEAN, INTEGER, INTEGER, INTEGER, DATE, DATE, BOOLEAN, TEXT, VARCHAR, BOOLEAN, INTEGER, INTEGER, VARCHAR, INTEGER);
 DROP FUNCTION IF EXISTS public.get_tender_detail(INTEGER, VARCHAR);
 DROP FUNCTION IF EXISTS public.get_activity_feed(VARCHAR, VARCHAR, INTEGER, INTEGER);
 DROP FUNCTION IF EXISTS public.get_filter_options(VARCHAR);
@@ -105,10 +105,12 @@ CREATE OR REPLACE FUNCTION public.get_tenders_paginated(
     p_closing_to DATE DEFAULT NULL,
     p_has_compulsory_briefing BOOLEAN DEFAULT NULL,
     p_search_text TEXT DEFAULT NULL,
-    p_sort_by VARCHAR DEFAULT 'recommendation',
-    p_sort_desc BOOLEAN DEFAULT FALSE,
+    p_sort_by VARCHAR DEFAULT 'published_date',
+    p_sort_desc BOOLEAN DEFAULT TRUE,
     p_limit INTEGER DEFAULT 25,
-    p_offset INTEGER DEFAULT 0
+    p_offset INTEGER DEFAULT 0,
+    p_status VARCHAR DEFAULT 'active',
+    p_min_days_until_close INTEGER DEFAULT NULL
 )
 RETURNS TABLE (
     tender_pk INTEGER,
@@ -161,7 +163,8 @@ BEGIN
     LEFT JOIN public.tender_syntheses ts ON t.tender_pk = ts.tender_pk AND ts.synthesis_type = 'comprehensive'
     WHERE cr.client_pk = v_client_pk
     AND e.evaluation_status = 'completed'
-    AND t.current_status = 'active'
+    AND (p_status IS NULL OR t.current_status = p_status)
+    AND (p_min_days_until_close IS NULL OR EXTRACT(DAY FROM (t.closing_date - NOW()))::INTEGER >= p_min_days_until_close)
     AND (p_is_relevant IS NULL
          OR (p_is_relevant = TRUE AND e.recommendation IN ('excellent_fit', 'good_fit', 'worth_reviewing'))
          OR (p_is_relevant = FALSE AND e.recommendation = 'not_recommended'))
@@ -215,7 +218,8 @@ BEGIN
     LEFT JOIN public.tender_syntheses ts ON t.tender_pk = ts.tender_pk AND ts.synthesis_type = 'comprehensive'
     WHERE cr.client_pk = v_client_pk
     AND e.evaluation_status = 'completed'
-    AND t.current_status = 'active'
+    AND (p_status IS NULL OR t.current_status = p_status)
+    AND (p_min_days_until_close IS NULL OR EXTRACT(DAY FROM (t.closing_date - NOW()))::INTEGER >= p_min_days_until_close)
     AND (p_is_relevant IS NULL
          OR (p_is_relevant = TRUE AND e.recommendation IN ('excellent_fit', 'good_fit', 'worth_reviewing'))
          OR (p_is_relevant = FALSE AND e.recommendation = 'not_recommended'))
@@ -262,7 +266,7 @@ END;
 $$;
 
 COMMENT ON FUNCTION public.get_tenders_paginated IS
-'Paginated tender listing with filters for relevance, location, category, dates, briefings, and full-text search. Supports multiple sort options with recommendation tier ordering.';
+'Paginated tender listing with filters for relevance, location, category, dates, briefings, status, days until close, and full-text search. Default sort is by published_date descending (newest first). Default status filter is active only.';
 
 -- FUNCTION 3: get_tender_detail
 -- Full tender detail for single tender view

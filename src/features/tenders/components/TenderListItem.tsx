@@ -11,9 +11,14 @@ export function TenderListItem({ tender, isSelected, onClick }: TenderListItemPr
   // Use generated_title if available, otherwise truncate description
   const displayTitle = tender.generated_title || truncateText(tender.description, 80)
 
-  // Format days until close
-  const daysText = formatDaysUntilClose(tender.days_until_close)
+  // Calculate days since published
+  const daysSincePublished = calculateDaysSince(tender.date_published)
+
+  // Format dates
+  const publishedText = formatDaysSince(daysSincePublished)
+  const closesText = formatDaysUntilClose(tender.days_until_close)
   const isUrgent = tender.days_until_close <= 3 && tender.days_until_close >= 0
+  const isClosed = tender.days_until_close < 0
 
   return (
     <div
@@ -41,23 +46,35 @@ export function TenderListItem({ tender, isSelected, onClick }: TenderListItemPr
         {'>'} {displayTitle}
       </div>
 
-      {/* Meta row: department, days, badge */}
-      <div className="flex items-center gap-2 mt-1.5 text-xs text-stone-500">
+      {/* Meta row: department, date info, badge (far right) */}
+      <div className="flex items-center gap-1.5 mt-1.5 text-xs text-stone-500">
+        {/* Department - truncated */}
         {tender.department_name && (
           <span
-            className="truncate max-w-[140px]"
+            className="truncate max-w-[100px]"
             title={tender.department_name}
           >
             {tender.department_name}
           </span>
         )}
-        {tender.department_name && <span className="text-stone-400">-</span>}
-        <span
-          className={`font-mono font-bold ${isUrgent ? 'text-red-600' : 'text-stone-500'}`}
-        >
-          {daysText}
+
+        {/* Date info: published · closes */}
+        <span className="text-stone-400">·</span>
+        <span className="text-stone-400 whitespace-nowrap" title={`Published ${daysSincePublished} days ago`}>
+          {publishedText}
         </span>
-        <RecommendationBadge recommendation={tender.recommendation} size="sm" />
+        <span className="text-stone-400">·</span>
+        <span
+          className={`font-medium whitespace-nowrap ${isClosed ? 'text-stone-400' : isUrgent ? 'text-red-600' : 'text-stone-600'}`}
+          title={isClosed ? 'Tender closed' : `Closes in ${tender.days_until_close} days`}
+        >
+          {closesText}
+        </span>
+
+        {/* Badge - pushed to far right */}
+        <div className="ml-auto">
+          <RecommendationBadge recommendation={tender.recommendation} size="sm" />
+        </div>
       </div>
     </div>
   )
@@ -68,9 +85,22 @@ function truncateText(text: string, maxLength: number): string {
   return text.slice(0, maxLength).trim() + '...'
 }
 
+function calculateDaysSince(dateString: string): number {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffTime = now.getTime() - date.getTime()
+  return Math.floor(diffTime / (1000 * 60 * 60 * 24))
+}
+
+function formatDaysSince(days: number): string {
+  if (days === 0) return 'today'
+  if (days === 1) return '1d ago'
+  return `${days}d ago`
+}
+
 function formatDaysUntilClose(days: number): string {
   if (days < 0) return 'Closed'
-  if (days === 0) return 'Closes today'
-  if (days === 1) return '1 day left'
-  return `${days}d`
+  if (days === 0) return 'today'
+  if (days === 1) return '1d left'
+  return `${days}d left`
 }

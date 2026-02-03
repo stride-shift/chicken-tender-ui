@@ -1,5 +1,5 @@
 #+TITLE: TenderRender Frontend - Architecture
-#+DATE: 2026-01-31
+#+DATE: 2026-02-03
 
 * Overview
 
@@ -201,20 +201,34 @@ Browse tenders and view details in a split-pane layout.
 │        │  ┌─────────────────────────┬────────────────────────────────────┐ │
 │  Side  │  │    TENDER LIST (left)   │      TENDER DETAIL (right)         │ │
 │  bar   │  │                         │                                    │ │
-│        │  │ Filters:                │  Title + Recommendation Badge      │ │
-│ ┌────┐ │  │ [Relevance ▼] [Search]  │  ─────────────────────────────     │ │
-│ │Dash│ │  │                         │                                    │ │
-│ └────┘ │  │ ┌─────────────────────┐ │  Key Info Cards:                   │ │
-│ ┌────┐ │  │ │ ● Tender 1     [EX] │ │  ┌──────────┐ ┌──────────┐ ┌─────┐ │ │
-│ │Tend│ │  │ │   Health • 5d       │◄──│ │ Closes   │ │ Briefing │ │ 87% │ │ │
-│ └────┘ │  │ └─────────────────────┘ │  │ │ 5 days   │ │ Feb 3 !  │ │score│ │ │
-│ ┌────┐ │  │ ┌─────────────────────┐ │  │ └──────────┘ └──────────┘ └─────┘ │ │
-│ │Rubr│ │  │ │   Tender 2     [GD] │ │  │                                   │ │
-│ └────┘ │  │ │   Treasury • 12d    │ │  │ Tabs: [Opportunity] [Evaluation]  │ │
-│        │  │ └─────────────────────┘ │  │       [Documents] [Changes]       │ │
-│        │  │                         │  │                                   │ │
-│        │  │ < 1 2 3 ... 10 >        │  │ (Tab content below)               │ │
+│        │  │ [Search box]  [Filter]  │  Title + Recommendation Badge      │ │
+│ ┌────┐ │  │                         │  ─────────────────────────────     │ │
+│ │Dash│ │  │ ┌─────────────────────┐ │                                    │ │
+│ └────┘ │  │ │ ● Tender 1     [EX] │ │  Key Info Cards:                   │ │
+│ ┌────┐ │  │ │   Health • 5d       │◄──│ ┌──────────┐ ┌──────────┐ ┌─────┐ │ │
+│ │Tend│ │  │ └─────────────────────┘ │  │ │ Closes   │ │ Briefing │ │ 87% │ │ │
+│ └────┘ │  │ ┌─────────────────────┐ │  │ │ 5 days   │ │ Feb 3 !  │ │score│ │ │
+│ ┌────┐ │  │ │   Tender 2     [GD] │ │  │ └──────────┘ └──────────┘ └─────┘ │ │
+│ │Rubr│ │  │ │   Treasury • 12d    │ │  │                                   │ │
+│ └────┘ │  │ └─────────────────────┘ │  │ Tabs: [Opportunity] [Evaluation]  │ │
+│        │  │                         │  │       [Documents] [Changes]       │ │
+│        │  │ < 1 2 3 ... 10 >        │  │                                   │ │
+│        │  │                         │  │ (Tab content below)               │ │
 │        │  └─────────────────────────┴────────────────────────────────────┘ │
+│        │                                                                    │
+│        │  ╔═════════════════════════════════════════════════════════════╗  │
+│        │  ║ FilterPopup Modal (opens on [Filter] click)                ║  │
+│        │  ║ ┌─────────────────────────────────────────────────────────┐║  │
+│        │  ║ │ Relevance:    [All ▼]                                  ││  │
+│        │  ║ │ Status:       [Active ▼]                               ││  │
+│        │  ║ │ Province:     [--- ▼]                                  ││  │
+│        │  ║ │ Department:   [--- ▼]                                  ││  │
+│        │  ║ │ Category:     [--- ▼]                                  ││  │
+│        │  ║ │ Days Until Close: [Any ▼]                              ││  │
+│        │  ║ │ Sort By:      [Published Date ▼] [Newest First]        ││  │
+│        │  ║ │ [Apply] [Clear All]                                    ││  │
+│        │  ║ └─────────────────────────────────────────────────────────┘║  │
+│        │  ╚═════════════════════════════════════════════════════════════╝  │
 └────────┴───────────────────────────────────────────────────────────────────┘
 #+END_EXAMPLE
 
@@ -223,7 +237,8 @@ Browse tenders and view details in a split-pane layout.
 #+BEGIN_EXAMPLE
 TendersPage
 ├── TenderListPanel
-│   ├── TenderListFilters (search, filter dropdowns)
+│   ├── TenderListFilters (search box + Filter button)
+│   │   └── FilterPopup (modal, opens on Filter button click)
 │   ├── TenderListItem[] (list of tender cards)
 │   └── Pagination
 └── TenderDetailPanel (when tender selected)
@@ -238,21 +253,25 @@ TendersPage
 
 *** Filter State
 
-Managed in TenderListPanel component:
+Managed in TenderListPanel and FilterPopup components:
 
 | Filter | Type | Default |
 |--------|------|---------|
-| isRelevant | boolean or null | null (all) |
+| isRelevant | boolean or null | null |
+| status | TenderStatus or null | 'active' |
 | provinceId | number or null | null |
 | departmentId | number or null | null |
 | categoryId | number or null | null |
+| minDaysUntilClose | number or null | null |
 | searchText | string | "" |
-| sortBy | string | "recommendation" |
-| sortDesc | boolean | false |
+| sortBy | string | "published_date" |
+| sortDesc | boolean | true |
 | page | number | 1 |
 | limit | number | 25 |
 
-Filters reset page to 1 on change.
+Search updates apply immediately. All other filters apply via FilterPopup modal. Filters reset page to 1 on change.
+
+See =src/features/tenders/quick_reference.org= for FilterPopup implementation details.
 
 *** Detail Panel Tabs
 
@@ -478,4 +497,4 @@ Still scaffolding - real Supabase Auth integration planned:
 | [[file:context_files/frontend.md][context_files/frontend.md]] | API documentation from backend |
 
 ---
-/Last Updated/: 2026-01-31
+/Last Updated/: 2026-02-03

@@ -19,13 +19,16 @@ const DEFAULT_FILTERS: TenderFilters = {
   departmentId: null,
   categoryId: null,
   searchText: null,
-  sortBy: 'recommendation',
-  sortDesc: false,
+  sortBy: 'published_date',
+  sortDesc: true,
+  status: 'active',
+  minDaysUntilClose: null,
 }
 
 export function TenderListPanel({ selectedTenderId, onSelectTender }: TenderListPanelProps) {
   const [filters, setFilters] = useState<TenderFilters>(DEFAULT_FILTERS)
   const [page, setPage] = useState(1)
+  const [isFilterPopupOpen, setIsFilterPopupOpen] = useState(false)
 
   // Fetch tenders with current filters and pagination
   const { tenders, totalCount, isLoading, error } = useTenders({
@@ -51,6 +54,15 @@ export function TenderListPanel({ selectedTenderId, onSelectTender }: TenderList
     setPage(1)
   }, [])
 
+  // Popup handlers
+  const handleOpenFilterPopup = () => setIsFilterPopupOpen(true)
+  const handleCloseFilterPopup = () => setIsFilterPopupOpen(false)
+  const handleApplyFilters = (newFilters: TenderFilters) => {
+    setFilters(newFilters)
+    setPage(1)
+    setIsFilterPopupOpen(false)
+  }
+
   // Handle page change
   const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage)
@@ -65,6 +77,10 @@ export function TenderListPanel({ selectedTenderId, onSelectTender }: TenderList
           onFiltersChange={handleFiltersChange}
           filterOptions={{ provinces, departments, categories }}
           isLoading={filterOptionsLoading}
+          onOpenFilterPopup={handleOpenFilterPopup}
+          isFilterPopupOpen={isFilterPopupOpen}
+          onCloseFilterPopup={handleCloseFilterPopup}
+          onApplyFilters={handleApplyFilters}
         />
 
         {/* Results count */}

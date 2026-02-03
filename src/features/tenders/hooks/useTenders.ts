@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/features/auth'
-import type { TenderListItem } from '@/lib/types'
+import type { TenderListItem, TenderStatus } from '@/lib/types'
 
 export interface TenderFilters {
   isRelevant: boolean | null
@@ -11,6 +11,8 @@ export interface TenderFilters {
   searchText: string | null
   sortBy: 'recommendation' | 'closing_date' | 'score' | 'published_date'
   sortDesc: boolean
+  status: TenderStatus | null
+  minDaysUntilClose: number | null
 }
 
 export interface UseTendersParams extends TenderFilters {
@@ -37,8 +39,10 @@ export function useTenders(params: Partial<UseTendersParams> = {}): UseTendersRe
     departmentId = null,
     categoryId = null,
     searchText = null,
-    sortBy = 'recommendation',
-    sortDesc = false,
+    sortBy = 'published_date',
+    sortDesc = true,
+    status = 'active',
+    minDaysUntilClose = null,
     page = 1,
     limit = DEFAULT_LIMIT,
   } = params
@@ -56,6 +60,8 @@ export function useTenders(params: Partial<UseTendersParams> = {}): UseTendersRe
       searchText,
       sortBy,
       sortDesc,
+      status,
+      minDaysUntilClose,
       page,
       limit,
     ],
@@ -68,12 +74,11 @@ export function useTenders(params: Partial<UseTendersParams> = {}): UseTendersRe
         p_province_id: provinceId,
         p_department_id: departmentId,
         p_category_id: categoryId,
-        p_closing_from: null,
-        p_closing_to: null,
-        p_has_compulsory_briefing: null,
         p_search_text: searchText || null,
         p_sort_by: sortBy,
         p_sort_desc: sortDesc,
+        p_status: status,
+        p_min_days_until_close: minDaysUntilClose,
         p_limit: limit,
         p_offset: offset,
       })
