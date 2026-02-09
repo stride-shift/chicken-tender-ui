@@ -57,9 +57,10 @@ Core utilities, type definitions, page components, global hooks, and React conte
 | Page | File | Route | Purpose |
 |------|------|-------|---------|
 | DashboardPage | DashboardPage.tsx:9 | / | Renders StatsGrid, AlertsRow, charts (ScoreDistribution + DepartmentTreemap), then TenderCarousel |
-| TendersPage | TendersPage.tsx:4 | /tenders, /tenders/:tenderId | Tender list and detail side-by-side |
+| TendersPage | TendersPage.tsx:6 | /tenders, /tenders/:tenderId | Tender list and detail side-by-side |
 | RubricPage | RubricPage.tsx:5 | /rubric | Displays active client evaluation rubric |
-| LoginPage | LoginPage.tsx:11 | /login | Login screen with in-place loading animation |
+| LoginPage | LoginPage.tsx:12 | /login | Login screen with forgot-password modal |
+| ResetPasswordPage | ResetPasswordPage.tsx:19 | /reset-password | Handles Supabase password reset callback |
 
 *** Page Details
 
@@ -77,9 +78,10 @@ Core utilities, type definitions, page components, global hooks, and React conte
 | RubricPage | 136-169 | Displays knockout criteria section |
 | RubricPage | 171-204 | Displays scoring criteria section |
 | RubricPage | 206-262 | Displays recommendation threshold ranges |
-| LoginPage | 48 | Renders LoginCard with onLogin and isLoading props |
-| LoginPage | 15 | Uses isLoading state to prevent duplicate submissions |
-| LoginPage | 28 | Navigates to / after successful login |
+| LoginPage | 60-64 | Renders LoginCard with onLogin, onForgotPassword, and isLoading props |
+| LoginPage | 16 | Uses isLoading state to prevent duplicate submissions |
+| LoginPage | 29 | Navigates to / after successful login |
+| LoginPage | 83-87 | Renders ForgotPasswordModal |
 
 * Global Hooks (=hooks/=)
 
@@ -108,35 +110,37 @@ Core utilities, type definitions, page components, global hooks, and React conte
 
 | File | Purpose |
 |------|---------|
-| App.tsx:10 | Root component with routing and providers |
-| main.tsx:17 | Application entry point with React render |
+| App.tsx:37 | Root component with routing and providers |
+| main.tsx:18 | Application entry point with React render |
 
 *** App.tsx Details
 
 | Line | Details |
 |------|---------|
-| 12 | Wraps app in AuthProvider for authentication context |
-| 13 | Wraps app in ToastProvider |
-| 14 | Wraps app in ErrorBoundary |
-| 15 | Route: /login → LoginPage (outside AppShell) |
-| 16 | Wraps protected routes in AppShell layout |
-| 17 | Uses ProtectedRoute component for authenticated routes |
-| 18 | Route: / → DashboardPage (protected) |
-| 19 | Route: /tenders → TendersPage (protected) |
-| 20 | Route: /tenders/:tenderId → TendersPage with param (protected) |
-| 21 | Route: /rubric → RubricPage (protected) |
-| 22 | Route: * → Redirect to / |
-| 26 | Renders Toaster component outside AppShell |
+| 39 | Wraps app in ToastProvider |
+| 40 | Wraps app in SidebarProvider |
+| 41 | Wraps app in ErrorBoundary |
+| 45 | Route: /login → LoginPage (outside AppShell) |
+| 48 | Route: /reset-password → ResetPasswordPage (outside AppShell) |
+| 54-55 | Wraps protected routes in ProtectedRoute + AppShell layout |
+| 57 | Route: / → DashboardPage (protected) |
+| 58 | Route: /tenders → TendersPage (protected) |
+| 59 | Route: /tenders/:tenderId → TendersPage with param (protected) |
+| 60 | Route: /rubric → RubricPage (protected) |
+| 61 | Route: * → Redirect to / |
+| 70 | Renders Toaster component outside SidebarProvider |
 
 *** main.tsx Details
 
 | Line | Details |
 |------|---------|
-| 8 | Creates TanStack Query client |
-| 11 | Sets staleTime to 5 minutes |
-| 12 | Disables refetch on window focus |
-| 19 | Wraps app in QueryClientProvider |
-| 20 | Wraps app in BrowserRouter |
+| 9 | Creates TanStack Query client |
+| 12 | Sets staleTime to 5 minutes |
+| 13 | Disables refetch on window focus |
+| 19 | Wraps app in StrictMode |
+| 20 | Wraps app in QueryClientProvider |
+| 21 | Wraps app in AuthProvider |
+| 22 | Wraps app in BrowserRouter |
 
 * Routing
 
@@ -145,6 +149,7 @@ React Router v6 setup with nested routes and URL parameters.
 | Route | Component | Params | Purpose |
 |-------|-----------|--------|---------|
 | /login | LoginPage | - | Login screen (no AppShell) |
+| /reset-password | ResetPasswordPage | - | Password reset via Supabase callback |
 | / | DashboardPage | - | Dashboard overview |
 | /tenders | TendersPage | - | Tender list without selection |
 | /tenders/:tenderId | TendersPage | tenderId: number | Tender list with detail panel |
@@ -157,7 +162,6 @@ React Router v6 setup with nested routes and URL parameters.
 |----------|---------|---------|
 | VITE_SUPABASE_URL | supabase.ts:3 | Supabase project URL |
 | VITE_SUPABASE_ANON_KEY | supabase.ts:4 | Supabase anonymous key |
-| VITE_DEV_CLIENT_CODE | AuthContext.tsx:23 | Development client code for auto-authentication |
 
 ---
-/Last Updated/: 2026-02-03
+/Last Updated/: 2026-02-09

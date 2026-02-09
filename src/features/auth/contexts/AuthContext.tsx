@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, useMemo, useCallback, ReactNode } from 'react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import type { AuthContextValue, UserProfile, Client } from '../types';
@@ -11,6 +11,32 @@ interface AuthProviderProps {
 
 const STORAGE_KEY = 'tenderrender_active_client';
 
+/**
+ * Detect AbortError in all forms:
+ * - Raw DOMException from navigator.locks / fetch
+ * - Supabase-wrapped error objects with { message, details, hint, code }
+ */
+function isAbortError(error: unknown): boolean {
+  if (error instanceof DOMException && error.name === 'AbortError') return true;
+  if (error && typeof error === 'object' && 'message' in error) {
+    const msg = String((error as { message: unknown }).message);
+    if (msg.includes('AbortError') || msg.includes('signal is aborted')) return true;
+  }
+  return false;
+}
+
+/**
+ * Recover the Supabase auth client after an AbortError permanently
+ * rejects its cached initializePromise. Without this, every subsequent
+ * operation (getSession, from().select(), etc.) fails forever.
+ */
+async function recoverSupabaseAuth(): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const auth = supabase.auth as any;
+  auth.initializePromise = null;
+  await auth.initialize();
+}
+
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -20,8 +46,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch user profile and clients after auth
-  const fetchUserData = async (userId: string): Promise<void> => {
+  const isFetchingRef = useRef(false);
+  const isManualLoginRef = useRef(false);
+
+  // Fetch user profile and clients after auth.
+  // IMPORTANT: Must NOT be called from inside an onAuthStateChange callback —
+  // doing so deadlocks because from().select() needs getSession() which needs
+  // the same navigator.locks lock that onAuthStateChange holds.
+  const fetchUserData = useCallback(async (userId: string): Promise<void> => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+
     try {
       // Fetch user profile
       const { data: profileData, error: profileError } = await supabase
@@ -39,7 +74,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Fetch clients based on user type
       let clientsData: Client[] = [];
       if (profileData.is_strideshift) {
-        // StrideShift users: fetch all active clients
         const { data, error } = await supabase
           .from('clients')
           .select('client_pk, client_code, client_name')
@@ -49,7 +83,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (error) throw error;
         clientsData = data || [];
       } else if (profileData.client_pk) {
-        // Regular users: fetch their specific client
         const { data, error } = await supabase
           .from('clients')
           .select('client_pk, client_code, client_name')
@@ -79,69 +112,42 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setIsAuthenticated(true);
     } catch (error) {
       console.error('Error fetching user data:', error);
-      // Clear auth state on error
-      setUser(null);
       setProfile(null);
       setClientCode(null);
       setAvailableClients([]);
       setIsStrideShift(false);
       setIsAuthenticated(false);
-      // Sanitize error message for users
-      const message = error instanceof Error
-        ? 'Failed to load user data. Please try logging in again.'
-        : 'Failed to load user data. Please try logging in again.';
-      throw new Error(message);
+      throw new Error('Failed to load user data. Please try logging in again.');
+    } finally {
+      isFetchingRef.current = false;
     }
-  };
+  }, []);
 
-  // Initialize auth state on mount
+  // Effect 1: Listen for auth state changes.
+  // Only manages user state — NEVER calls fetchUserData (deadlock risk).
   useEffect(() => {
     let mounted = true;
 
-    const initializeAuth = async () => {
-      try {
-        // Check for existing session
-        const { data: { session }, error } = await supabase.auth.getSession();
-
-        if (error) throw error;
-
-        if (session?.user && mounted) {
-          setUser(session.user);
-          await fetchUserData(session.user.id);
-        }
-      } catch (error) {
-        console.error('Error initializing auth:', error);
-      } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    initializeAuth();
-
-    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         if (!mounted) return;
 
-        if (event === 'SIGNED_IN' && session?.user) {
+        if (session?.user) {
           setUser(session.user);
-          try {
-            await fetchUserData(session.user.id);
-          } catch (error) {
-            console.error('Error fetching user data on sign in:', error);
-          }
-        } else if (event === 'SIGNED_OUT') {
+        }
+
+        if (event === 'SIGNED_OUT') {
           setUser(null);
           setProfile(null);
           setClientCode(null);
           setAvailableClients([]);
           setIsStrideShift(false);
           setIsAuthenticated(false);
+          setIsLoading(false);
           localStorage.removeItem(STORAGE_KEY);
-        } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-          setUser(session.user);
+        } else if (event === 'INITIAL_SESSION' && !session) {
+          // No existing session — stop loading
+          setIsLoading(false);
         }
       }
     );
@@ -152,11 +158,43 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
   }, []);
 
-  const login = async (email: string, password: string): Promise<void> => {
+  // Effect 2: Fetch user profile when user changes (from auth events).
+  // Runs OUTSIDE the onAuthStateChange callback, so the Supabase lock is free.
+  // NOTE: No cancellation pattern here. In StrictMode, the first run starts
+  // fetchUserData (guarded by isFetchingRef), the second run skips it.
+  // The first run's completion MUST set isLoading=false regardless of
+  // StrictMode cleanup, otherwise isLoading stays true → blank screen.
+  useEffect(() => {
+    if (!user || isAuthenticated || isManualLoginRef.current || isFetchingRef.current) {
+      return;
+    }
+
+    (async () => {
+      try {
+        await fetchUserData(user.id);
+      } catch (error) {
+        if (isAbortError(error)) {
+          try {
+            await recoverSupabaseAuth();
+            isFetchingRef.current = false;
+            await fetchUserData(user.id);
+          } catch (retryError) {
+            console.error('Error loading user data after recovery:', retryError);
+          }
+        } else {
+          console.error('Error loading user data:', error);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [user, isAuthenticated, fetchUserData]);
+
+  const login = useCallback(async (email: string, password: string): Promise<void> => {
     setIsLoading(true);
+    isManualLoginRef.current = true;
 
     try {
-      // Sign in with Supabase
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -166,10 +204,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (!data.user) throw new Error('Authentication failed');
 
       setUser(data.user);
-      await fetchUserData(data.user.id);
+
+      // Fetch user data directly. signInWithPassword doesn't hold the lock,
+      // so from().select() → getSession() works fine here.
+      try {
+        await fetchUserData(data.user.id);
+      } catch (fetchError) {
+        if (isAbortError(fetchError)) {
+          await recoverSupabaseAuth();
+          isFetchingRef.current = false;
+          await fetchUserData(data.user.id);
+        } else {
+          throw fetchError;
+        }
+      }
     } catch (error) {
       console.error('Login error:', error);
-      // Sanitize error message for users
       const message = error instanceof Error
         ? (error.message.toLowerCase().includes('invalid') || error.message.toLowerCase().includes('credentials')
           ? 'Invalid email or password'
@@ -177,16 +227,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
         : 'Login failed. Please try again.';
       throw new Error(message);
     } finally {
+      isManualLoginRef.current = false;
       setIsLoading(false);
     }
-  };
+  }, [fetchUserData]);
 
-  const logout = async (): Promise<void> => {
+  const logout = useCallback(async (): Promise<void> => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
 
-      // Clear state (also handled by onAuthStateChange)
       setUser(null);
       setProfile(null);
       setClientCode(null);
@@ -196,14 +246,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       localStorage.removeItem(STORAGE_KEY);
     } catch (error) {
       console.error('Logout error:', error);
-      // Sanitize error message for users
-      const message = 'Logout failed. Please try again.';
-      throw new Error(message);
+      throw new Error('Logout failed. Please try again.');
     }
-  };
+  }, []);
 
-  const setActiveClient = (newClientCode: string): void => {
-    // Validate that the client is available to this user
+  const setActiveClient = useCallback((newClientCode: string): void => {
     const isValid = availableClients.some(c => c.client_code === newClientCode);
 
     if (!isValid) {
@@ -213,9 +260,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     setClientCode(newClientCode);
     localStorage.setItem(STORAGE_KEY, newClientCode);
-  };
+  }, [availableClients]);
 
-  const updatePassword = async (newPassword: string): Promise<void> => {
+  const updatePassword = useCallback(async (newPassword: string): Promise<void> => {
     try {
       const { error } = await supabase.auth.updateUser({
         password: newPassword,
@@ -224,7 +271,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (error) throw error;
     } catch (error) {
       console.error('Password update error:', error);
-      // Sanitize error message for users
       const message = error instanceof Error
         ? (error.message.toLowerCase().includes('password')
           ? 'Password update failed. Please ensure your new password meets the requirements.'
@@ -232,9 +278,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         : 'Password update failed. Please try again.';
       throw new Error(message);
     }
-  };
+  }, []);
 
-  const forgotPassword = async (email: string): Promise<void> => {
+  const forgotPassword = useCallback(async (email: string): Promise<void> => {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
@@ -243,7 +289,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (error) throw error;
     } catch (error) {
       console.error('Forgot password error:', error);
-      // Sanitize error message for users
       const message = error instanceof Error
         ? (error.message.toLowerCase().includes('email')
           ? 'Invalid email address.'
@@ -251,7 +296,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         : 'Password reset request failed. Please try again.';
       throw new Error(message);
     }
-  };
+  }, []);
 
   const value = useMemo((): AuthContextValue => ({
     user,
@@ -280,7 +325,3 @@ export function useAuth(): AuthContextValue {
 
   return context;
 }
-
-// For backwards compatibility and dev reference only:
-// Dev bypass using VITE_DEV_CLIENT_CODE has been removed.
-// All authentication now goes through Supabase Auth.

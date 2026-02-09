@@ -77,21 +77,25 @@ See =src/lib/quick_reference.org= for detailed file contents.
 Application wrapping order in =main.tsx= and =App.tsx=:
 
 #+BEGIN_EXAMPLE
-QueryClientProvider          # TanStack Query (staleTime: 5min, no refetch on focus)
-└── AuthProvider             # Auth state (user, clientCode, login/logout)
-    └── BrowserRouter        # React Router v6
-        └── ToastProvider    # Toast notification state
-            └── ErrorBoundary    # Catches React component errors
-                └── AppShell     # Layout with Header + Sidebar
-                    └── Routes   # Page components
+StrictMode                       # React StrictMode (double-mount in dev)
+└── QueryClientProvider          # TanStack Query (staleTime: 5min, no refetch on focus)
+    └── AuthProvider             # Auth state (user, clientCode, login/logout)
+        └── BrowserRouter        # React Router v6
+            └── ToastProvider    # Toast notification state
+                └── SidebarProvider  # Sidebar collapse state
+                    └── ErrorBoundary    # Catches React component errors
+                        └── AppShell     # Layout with Header + Sidebar
+                            └── Routes   # Page components
 #+END_EXAMPLE
 
 | Provider | Purpose | Configuration |
 |----------|---------|---------------|
+| StrictMode | React dev checks | Double-mount in development |
 | QueryClientProvider | Server state caching | staleTime: 5 minutes, refetchOnWindowFocus: false |
-| AuthProvider | Authentication state | user, clientCode, isAuthenticated, login/logout |
+| AuthProvider | Authentication state | user, profile, clientCode, login/logout |
 | BrowserRouter | Client-side routing | - |
 | ToastProvider | Toast notification state | Auto-dismiss after 5 seconds |
+| SidebarProvider | Sidebar collapse state | Expanded/collapsed toggle |
 | ErrorBoundary | Error recovery | Renders fallback UI, reload button |
 
 * Data Flow
@@ -140,6 +144,7 @@ See [[file:FUNCTIONS.org][FUNCTIONS.org]] for RPC function signatures.
 | Route | Page | Purpose |
 |-------|------|---------|
 | /login | LoginPage | Login screen (outside AppShell) |
+| /reset-password | ResetPasswordPage | Password reset via Supabase callback |
 | / | DashboardPage | Overview stats, alerts, recent activity |
 | /tenders | TendersPage | Tender list with filters, no selection |
 | /tenders/:tenderId | TendersPage | Tender list with detail panel open |
@@ -429,48 +434,33 @@ Keep together when:
 
 * Authentication Strategy
 
-** Current Implementation
+Supabase Auth with a two-effect architecture in AuthProvider to avoid deadlocking =navigator.locks=.
 
-AuthContext-based authentication with development bypass via =VITE_DEV_CLIENT_CODE=.
+** Auth Flow
 
-*** Development Mode
+1. On mount, =onAuthStateChange= fires =INITIAL_SESSION= — sets =user= state only (no DB queries)
+2. Separate effect watches =user= state, calls =fetchUserData()= outside the lock context
+3. =fetchUserData()= queries =user_profiles= for profile, then =clients= for available clients
+4. Sets =clientCode= from localStorage or first available client
+5. All RPC calls use =clientCode= for multi-tenant isolation
 
-When =VITE_DEV_CLIENT_CODE= is set, the app auto-authenticates with a mock user:
-
-#+BEGIN_EXAMPLE
-// Dev bypass in AuthContext
-if (devClientCode) {
-  setUser({ id: 'dev-user-001', email: 'dev@tenderrender.local' });
-  setClientCode(devClientCode);
-  setIsAuthenticated(true);
-}
-#+END_EXAMPLE
-
-*** Production Mode
-
-Without =VITE_DEV_CLIENT_CODE=, unauthenticated users are redirected to =/login=. The login form accepts email/password and calls =auth.login()=.
-
-*** Auth State
+** Auth State
 
 | State | Type | Purpose |
 |-------|------|---------|
-| user | User or null | Current user (id, email) |
+| user | SupabaseUser or null | Supabase user from auth state changes |
+| profile | UserProfile or null | Profile from user_profiles table |
 | clientCode | string or null | Client identifier for RPC calls |
-| isAuthenticated | boolean | Whether user is logged in |
+| isAuthenticated | boolean | True after successful data fetch |
 | isLoading | boolean | Auth state loading |
 
-*** Logout
+** Login
+
+Login form at =/login= accepts email/password. =signInWithPassword()= bypasses the cached =initializePromise=, then =fetchUserData()= loads profile and clients. Forgot password sends reset email via Supabase Auth, redirecting to =/reset-password=.
+
+** Logout
 
 Header displays logout button when authenticated. Calls =auth.logout()= to clear state and redirect to login.
-
-** Future (Production)
-
-Still scaffolding - real Supabase Auth integration planned:
-
-1. User authenticates via Supabase Auth
-2. App queries =user_profiles= to get =client_pk=
-3. App fetches =client_code= from =clients= table
-4. All RPC calls use that client_code
 
 * UI Decisions
 
@@ -497,4 +487,4 @@ Still scaffolding - real Supabase Auth integration planned:
 | [[file:context_files/frontend.md][context_files/frontend.md]] | API documentation from backend |
 
 ---
-/Last Updated/: 2026-02-03
+/Last Updated/: 2026-02-09

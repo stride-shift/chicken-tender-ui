@@ -1,15 +1,16 @@
 #+TITLE: Auth Feature - Quick Reference
-#+DATE: 2026-02-03
+#+DATE: 2026-02-09
 
 * Overview
 
-Authentication via Supabase Auth with user profiles and multi-client support. Provides arcade-styled login UI, real auth state management, and client switching for StrideShift admins.
+Authentication via Supabase Auth with user profiles and multi-client support. Provides arcade-styled login UI, forgot-password flow, auth state management, and client switching for StrideShift admins.
 
 * Components
 
 | Component | File | Purpose |
 |-----------|------|---------|
-| LoginCard | LoginCard.tsx:23 | Login form with email/password inputs and arcade styling |
+| LoginCard | LoginCard.tsx:24 | Login form with email/password inputs and arcade styling |
+| ForgotPasswordModal | ForgotPasswordModal.tsx:21 | Modal for sending password reset email |
 | CombinedLogo | CombinedLogo.tsx:19 | Logo showing StrideShift Global + TenderRender |
 | PixelBootLoader | PixelBootLoader.tsx:33 | Animated 10x10 pixel grid loader with reveal animation |
 
@@ -17,15 +18,15 @@ Authentication via Supabase Auth with user profiles and multi-client support. Pr
 
 | Item | File | Purpose |
 |------|------|---------|
-| AuthProvider | AuthContext.tsx:14 | Provider component wrapping app with Supabase auth |
-| useAuth | AuthContext.tsx:236 | Hook to access auth state and methods |
+| AuthProvider | AuthContext.tsx:40 | Provider component wrapping app with Supabase auth |
+| useAuth | AuthContext.tsx:319 | Hook to access auth state and methods |
 
 * Types
 
 | Type | File | Key Fields |
 |------|------|-----------|
 | AuthState | types.ts:17 | user, profile, clientCode, availableClients, isStrideShift, isAuthenticated, isLoading |
-| AuthContextValue | types.ts:27 | AuthState + login(), logout(), setActiveClient(), updatePassword() |
+| AuthContextValue | types.ts:27 | AuthState + login(), logout(), setActiveClient(), updatePassword(), forgotPassword() |
 | UserProfile | types.ts:9 | user_id, client_pk (nullable), display_name, role, is_strideshift |
 | Client | types.ts:3 | client_pk, client_code, client_name |
 
@@ -37,12 +38,13 @@ Authentication via Supabase Auth with user profiles and multi-client support. Pr
 | logout | () => Promise<void> | Sign out via Supabase, clear all state and localStorage |
 | setActiveClient | (clientCode: string) => void | Switch active client, validate against availableClients |
 | updatePassword | (newPassword: string) => Promise<void> | Update user password via Supabase Auth |
+| forgotPassword | (email: string) => Promise<void> | Send password reset email via Supabase Auth |
 
 * AuthProvider State
 
 | Property | Type | Purpose |
 |----------|------|---------|
-| user | SupabaseUser \vert null | Raw Supabase user object from auth.getSession() |
+| user | SupabaseUser \vert null | Raw Supabase user object from auth state changes |
 | profile | UserProfile \vert null | User profile from user_profiles table |
 | clientCode | string \vert null | Active client code for scoping queries |
 | availableClients | Client[] | List of clients user has access to |
@@ -50,12 +52,54 @@ Authentication via Supabase Auth with user profiles and multi-client support. Pr
 | isAuthenticated | boolean | True after successful fetchUserData |
 | isLoading | boolean | True during login or initial auth check |
 
+* Authentication Flow (Two-Effect Architecture)
+
+AuthProvider uses two separate effects to avoid deadlocking Supabase's internal navigator.locks mechanism.
+
+** Effect 1: Auth State Listener (AuthContext.tsx:128)
+
+- Subscribes to =supabase.auth.onAuthStateChange=
+- ONLY sets =user= state from session — never calls DB queries
+- Handles =SIGNED_OUT= (clears all state) and =INITIAL_SESSION= without session (stops loading)
+- Calling =supabase.from().select()= from inside this callback deadlocks because the lock is held
+
+** Effect 2: User Data Fetcher (AuthContext.tsx:167)
+
+- Watches =user= state — runs OUTSIDE the onAuthStateChange callback (lock is free)
+- Calls =fetchUserData(userId)= (AuthContext.tsx:56) to load profile and clients
+- Guarded by =isFetchingRef= (prevents concurrent calls) and =isManualLoginRef= (prevents race with login)
+- On AbortError: calls =recoverSupabaseAuth()= to reset cached =initializePromise=, then retries
+- Always sets =isLoading=false= in finally block (no cancelled pattern — critical for StrictMode)
+
+** Login Flow (AuthContext.tsx:193)
+
+1. =signInWithPassword()= — bypasses =initializePromise=, always works
+2. Sets =user= state
+3. Calls =fetchUserData()= directly (lock is free after sign-in)
+4. On AbortError: recovers auth client and retries fetchUserData
+5. =isManualLoginRef= prevents Effect 2 from racing
+
+** AbortError Recovery
+
+- =isAbortError()= (AuthContext.tsx:19) detects both DOMException and Supabase-wrapped error objects
+- =recoverSupabaseAuth()= (AuthContext.tsx:33) resets =auth.initializePromise = null= then re-initializes
+- React StrictMode double-mount can abort =navigator.locks.request()=, permanently rejecting the cached promise
+
 * LoginCard Props
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
 | onLogin | (username: string, password: string) => void | Yes | Called when form submitted |
+| onForgotPassword | () => void | No | Called when "FORGOT PASSWORD?" clicked |
 | isLoading | boolean | Yes | Disables inputs, shows "LOGGING IN..." state |
+
+* ForgotPasswordModal Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| isOpen | boolean | Yes | Controls modal visibility |
+| onClose | () => void | Yes | Called to dismiss modal |
+| onSubmit | (email: string) => Promise<void> | Yes | Called with email to send reset link |
 
 * CombinedLogo Props
 
@@ -70,17 +114,6 @@ Authentication via Supabase Auth with user profiles and multi-client support. Pr
 |------|------|----------|---------|-------------|
 | size | 'small' \vert 'medium' \vert 'large' | No | 'medium' | Pixel size |
 | color | string | No | '#2a9d8f' | Pixel color |
-
-* Authentication Flow
-
-1. AuthProvider checks for existing session on mount via supabase.auth.getSession()
-2. If session exists, sets user and calls fetchUserData(userId)
-3. fetchUserData fetches user_profiles row, checks is_strideshift flag
-4. If StrideShift: fetches all active clients from clients table
-5. If regular user: fetches their single client via client_pk
-6. Sets clientCode from localStorage or defaults to first available client
-7. onAuthStateChange listens for SIGNED_IN, SIGNED_OUT, TOKEN_REFRESHED events
-8. login() calls supabase.auth.signInWithPassword() then fetchUserData()
 
 * Client Switching (StrideShift Only)
 
@@ -109,4 +142,4 @@ Authentication via Supabase Auth with user profiles and multi-client support. Pr
 | clients | SELECT active by is_active or client_pk | Fetch available clients for user |
 
 ---
-/Last Updated/: 2026-02-03
+/Last Updated/: 2026-02-09
