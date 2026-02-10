@@ -21,7 +21,7 @@ type StatusFilter = 'active' | 'closed' | 'all'
 type SortByOption = 'published_date' | 'recommendation' | 'closing_date' | 'score'
 
 const DEFAULT_FILTERS: TenderFilters = {
-  isRelevant: null,
+  isRelevant: true,
   provinceId: null,
   departmentId: null,
   categoryId: null,

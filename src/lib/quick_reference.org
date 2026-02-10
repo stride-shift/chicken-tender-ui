@@ -1,5 +1,5 @@
 #+TITLE: Lib, Pages, Hooks & Contexts - Quick Reference
-#+DATE: 2026-01-31
+#+DATE: 2026-02-10
 
 * Overview
 
@@ -34,6 +34,7 @@ Core utilities, type definitions, page components, global hooks, and React conte
 | Importance | types.ts:3 | Enum for change importance (high/medium/low) |
 | TenderStatus | types.ts:4 | Enum for tender lifecycle status |
 | ChangeType | types.ts:5 | Enum for change type (metadata/document) |
+| LifecycleStatus | types.ts:6 | Enum for tender lifecycle stage (new/under_review/shortlisted/declined/watching) |
 | DashboardStats | types.ts:8 | Dashboard metrics from get_dashboard_stats RPC |
 | TenderListItem | types.ts:21 | Paginated tender list with llm_notes field |
 | TenderDetail | types.ts:52 | Full tender detail from get_tender_detail |
@@ -164,4 +165,4 @@ React Router v6 setup with nested routes and URL parameters.
 | VITE_SUPABASE_ANON_KEY | supabase.ts:4 | Supabase anonymous key |
 
 ---
-/Last Updated/: 2026-02-09
+/Last Updated/: 2026-02-10

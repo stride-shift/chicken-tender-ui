@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useTenders, type TenderFilters } from '../hooks/useTenders'
 import { useFilterOptions } from '../hooks/useFilterOptions'
+import { useDashboardStats } from '@/features/dashboard/hooks/useDashboardStats'
 import { TenderListFilters } from './TenderListFilters'
 import { TenderListItem } from './TenderListItem'
 import { Pagination } from '@/components/shared/Pagination'
@@ -14,7 +15,7 @@ interface TenderListPanelProps {
 const ITEMS_PER_PAGE = 25
 
 const DEFAULT_FILTERS: TenderFilters = {
-  isRelevant: null,
+  isRelevant: true,
   provinceId: null,
   departmentId: null,
   categoryId: null,
@@ -44,6 +45,9 @@ export function TenderListPanel({ selectedTenderId, onSelectTender }: TenderList
     categories,
     isLoading: filterOptionsLoading,
   } = useFilterOptions()
+
+  // Fetch dashboard stats for total active tenders count
+  const { data: dashboardStats } = useDashboardStats()
 
   // Calculate total pages
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE)
@@ -94,7 +98,11 @@ export function TenderListPanel({ selectedTenderId, onSelectTender }: TenderList
               >
                 {totalCount}
               </span>
-              <span className="text-stone-500 text-sm">tender{totalCount === 1 ? '' : 's'} found</span>
+              <span className="text-stone-500 text-sm">
+                {dashboardStats?.total_active
+                  ? `of ${dashboardStats.total_active} active tender${dashboardStats.total_active === 1 ? '' : 's'}`
+                  : `tender${totalCount === 1 ? '' : 's'}`}
+              </span>
             </>
           )}
         </div>

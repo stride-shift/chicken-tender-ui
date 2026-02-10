@@ -35,7 +35,7 @@ interface TenderListFiltersProps {
 // Count active filters (non-default values)
 const countActiveFilters = (filters: TenderFilters): number => {
   let count = 0
-  if (filters.isRelevant !== null) count++
+  if (filters.isRelevant !== true) count++
   if (filters.provinceId !== null) count++
   if (filters.departmentId !== null) count++
   if (filters.categoryId !== null) count++

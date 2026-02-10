@@ -1,5 +1,5 @@
 #+TITLE: Dashboard Feature - Quick Reference
-#+DATE: 2026-02-03
+#+DATE: 2026-02-10
 
 * Overview
 
@@ -15,7 +15,7 @@ Overview and monitoring feature. Displays stats, alerts, and recent activity for
 | AlertsRow | components/AlertsRow.tsx:9 | Row showing briefings, closing deadlines, and changes |
 | RecentChanges | components/RecentChanges.tsx:8 | Displays high-importance changes count preview |
 | TenderCarousel | components/TenderCarousel.tsx:11 | Auto-scrolling carousel of featured tenders |
-| TenderCarouselCard | components/TenderCarouselCard.tsx:9 | Individual card for carousel display |
+| TenderCarouselCard | components/TenderCarouselCard.tsx:9 | Individual card showing score, dates published/closing |
 | ScoreDistributionChart | components/ScoreDistributionChart.tsx:18 | Recharts donut chart showing score breakdown |
 | DepartmentTreemap | components/DepartmentTreemap.tsx:122 | Recharts treemap of tenders by department |
 
@@ -36,8 +36,8 @@ The hook passes the following fixed parameters to get_tenders_paginated to ensur
 | p_is_relevant | true | Filter to relevant tenders only |
 | p_status | 'active' | Explicitly filter by active status |
 | p_min_days_until_close | 0 | Ensure closing_date >= NOW() (not yet closed) |
-| p_sort_by | 'recommendation' | Sort by recommendation score (best first) |
-| p_sort_desc | false | Ascending order (best recommendations first) |
+| p_sort_by | 'score' | Sort by relevance score (best first) |
+| p_sort_desc | true | Descending order (highest scores first) |
 | p_limit | limit parameter (default 12) | Control carousel display count |
 | p_offset | 0 | Start from first result |
 
@@ -129,4 +129,4 @@ DashboardPage.tsx displays components in this order:
 Note: ClosingTimelineChart exists but is not currently used in DashboardPage.
 
 ---
-/Last Updated/: 2026-02-03
+/Last Updated/: 2026-02-10

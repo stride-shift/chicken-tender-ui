@@ -191,7 +191,7 @@ At-a-glance metrics, alerts, featured tenders, and visualizations.
 | AlertsRow | get_dashboard_stats → briefings_next_7_days, closing_next_7_days, high_importance_changes_24h |
 | ScoreDistributionChart | get_dashboard_stats → excellent_count, good_count, worth_reviewing_count |
 | DepartmentTreemap | get_filter_options → departments with counts (top 12) |
-| TenderCarousel | get_tenders_paginated → relevant tenders (limit: 8), toggles between carousel and grid views |
+| TenderCarousel | get_tenders_paginated → relevant tenders sorted by score descending (limit: 12), toggles between carousel and grid views |
 
 See =src/features/dashboard/quick_reference.org= for component details.
 
@@ -224,7 +224,7 @@ Browse tenders and view details in a split-pane layout.
 │        │  ╔═════════════════════════════════════════════════════════════╗  │
 │        │  ║ FilterPopup Modal (opens on [Filter] click)                ║  │
 │        │  ║ ┌─────────────────────────────────────────────────────────┐║  │
-│        │  ║ │ Relevance:    [All ▼]                                  ││  │
+│        │  ║ │ Relevance:    [Relevant Only ▼]                          ││  │
 │        │  ║ │ Status:       [Active ▼]                               ││  │
 │        │  ║ │ Province:     [--- ▼]                                  ││  │
 │        │  ║ │ Department:   [--- ▼]                                  ││  │
@@ -247,7 +247,7 @@ TendersPage
 │   ├── TenderListItem[] (list of tender cards)
 │   └── Pagination
 └── TenderDetailPanel (when tender selected)
-    ├── TenderDetailHeader (title, recommendation, key info cards)
+    ├── TenderDetailHeader (title, recommendation, key info cards, lifecycle action bar)
     ├── TenderDetailTabs (tab navigation)
     └── Tab Content:
         ├── TenderOpportunityTab (AI assessment, description, metadata, contact)
@@ -262,7 +262,7 @@ Managed in TenderListPanel and FilterPopup components:
 
 | Filter | Type | Default |
 |--------|------|---------|
-| isRelevant | boolean or null | null |
+| isRelevant | boolean or null | true (relevant only) |
 | status | TenderStatus or null | 'active' |
 | provinceId | number or null | null |
 | departmentId | number or null | null |
@@ -274,7 +274,7 @@ Managed in TenderListPanel and FilterPopup components:
 | page | number | 1 |
 | limit | number | 25 |
 
-Search updates apply immediately. All other filters apply via FilterPopup modal. Filters reset page to 1 on change.
+Search updates apply immediately. All other filters apply via FilterPopup modal. Filters reset page to 1 on change. Results count shows "X of Y active tenders" using dashboard stats.
 
 See =src/features/tenders/quick_reference.org= for FilterPopup implementation details.
 
@@ -487,4 +487,4 @@ Header displays logout button when authenticated. Calls =auth.logout()= to clear
 | [[file:context_files/frontend.md][context_files/frontend.md]] | API documentation from backend |
 
 ---
-/Last Updated/: 2026-02-09
+/Last Updated/: 2026-02-10

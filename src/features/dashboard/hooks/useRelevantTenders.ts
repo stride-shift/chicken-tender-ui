@@ -42,8 +42,8 @@ export function useRelevantTenders(
         p_search_text: null,
         p_status: 'active',
         p_min_days_until_close: 0,
-        p_sort_by: 'recommendation',
-        p_sort_desc: false,
+        p_sort_by: 'score',
+        p_sort_desc: true,
         p_limit: limit,
         p_offset: 0,
       })

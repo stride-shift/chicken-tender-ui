@@ -3,6 +3,7 @@ export type Recommendation = 'excellent_fit' | 'good_fit' | 'worth_reviewing' | 
 export type Importance = 'high' | 'medium' | 'low'
 export type TenderStatus = 'active' | 'awarded' | 'closed' | 'cancelled'
 export type ChangeType = 'metadata' | 'document'
+export type LifecycleStatus = 'new' | 'under_review' | 'shortlisted' | 'declined' | 'watching'
 
 // Dashboard stats from get_dashboard_stats()
 export interface DashboardStats {

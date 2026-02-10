@@ -1,5 +1,5 @@
 #+TITLE: Tenders Feature - Quick Reference
-#+DATE: 2026-02-03
+#+DATE: 2026-02-10
 
 * Overview
 
@@ -9,12 +9,12 @@ Primary feature module for viewing and filtering tenders. Contains list/detail c
 
 | Component | File | Purpose |
 |-----------|------|---------|
-| TenderListPanel | TenderListPanel.tsx:26 | Container managing filters, pagination, tender list |
+| TenderListPanel | TenderListPanel.tsx:29 | Container managing filters, pagination, "X of Y active tenders" count |
 | TenderListItem | components/TenderListItem.tsx:10 | Single tender row: title, department, published date, closing date, recommendation badge |
 | TenderListFilters | TenderListFilters.tsx:48 | Search box + Filter button (opens FilterPopup) |
 | FilterPopup | FilterPopup.tsx:57 | Modal popup for applying tender filters with Apply/Clear |
 | TenderDetailPanel | TenderDetailPanel.tsx:15 | Main detail panel with tabs and content |
-| TenderDetailHeader | TenderDetailHeader.tsx:10 | Header with title, recommendation, key stats |
+| TenderDetailHeader | TenderDetailHeader.tsx:11 | Header with title, recommendation, key stats, lifecycle action bar |
 | TenderDetailTabs | TenderDetailTabs.tsx:8 | Four-tab navigation bar |
 | TenderDetailOverview | TenderDetailOverview.tsx:7 | Overview tab with description and metadata |
 | TenderDetailDocs | TenderDetailDocs.tsx:7 | Documents tab listing files and downloads |
@@ -28,11 +28,11 @@ Primary feature module for viewing and filtering tenders. Contains list/detail c
 
 | Hook | File | RPC Function | Purpose |
 |------|------|--------------|---------|
-| useTenders | hooks/useTenders.ts:30 | get_tenders_paginated | Fetches paginated tender list with filters |
-| useTenderDetail | hooks/useTenderDetail.ts:15 | get_tender_detail | Fetches single tender detail by PK |
-| useFilterOptions | hooks/useFilterOptions.ts:13 | get_filter_options | Fetches province, department, category filter options |
+| useTenders | hooks/useTenders.ts:33 | get_tenders_paginated | Fetches paginated tender list with filters |
+| useTenderDetail | hooks/useTenderDetail.ts:16 | get_tender_detail | Fetches single tender detail by PK |
+| useFilterOptions | hooks/useFilterOptions.ts:14 | get_filter_options | Fetches province, department, category filter options |
 | useClientRubric | hooks/useClientRubric.ts:5 | get_client_rubric | Fetches rubric definition by rubric PK |
-| useActiveClientRubric | hooks/useActiveClientRubric.ts:9 | get_active_client_rubric | Fetches active rubric for current client |
+| useActiveClientRubric | hooks/useActiveClientRubric.ts:10 | get_active_client_rubric | Fetches active rubric for current client |
 
 * RPC Function Usage
 
@@ -65,7 +65,7 @@ TenderDetailPanel
 TenderFilters interface (useTenders.ts:6-16):
 | Field | Type | Default |
 |-------|------|---------|
-| isRelevant | boolean \| null | null |
+| isRelevant | boolean \| null | true |
 | provinceId | number \| null | null |
 | departmentId | number \| null | null |
 | categoryId | number \| null | null |
@@ -108,6 +108,7 @@ TenderListFilters (components/TenderListFilters.tsx:48) is a simplified filter U
 The component receives filter state and handler functions from parent (TenderListPanel).
 Search updates are applied immediately via onFiltersChange.
 All other filters (province, department, category, status, days, sort) are applied via FilterPopup.
+Filter badge count increments when isRelevant !== true (default is true, so badge only shows if changed).
 
 * FilterPopup Component Details
 
@@ -116,9 +117,19 @@ FilterPopup (components/FilterPopup.tsx:57) is a modal dialog with:
 - 6 dropdown filters: Relevance, Status, Province, Department, Category, Days Until Close
 - Sort By dropdown (affects sortDesc automatically)
 - Apply Filters button (calls onApply with local state)
-- Clear All button (resets to defaults)
+- Clear All button (resets to defaults: isRelevant=true, status='active', sortBy='published_date', sortDesc=true)
 
 Default sort logic: closing_date sorts ascending (sortDesc=false), all others sort descending (sortDesc=true).
+
+* TenderDetailHeader Component Details
+
+TenderDetailHeader (components/TenderDetailHeader.tsx:11) displays tender header with:
+- Title (generated_title or tender_no), recommendation badge, closing date status
+- Meta line: Tender number (if generated title), Closes (with days color coding), Briefing, Score
+- Health bar showing score percentage (when score exists)
+- Lifecycle action bar (skeleton, coming soon): Shortlist, Review, Watch, Decline buttons
+  * All buttons call handleLifecycleAction which shows "Coming soon" toast via useToast hook
+  * Button colors: Shortlist (emerald), Review (blue), Watch (amber), Decline (stone)
 
 * TenderListItem Component Details
 
@@ -143,4 +154,4 @@ Helper functions:
 Date display: Published text is muted (stone-400), closing text uses conditional color (urgent=red-600, normal=stone-600, closed=stone-400).
 
 ---
-/Last Updated/: 2026-02-03
+/Last Updated/: 2026-02-10

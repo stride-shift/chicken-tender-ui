@@ -14,11 +14,25 @@ export function TenderCarouselCard({ tender }: TenderCarouselCardProps) {
   }
 
   const formatDaysUntilClose = (days: number): string => {
-    if (days < 0) return 'CLOSED'
-    if (days === 0) return 'TODAY'
-    if (days === 1) return '1 DAY'
-    return `${days} DAYS`
+    if (days < 0) return 'Closed'
+    if (days === 0) return 'today'
+    if (days === 1) return '1d left'
+    return `${days}d left`
   }
+
+  const calculateDaysSince = (dateString: string): number => {
+    const date = new Date(dateString)
+    const now = new Date()
+    return Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
+  }
+
+  const formatDaysSince = (days: number): string => {
+    if (days === 0) return 'today'
+    if (days === 1) return '1d ago'
+    return `${days}d ago`
+  }
+
+  const daysSincePublished = calculateDaysSince(tender.date_published)
 
   // Determine score color based on percentage - returns gradient colors
   const getScoreGradient = (score: number): { from: string; to: string; shadow: string } => {
@@ -54,15 +68,21 @@ export function TenderCarouselCard({ tender }: TenderCarouselCardProps) {
               {tender.tender_no}
             </span>
           </div>
-          <span
-            className="text-xs font-mono font-bold flex-shrink-0 px-2 py-0.5 rounded"
-            style={{
-              color: getUrgencyStyle(tender.days_until_close).text,
-              backgroundColor: getUrgencyStyle(tender.days_until_close).bg,
-            }}
-          >
-            {formatDaysUntilClose(tender.days_until_close)}
-          </span>
+          <div className="flex items-center gap-1.5 flex-shrink-0 text-xs font-mono">
+            <span className="text-teal-200">
+              {formatDaysSince(daysSincePublished)}
+            </span>
+            <span className="text-teal-300">·</span>
+            <span
+              className="font-bold px-1.5 py-0.5 rounded"
+              style={{
+                color: getUrgencyStyle(tender.days_until_close).text,
+                backgroundColor: getUrgencyStyle(tender.days_until_close).bg,
+              }}
+            >
+              {formatDaysUntilClose(tender.days_until_close)}
+            </span>
+          </div>
         </div>
 
         {/* Card content - light background */}

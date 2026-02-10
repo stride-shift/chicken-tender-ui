@@ -2,12 +2,19 @@ import type { TenderDetail } from '@/lib/types'
 import { RecommendationBadge } from '@/components/shared'
 import { DateDisplay } from '@/components/shared'
 import { HealthBar } from '@/components/ui'
+import { useToast } from '@/hooks/useToast'
 
 interface TenderDetailHeaderProps {
   tender: TenderDetail
 }
 
 export function TenderDetailHeader({ tender }: TenderDetailHeaderProps) {
+  const { addToast } = useToast()
+
+  const handleLifecycleAction = () => {
+    addToast('Coming soon — Tender lifecycle management is on the way!', 'info')
+  }
+
   // Determine title: prefer generated_title, fall back to tender_no
   const title = tender.generated_title || tender.tender_no
 
@@ -117,6 +124,52 @@ export function TenderDetailHeader({ tender }: TenderDetailHeaderProps) {
           <HealthBar current={scoreValue} max={100} color={scoreColor} segments={20} />
         </div>
       )}
+
+      {/* Row 4: Lifecycle action bar (skeleton — coming soon) */}
+      <div className="mt-3 pt-3 border-t border-stone-200">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs font-mono font-bold text-stone-500 uppercase tracking-wide">
+            Tender Actions
+          </span>
+          <span className="text-[10px] font-mono text-stone-400 bg-stone-100 px-1.5 py-0.5 rounded">
+            coming soon
+          </span>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={handleLifecycleAction}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded transition-all
+              bg-emerald-50 text-emerald-700 border border-emerald-200
+              hover:bg-emerald-100 hover:border-emerald-300 active:translate-y-px"
+          >
+            <span>&#9733;</span> Shortlist
+          </button>
+          <button
+            onClick={handleLifecycleAction}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded transition-all
+              bg-blue-50 text-blue-700 border border-blue-200
+              hover:bg-blue-100 hover:border-blue-300 active:translate-y-px"
+          >
+            <span>&#9998;</span> Review
+          </button>
+          <button
+            onClick={handleLifecycleAction}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded transition-all
+              bg-amber-50 text-amber-700 border border-amber-200
+              hover:bg-amber-100 hover:border-amber-300 active:translate-y-px"
+          >
+            <span>&#9673;</span> Watch
+          </button>
+          <button
+            onClick={handleLifecycleAction}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded transition-all
+              bg-stone-50 text-stone-500 border border-stone-200
+              hover:bg-stone-100 hover:border-stone-300 active:translate-y-px"
+          >
+            <span>&#10005;</span> Decline
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
