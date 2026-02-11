@@ -33,11 +33,11 @@ export function TenderCarouselCard({ tender }: TenderCarouselCardProps) {
 
   const daysSincePublished = calculateDaysSince(tender.date_published)
 
-  // Determine score color based on percentage
-  const getScoreColor = (score: number): string => {
-    if (score >= 80) return 'text-success'
-    if (score >= 60) return 'text-info'
-    return 'text-warning'
+  // Determine score badge style based on percentage
+  const getScoreBadgeStyle = (score: number): string => {
+    if (score >= 80) return 'text-success border-success bg-success/10'
+    if (score >= 60) return 'text-info border-info bg-info/10'
+    return 'text-warning border-warning bg-warning/10'
   }
 
   // Determine urgency styling for closing date badge
@@ -52,7 +52,7 @@ export function TenderCarouselCard({ tender }: TenderCarouselCardProps) {
       onClick={handleClick}
       className="w-full text-left h-full flex flex-col group"
     >
-      <div className="rounded-lg border border-border bg-card shadow-sm overflow-hidden h-full flex flex-col card-hover">
+      <div className="rounded-lg border-2 border-border bg-card shadow-sm overflow-hidden h-full flex flex-col card-hover group-hover:border-primary transition-colors">
         {/* Header bar with tender number and metadata */}
         <div className="bg-slate-800 px-3 py-2 flex items-center justify-between gap-2">
           <span className="text-white text-sm font-semibold truncate">
@@ -74,11 +74,11 @@ export function TenderCarouselCard({ tender }: TenderCarouselCardProps) {
           {/* Title row with score badge */}
           <div className="flex items-start gap-2 mb-3">
             {/* Title */}
-            <div className="text-foreground font-semibold line-clamp-2 text-sm leading-snug group-hover:text-primary transition-colors flex-1">
+            <div className="text-foreground font-semibold line-clamp-2 text-sm leading-snug flex-1">
               {tender.generated_title || tender.tender_no}
             </div>
             {/* Score badge */}
-            <div className={`px-2 py-0.5 text-xs font-bold rounded-full border-2 border-primary ${getScoreColor(tender.score_percentage)} bg-background flex-shrink-0`}>
+            <div className={`px-2 py-0.5 text-xs font-bold rounded-full border-2 flex-shrink-0 ${getScoreBadgeStyle(tender.score_percentage)}`}>
               {tender.score_percentage}%
             </div>
           </div>

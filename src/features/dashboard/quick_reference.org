@@ -91,15 +91,25 @@ Hook interface parameters:
 | View toggle | Button to switch between carousel and expanded grid |
 | Grid mode | Shows all tenders in responsive grid (1/2/3 columns) |
 
+** TenderCarouselCard
+
+| Feature | Implementation |
+|---------|----------------|
+| Hover effect | 2px primary border with transition-colors on card container |
+| Score badge | Dynamic styling via getScoreBadgeStyle() based on percentage |
+| Score tiers | >=80% (success green), >=60% (info blue), else (warning amber) |
+| Badge styling | Returns combined classes: text-{tier} border-{tier} bg-{tier}/10 |
+| Urgency badge | Days until close colored red (<7d), amber (7-14d), primary (14+d) |
+
 ** ScoreDistributionChart
 
 | Feature | Implementation |
 |---------|----------------|
 | Chart type | Recharts donut chart (PieChart with innerRadius) |
 | Data source | useDashboardStats hook |
-| Categories | Excellent Fit (emerald), Good Fit (blue), Worth Reviewing (amber) |
-| Labels | Percentage shown in center of segments if >5% |
-| Legend | Custom legend with counts below chart |
+| Colors | Excellent Fit (dark gold hsl(32,80%,40%)), Good Fit (medium gold hsl(45,93%,50%)), Worth Reviewing (light gold hsl(48,85%,65%)) |
+| Labels | Percentage text with dark fill (hsl(240,10%,10%)) and white stroke, shown if >5% |
+| Legend | Custom legend with colored squares and counts below chart |
 
 ** DepartmentTreemap
 

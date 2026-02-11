@@ -9,19 +9,19 @@ Authentication via Supabase Auth with user profiles and multi-client support. Pr
 
 | Component | File | Purpose |
 |-----------|------|---------|
-| LoginCard | LoginCard.tsx:10 | Semantic login form with email/password and forgot-password link |
-| ForgotPasswordModal | ForgotPasswordModal.tsx:9 | Modal for sending password reset email via Supabase |
-| CombinedLogo | CombinedLogo.tsx:19 | Logo with StrideShift Global + TenderRender, pixel boot on load |
-| PixelBootLoader | PixelBootLoader.tsx:14 | Animated spinner loader with pulsing text and crossfade |
+| LoginCard | components/LoginCard.tsx:10 | Semantic login form with email/password and forgot-password link |
+| ForgotPasswordModal | components/ForgotPasswordModal.tsx:9 | Modal for sending password reset email via Supabase |
+| CombinedLogo | components/CombinedLogo.tsx:19 | Logo with StrideShift Global + TenderRender, pixel boot on load |
+| PixelBootLoader | components/PixelBootLoader.tsx:14 | Animated spinner loader with pulsing text and crossfade |
 
 * Contexts & Hooks
 
 | Item | File | Purpose |
 |------|------|---------|
-| AuthProvider | AuthContext.tsx:40 | Provider with two-effect auth state management, deadlock-safe |
-| useAuth | AuthContext.tsx:319 | Hook to access auth state and methods (login, logout, etc.) |
-| isAbortError | AuthContext.tsx:19 | Detect AbortError in both DOMException and Supabase-wrapped forms |
-| recoverSupabaseAuth | AuthContext.tsx:33 | Reset cached initializePromise and reinitialize auth client |
+| AuthProvider | contexts/AuthContext.tsx:40 | Provider with two-effect auth state management, deadlock-safe |
+| useAuth | contexts/AuthContext.tsx:319 | Hook to access auth state and methods (login, logout, etc.) |
+| isAbortError | contexts/AuthContext.tsx:19 | Detect AbortError in both DOMException and Supabase-wrapped forms |
+| recoverSupabaseAuth | contexts/AuthContext.tsx:33 | Reset cached initializePromise and reinitialize auth client |
 
 * Types
 
@@ -58,22 +58,22 @@ Authentication via Supabase Auth with user profiles and multi-client support. Pr
 
 AuthProvider uses two separate effects to avoid deadlocking Supabase's internal navigator.locks mechanism.
 
-** Effect 1: Auth State Listener (AuthContext.tsx:128)
+** Effect 1: Auth State Listener (contexts/AuthContext.tsx:128)
 
 - Subscribes to =supabase.auth.onAuthStateChange=
 - ONLY sets =user= state from session—never calls DB queries
 - Handles =SIGNED_OUT= (clears all state) and =INITIAL_SESSION= without session (stops loading)
 - Avoids deadlock: =from().select()= cannot be called here (lock held by onAuthStateChange)
 
-** Effect 2: User Data Fetcher (AuthContext.tsx:167)
+** Effect 2: User Data Fetcher (contexts/AuthContext.tsx:167)
 
 - Watches =user= state—runs OUTSIDE onAuthStateChange callback (lock free)
-- Calls =fetchUserData(userId)= (AuthContext.tsx:56) to load profile and clients
+- Calls =fetchUserData(userId)= (contexts/AuthContext.tsx:56) to load profile and clients
 - Guarded by =isFetchingRef= (prevents concurrent) and =isManualLoginRef= (prevents login race)
 - On AbortError: calls =recoverSupabaseAuth()=, then retries fetchUserData
 - Always sets =isLoading=false= in finally (critical for React StrictMode)
 
-** Login Flow (AuthContext.tsx:193)
+** Login Flow (contexts/AuthContext.tsx:193)
 
 1. =signInWithPassword()=—bypasses =initializePromise=, always works
 2. Sets =user= state

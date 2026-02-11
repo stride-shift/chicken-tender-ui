@@ -3,9 +3,9 @@ import type { PieLabelRenderProps } from 'recharts'
 import { useDashboardStats } from '../hooks/useDashboardStats'
 
 const COLORS = {
-  excellent: 'hsl(142, 76%, 36%)',
-  good: 'hsl(199, 89%, 48%)',
-  review: 'hsl(38, 92%, 50%)',
+  excellent: 'hsl(32, 80%, 40%)',    // dark amber/gold (deepest, most saturated)
+  good: 'hsl(45, 93%, 50%)',         // medium gold (the primary gold)
+  review: 'hsl(48, 85%, 65%)',       // light gold (lightest shade)
 }
 
 interface ChartData {
@@ -90,13 +90,13 @@ export function ScoreDistributionChart() {
       <text
         x={x}
         y={y}
-        fill="white"
+        fill="hsl(240, 10%, 10%)"
         textAnchor="middle"
         dominantBaseline="central"
         fontSize={12}
         fontWeight="600"
         fontFamily="system-ui, sans-serif"
-        stroke="rgba(0,0,0,0.3)"
+        stroke="rgba(255,255,255,0.5)"
         strokeWidth={0.5}
         paintOrder="stroke"
       >

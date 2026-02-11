@@ -36,11 +36,12 @@ Clean, professional design system using semantic CSS custom properties defined i
 
 | Element | Implementation |
 |---------|----------------|
-| Colors | Semantic tokens: =--color-primary= (gold), =--color-foreground=, =--color-muted=, =--color-destructive=, etc. |
+| Colors | Semantic tokens: =--color-primary= (bright gold), =--color-accent= (deep gold), =--color-foreground=, =--color-muted=, =--color-destructive=, etc. |
 | Typography | Inter (sans) for body, Lora (serif) for headings; weight 300 body, 600 headings |
+| Logo | Black themed: dot is black, RENDER text is gray (#6b6b78), TENDER text uses foreground color |
 | Containers | PixelBox renders =rounded-lg border border-border bg-card shadow-sm= |
 | Numbers | LEDNumber renders =font-semibold tabular-nums= text |
-| Progress | HealthBar renders rounded-full progress bar |
+| Progress | HealthBar renders rounded-full progress bar with =bg-muted-foreground/20= track background |
 | Buttons | ArcadeButton with semantic variant classes (=bg-primary=, =bg-destructive=, etc.) |
 | Badges | Rounded-pill badges with tinted backgrounds (=bg-success/10 text-success=) |
 | Shadows | CSS custom property shadows: =--shadow-primary=, =--shadow-glow= |
@@ -250,10 +251,11 @@ TendersPage
 │   ├── TenderListItem[] (list of tender cards)
 │   └── Pagination
 └── TenderDetailPanel (when tender selected)
-    ├── TenderDetailHeader (title, recommendation, key info cards, lifecycle action bar)
-    ├── TenderDetailTabs (tab navigation)
+    ├── TenderDetailHeader (title, recommendation, key info cards)
+    ├── TenderDetailTabs (tab navigation with action buttons)
     └── Tab Content:
-        ├── TenderOpportunityTab (AI assessment, description, metadata, contact)
+        ├── TenderOpportunityTab (AI assessment, metadata, contact)
+        ├── TenderAISummaryTab (AI-generated summary)
         ├── TenderDetailEval (knockout + criteria results)
         ├── TenderDetailDocs (document list with download links)
         └── TenderDetailChanges (change history with field diffs)
@@ -285,12 +287,13 @@ See =src/features/tenders/quick_reference.org= for FilterPopup implementation de
 
 | Tab | Content | Component |
 |-----|---------|-----------|
-| Opportunity | AI quality assessment, description, metadata, contact | TenderOpportunityTab |
+| Opportunity | AI quality assessment, metadata, contact | TenderOpportunityTab |
+| AI Summary | AI-generated tender summary | TenderAISummaryTab |
 | Evaluation | Overall score, knockout results, criteria results | TenderDetailEval |
 | Documents | Document list with download links | TenderDetailDocs |
 | Changes | Change history timeline with field diffs | TenderDetailChanges |
 
-Tab state managed locally in TenderDetailPanel.
+Tab state managed locally in TenderDetailPanel. Action buttons (Shortlist, Review, Watch, Decline) appear in the tab navigation row.
 
 See =src/features/tenders/quick_reference.org= for component details.
 

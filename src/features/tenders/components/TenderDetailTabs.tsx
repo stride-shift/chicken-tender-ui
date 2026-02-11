@@ -3,7 +3,7 @@ interface TenderDetailTabsProps {
   onTabChange: (tab: string) => void
 }
 
-const TABS = ['Opportunity', 'Evaluation', 'Documents', 'Changes'] as const
+const TABS = ['Opportunity', 'AI Summary', 'Evaluation', 'Documents', 'Changes'] as const
 
 export function TenderDetailTabs({ activeTab, onTabChange }: TenderDetailTabsProps) {
   return (

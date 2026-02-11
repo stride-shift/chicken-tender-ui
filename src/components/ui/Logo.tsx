@@ -63,7 +63,7 @@ export function Logo({ size = 'md', showParentBrand = true }: LogoProps) {
           style={{
             width: s.iconDot,
             height: s.iconDot,
-            backgroundColor: '#f0b429',
+            backgroundColor: '#17171c',
           }}
         />
       </div>
@@ -108,7 +108,7 @@ export function Logo({ size = 'md', showParentBrand = true }: LogoProps) {
                 }}
               >
                 <span style={{ color: '#17171c' }}>TENDER</span>
-                <span style={{ color: '#f0b429' }}>RENDER</span>
+                <span style={{ color: '#6b6b78' }}>RENDER</span>
               </span>
             </div>
           </>
@@ -123,7 +123,7 @@ export function Logo({ size = 'md', showParentBrand = true }: LogoProps) {
             }}
           >
             <span style={{ color: '#17171c' }}>TENDER</span>
-            <span style={{ color: '#f0b429' }}>RENDER</span>
+            <span style={{ color: '#6b6b78' }}>RENDER</span>
           </span>
         )}
       </div>

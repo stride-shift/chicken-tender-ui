@@ -107,10 +107,10 @@ Display component (=ui/LEDNumber.tsx:7=) for numeric values:
 
 Progress component (=ui/HealthBar.tsx:10=) with single bar:
 
-- Rounded-full progress bar: bg-secondary to bg-primary
+- Track background: bg-muted-foreground/20 for better visibility
+- Progress bar: bg-primary with smooth 500ms transition
 - Current/max percentage calculation
 - Optional numeric label: current/max
-- Smooth 500ms transition on width change
 
 ** ArcadeButton
 
@@ -136,6 +136,16 @@ Empty stub (=ui/Scanlines.tsx:5=):
 - Returns null (no-op)
 - CRT effect removed
 
+** Logo
+
+Branding component (=ui/Logo.tsx:47=) with StrideShift and TenderRender text:
+
+- Icon: circular border with dot in black (#17171c)
+- Text: STRIDESHIFT in black (#17171c), GLOBAL in dark gray (#555568)
+- TENDER in black (#17171c), RENDER in medium-dark gray (#6b6b78)
+- Four size variants: sm, md, lg, xl with proportional scaling
+- showParentBrand prop controls display of parent branding
+
 * Layout Structure
 
 AppShell (=layout/AppShell.tsx:10=) orchestrates layout:
@@ -153,8 +163,8 @@ Header (=layout/Header.tsx:10=) provides:
 - Breadcrumb: "/" + current page name (Dashboard/Tenders/Rubric)
 - Profile pill button: avatar (bg-primary) + name + client name + dropdown
 - Profile dropdown contains:
-  - User display name and admin status (StrideShift only)
-  - Client selector list with checkmark (StrideShift admin only)
+  - User display name and admin status in text-accent (StrideShift only)
+  - Client selector list with active highlight bg-accent/10 text-accent, dot and checkmark in text-accent
   - Sign Out button with bg-destructive
 - Dropdown closes on click-outside (useRef + useEffect)
 - Uses useAuth for clients, switching, profile, logout

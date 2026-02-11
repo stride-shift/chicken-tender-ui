@@ -3,6 +3,7 @@ import { useTenderDetail } from '../hooks/useTenderDetail'
 import { TenderDetailHeader } from './TenderDetailHeader'
 import { TenderDetailTabs } from './TenderDetailTabs'
 import { TenderOpportunityTab } from './TenderOpportunityTab'
+import { TenderAISummaryTab } from './TenderAISummaryTab'
 import { TenderDetailEval } from './TenderDetailEval'
 import { TenderDetailDocs } from './TenderDetailDocs'
 import { TenderDetailChanges } from './TenderDetailChanges'
@@ -191,6 +192,7 @@ export function TenderDetailPanel({ tenderId }: TenderDetailPanelProps) {
       {/* Content area */}
       <div className="flex-1 overflow-y-auto p-4 bg-muted/50">
         {activeTab === 'Opportunity' && <TenderOpportunityTab tender={tender} />}
+        {activeTab === 'AI Summary' && <TenderAISummaryTab tender={tender} />}
         {activeTab === 'Evaluation' && <TenderDetailEval tender={tender} />}
         {activeTab === 'Documents' && <TenderDetailDocs documents={tender.documents} />}
         {activeTab === 'Changes' && <TenderDetailChanges changes={tender.recent_changes} />}
