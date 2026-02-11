@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRelevantTenders } from '../hooks/useRelevantTenders'
 import { TenderCarouselCard } from './TenderCarouselCard'
 import { LoadingState } from '@/components/shared/LoadingState'
-import { PixelBox } from '@/components/ui'
 
 interface TenderCarouselProps {
   autoScrollInterval?: number
@@ -58,67 +57,50 @@ export function TenderCarousel({ autoScrollInterval = 5000 }: TenderCarouselProp
 
   if (isLoading) {
     return (
-      <PixelBox color="#2d8f8f" className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-3 h-3 bg-orange-500" />
-          <span className="text-xs tracking-widest font-black text-stone-600">FEATURED TENDERS</span>
-        </div>
+      <div className="rounded-lg border border-border bg-card shadow-sm p-6">
+        <h2 className="font-serif font-semibold text-foreground mb-4">Featured Tenders</h2>
         <LoadingState variant="list" count={3} />
-      </PixelBox>
+      </div>
     )
   }
 
   if (error) {
     return (
-      <PixelBox color="#2d8f8f" className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-3 h-3 bg-orange-500" />
-          <span className="text-xs tracking-widest font-black text-stone-600">FEATURED TENDERS</span>
+      <div className="rounded-lg border border-border bg-card shadow-sm p-6">
+        <h2 className="font-serif font-semibold text-foreground mb-4">Featured Tenders</h2>
+        <div className="rounded-lg border border-destructive bg-destructive/5 px-4 py-3">
+          <p className="font-semibold text-destructive">Error loading tenders</p>
+          <p className="text-sm mt-1 text-muted-foreground">{error.message}</p>
         </div>
-        <div className="bg-red-900/30 border-2 border-red-500 text-red-400 px-4 py-3 font-mono">
-          <p className="font-bold">[ERROR] Loading tenders failed</p>
-          <p className="text-sm mt-1">{error.message}</p>
-        </div>
-      </PixelBox>
+      </div>
     )
   }
 
   if (tenders.length === 0) {
     return (
-      <PixelBox color="#2d8f8f" className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-3 h-3 bg-orange-500" />
-          <span className="text-xs tracking-widest font-black text-stone-600">FEATURED TENDERS</span>
+      <div className="rounded-lg border border-border bg-card shadow-sm p-6">
+        <h2 className="font-serif font-semibold text-foreground mb-4">Featured Tenders</h2>
+        <div className="text-center py-8 text-muted-foreground">
+          <p>No relevant tenders at this time.</p>
         </div>
-        <div className="text-center py-8 text-stone-500 font-mono">
-          <p>{'>'} No relevant tenders at this time.</p>
-        </div>
-      </PixelBox>
+      </div>
     )
   }
 
   const showNavigation = tenders.length > visibleCount
 
   return (
-    <PixelBox color="#2d8f8f" className="p-6 relative overflow-hidden">
+    <div className="rounded-lg border border-border bg-card shadow-sm p-6 relative overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between mb-4 relative z-20">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-orange-500" />
-          <span className="text-xs tracking-widest font-black text-stone-600">FEATURED TENDERS</span>
-        </div>
+        <h2 className="font-serif font-semibold text-foreground">Featured Tenders</h2>
 
         {/* Navigation controls */}
         <div className="flex items-center gap-2">
           {/* Expand/Collapse toggle */}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="w-10 h-10 flex items-center justify-center font-black text-lg text-stone-600 active:translate-y-0.5 transition-transform"
-            style={{
-              background: 'linear-gradient(180deg, #f5f5f4 0%, #e7e5e4 100%)',
-              boxShadow: '0 3px 0 #a8a29e',
-              borderRadius: '6px'
-            }}
+            className="w-10 h-10 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-lg border border-border bg-background hover-lift"
             aria-label={isExpanded ? 'Collapse to carousel' : 'Expand to grid'}
             title={isExpanded ? 'Collapse to carousel' : 'Expand to grid'}
           >
@@ -138,24 +120,14 @@ export function TenderCarousel({ autoScrollInterval = 5000 }: TenderCarouselProp
             <>
               <button
                 onClick={goPrev}
-                className="w-10 h-10 flex items-center justify-center font-black text-lg text-stone-600 active:translate-y-0.5 transition-transform"
-                style={{
-                  background: 'linear-gradient(180deg, #f5f5f4 0%, #e7e5e4 100%)',
-                  boxShadow: '0 3px 0 #a8a29e',
-                  borderRadius: '6px'
-                }}
+                className="w-10 h-10 flex items-center justify-center text-lg text-muted-foreground hover:text-foreground transition-colors rounded-lg border border-border bg-background hover-lift"
                 aria-label="Previous"
               >
                 ‹
               </button>
               <button
                 onClick={goNext}
-                className="w-10 h-10 flex items-center justify-center font-black text-lg text-stone-600 active:translate-y-0.5 transition-transform"
-                style={{
-                  background: 'linear-gradient(180deg, #f5f5f4 0%, #e7e5e4 100%)',
-                  boxShadow: '0 3px 0 #a8a29e',
-                  borderRadius: '6px'
-                }}
+                className="w-10 h-10 flex items-center justify-center text-lg text-muted-foreground hover:text-foreground transition-colors rounded-lg border border-border bg-background hover-lift"
                 aria-label="Next"
               >
                 ›
@@ -198,18 +170,16 @@ export function TenderCarousel({ autoScrollInterval = 5000 }: TenderCarouselProp
             </div>
           </div>
 
-          {/* LED-style dot indicators */}
+          {/* Dot indicators */}
           {showNavigation && (
             <div className="flex justify-center gap-2 mt-4 relative z-20">
               {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setCurrentIndex(idx)}
-                  className="w-3 h-3 rounded-full transition-all"
-                  style={{
-                    backgroundColor: idx === currentIndex ? '#2d8f8f' : '#d6d3d1',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
-                  }}
+                  className={`w-3 h-3 rounded-full transition-all ${
+                    idx === currentIndex ? 'bg-primary' : 'bg-muted-foreground/30'
+                  }`}
                   aria-label={`Go to slide ${idx + 1}`}
                 />
               ))}
@@ -217,6 +187,6 @@ export function TenderCarousel({ autoScrollInterval = 5000 }: TenderCarouselProp
           )}
         </>
       )}
-    </PixelBox>
+    </div>
   )
 }

@@ -1,5 +1,5 @@
 #+TITLE: Lib, Pages, Hooks & Contexts - Quick Reference
-#+DATE: 2026-02-10
+#+DATE: 2026-02-11
 
 * Overview
 
@@ -19,6 +19,7 @@ Core utilities, type definitions, page components, global hooks, and React conte
 |------|---------|
 | supabase.ts:3-4 | Reads VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY |
 | supabase.ts:6-10 | Throws error if environment variables missing |
+| supabase.ts:12 | Creates Supabase client with URL and anon key |
 
 ** Types
 
@@ -57,38 +58,38 @@ Core utilities, type definitions, page components, global hooks, and React conte
 
 | Page | File | Route | Purpose |
 |------|------|-------|---------|
-| DashboardPage | DashboardPage.tsx:9 | / | Renders StatsGrid, AlertsRow, charts (ScoreDistribution + DepartmentTreemap), then TenderCarousel |
+| DashboardPage | DashboardPage.tsx:9 | / | Renders StatsGrid, AlertsRow, charts, TenderCarousel |
 | TendersPage | TendersPage.tsx:6 | /tenders, /tenders/:tenderId | Tender list and detail side-by-side |
-| RubricPage | RubricPage.tsx:5 | /rubric | Displays active client evaluation rubric |
-| LoginPage | LoginPage.tsx:12 | /login | Login screen with forgot-password modal |
-| ResetPasswordPage | ResetPasswordPage.tsx:19 | /reset-password | Handles Supabase password reset callback |
+| RubricPage | RubricPage.tsx:4 | /rubric | Displays active client evaluation rubric |
+| LoginPage | LoginPage.tsx:7 | /login | Login with forgot-password modal |
+| ResetPasswordPage | ResetPasswordPage.tsx:6 | /reset-password | Handles Supabase magic link reset |
 
 *** Page Details
 
-| Page | Key Lines | Details |
-|------|-----------|---------|
-| DashboardPage | 14-15 | Renders StatsGrid and AlertsRow |
-| DashboardPage | 20-21 | Renders ScoreDistributionChart and DepartmentTreemap |
-| DashboardPage | 25 | Renders TenderCarousel |
-| TendersPage | 5-6, 8 | Parses tenderId from URL, creates selectedTenderId |
-| TendersPage | 10-12 | Navigation handler for tender selection |
-| TendersPage | 14-25 | Two-panel layout with TenderListPanel and TenderDetailPanel |
-| RubricPage | 6 | Uses useActiveClientRubric hook for data |
-| RubricPage | 76-77 | Calls ensureArray to parse JSONB arrays |
-| RubricPage | 373-384 | ensureArray helper ensures JSONB parsed correctly |
-| RubricPage | 136-169 | Displays knockout criteria section |
-| RubricPage | 171-204 | Displays scoring criteria section |
-| RubricPage | 206-262 | Displays recommendation threshold ranges |
-| LoginPage | 60-64 | Renders LoginCard with onLogin, onForgotPassword, and isLoading props |
-| LoginPage | 16 | Uses isLoading state to prevent duplicate submissions |
-| LoginPage | 29 | Navigates to / after successful login |
-| LoginPage | 83-87 | Renders ForgotPasswordModal |
+| Page | Lines | Details |
+|------|-------|---------|
+| DashboardPage | 10-15 | Renders StatsGrid and AlertsRow in flex layout |
+| DashboardPage | 19-22 | Renders ScoreDistributionChart + DepartmentTreemap grid |
+| DashboardPage | 25 | Renders TenderCarousel component |
+| TendersPage | 6-14 | Parses tenderId param, creates selectedTenderId state |
+| TendersPage | 16-23 | handleSelectTender auto-collapses sidebar first time |
+| TendersPage | 25-35 | Two-panel grid layout with list and detail panels |
+| RubricPage | 4-5 | Uses useActiveClientRubric hook for data |
+| RubricPage | 70-72 | Calls ensureArray to parse JSONB arrays safely |
+| RubricPage | 307-318 | ensureArray helper handles JSONB parsing |
+| RubricPage | 118-139 | Renders knockout criteria section with styled header |
+| RubricPage | 142-164 | Renders scoring criteria section with weights |
+| RubricPage | 167-207 | Renders recommendation threshold ranges |
+| LoginPage | 15-33 | handleLogin callback with error handling |
+| LoginPage | 35-40 | handleForgotPassword callback triggers modal |
+| LoginPage | 42-54 | Renders LoginCard and error display |
+| LoginPage | 57-61 | Renders ForgotPasswordModal component |
 
 * Global Hooks (=hooks/=)
 
 | Hook | File | Purpose |
 |------|------|---------|
-| useToast | useToast.ts:1 | Re-exports useToastContext from ToastContext |
+| useToast | useToast.ts:1 | Re-exports useToastContext and toast types |
 
 * Contexts (=contexts/=)
 
@@ -101,11 +102,11 @@ Core utilities, type definitions, page components, global hooks, and React conte
 | Export | Line | Purpose |
 |--------|------|---------|
 | ToastType | ToastContext.tsx:3 | Type for success/error/info toast types |
-| Toast | ToastContext.tsx:5 | Toast object with id, message, type |
-| ToastProvider | ToastContext.tsx:19 | Provider component wrapping app |
-| useToastContext | ToastContext.tsx:43 | Hook to access toast context |
-| addToast | ToastContext.tsx:27 | Adds toast, auto-removes after 5 seconds |
-| removeToast | ToastContext.tsx:23 | Manually removes toast by id |
+| Toast | ToastContext.tsx:5-9 | Toast object with id, message, type |
+| ToastProvider | ToastContext.tsx:19-60 | Provider component wrapping app |
+| useToastContext | ToastContext.tsx:62-66 | Hook to access toast context |
+| addToast | ToastContext.tsx:42-53 | Adds toast, auto-removes after 5000ms |
+| removeToast | ToastContext.tsx:32-40 | Manually removes toast by id |
 
 * App Entry Points
 
@@ -118,30 +119,33 @@ Core utilities, type definitions, page components, global hooks, and React conte
 
 | Line | Details |
 |------|---------|
-| 39 | Wraps app in ToastProvider |
-| 40 | Wraps app in SidebarProvider |
-| 41 | Wraps app in ErrorBoundary |
+| 1-9 | Imports: React, Router, Auth, components |
+| 11-15 | Lazy-loaded pages: Dashboard, Tenders, Rubric, ResetPassword |
+| 17-32 | ProtectedRoute wrapper checks isAuthenticated |
+| 37-73 | App function wraps app in ToastProvider → SidebarProvider → ErrorBoundary |
+| 43-67 | Routes with Suspense fallback |
 | 45 | Route: /login → LoginPage (outside AppShell) |
 | 48 | Route: /reset-password → ResetPasswordPage (outside AppShell) |
-| 54-55 | Wraps protected routes in ProtectedRoute + AppShell layout |
-| 57 | Route: / → DashboardPage (protected) |
-| 58 | Route: /tenders → TendersPage (protected) |
-| 59 | Route: /tenders/:tenderId → TendersPage with param (protected) |
-| 60 | Route: /rubric → RubricPage (protected) |
+| 51-65 | Wraps protected routes in ProtectedRoute + AppShell |
+| 57 | Route: / → DashboardPage |
+| 58 | Route: /tenders → TendersPage |
+| 59 | Route: /tenders/:tenderId → TendersPage |
+| 60 | Route: /rubric → RubricPage |
 | 61 | Route: * → Redirect to / |
-| 70 | Renders Toaster component outside SidebarProvider |
+| 70 | Renders Toaster outside SidebarProvider |
 
 *** main.tsx Details
 
 | Line | Details |
 |------|---------|
-| 9 | Creates TanStack Query client |
-| 12 | Sets staleTime to 5 minutes |
-| 13 | Disables refetch on window focus |
-| 19 | Wraps app in StrictMode |
-| 20 | Wraps app in QueryClientProvider |
-| 21 | Wraps app in AuthProvider |
-| 22 | Wraps app in BrowserRouter |
+| 1-8 | Imports: React, ReactDOM, TanStack Query, Router, Auth |
+| 9-16 | Creates QueryClient with 5-min staleTime, disables refetch on focus |
+| 18-28 | Renders app in StrictMode with Provider chain |
+| 19 | Wraps in StrictMode |
+| 20 | Wraps in QueryClientProvider |
+| 21 | Wraps in AuthProvider |
+| 22 | Wraps in BrowserRouter |
+| 23 | Renders App component |
 
 * Routing
 
@@ -165,4 +169,4 @@ React Router v6 setup with nested routes and URL parameters.
 | VITE_SUPABASE_ANON_KEY | supabase.ts:4 | Supabase anonymous key |
 
 ---
-/Last Updated/: 2026-02-10
+/Last Updated/: 2026-02-11

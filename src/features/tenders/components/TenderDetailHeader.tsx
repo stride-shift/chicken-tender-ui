@@ -20,10 +20,10 @@ export function TenderDetailHeader({ tender }: TenderDetailHeaderProps) {
 
   // Days until close color
   const getDaysUntilColor = () => {
-    if (tender.days_until_close <= 0) return '#78716c' // stone-500
-    if (tender.days_until_close <= 3) return '#ef4444' // red-500
-    if (tender.days_until_close <= 7) return '#f59e0b' // amber-500
-    return '#22c55e' // green-500
+    if (tender.days_until_close <= 0) return 'hsl(var(--muted-foreground))'
+    if (tender.days_until_close <= 3) return 'hsl(var(--destructive))'
+    if (tender.days_until_close <= 7) return 'hsl(var(--warning))'
+    return 'hsl(var(--success))'
   }
 
   // Check if briefing is upcoming and urgent
@@ -38,11 +38,11 @@ export function TenderDetailHeader({ tender }: TenderDetailHeaderProps) {
 
   // Score color based on value
   const getScoreColor = (score: number | null): string => {
-    if (score === null) return '#78716c'
-    if (score >= 80) return '#22c55e' // green-500
-    if (score >= 60) return '#3b82f6' // blue-500
-    if (score >= 40) return '#f59e0b' // amber-500
-    return '#78716c' // stone-500
+    if (score === null) return 'hsl(var(--muted-foreground))'
+    if (score >= 80) return 'hsl(var(--success))'
+    if (score >= 60) return 'hsl(var(--info))'
+    if (score >= 40) return 'hsl(var(--warning))'
+    return 'hsl(var(--muted-foreground))'
   }
 
   const scoreColor = getScoreColor(tender.score_percentage)
@@ -53,18 +53,18 @@ export function TenderDetailHeader({ tender }: TenderDetailHeaderProps) {
     if (!hasBriefing) return 'None'
     const urgent = isBriefingUrgent()
     return (
-      <span style={{ color: urgent ? '#d97706' : '#78716c' }}>
+      <span style={{ color: urgent ? 'hsl(var(--warning))' : 'hsl(var(--muted-foreground))' }}>
         <DateDisplay date={tender.briefing_datetime!} showRelative />
-        {tender.is_briefing_compulsory && <span className="text-red-600 ml-0.5">!</span>}
+        {tender.is_briefing_compulsory && <span className="text-destructive ml-0.5">!</span>}
       </span>
     )
   }
 
   return (
-    <div className="p-4 bg-white border-b border-stone-200">
+    <div className="p-4 bg-card border-b border-border">
       {/* Row 1: Title + Recommendation Badge */}
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-lg font-black text-[#1a3a4a] font-mono truncate flex-1">
+        <h1 className="text-title font-serif font-semibold text-foreground truncate flex-1">
           {title}
         </h1>
         {tender.recommendation && (
@@ -77,44 +77,44 @@ export function TenderDetailHeader({ tender }: TenderDetailHeaderProps) {
       </div>
 
       {/* Row 2: Compact meta line with bullet separators */}
-      <div className="mt-1.5 flex items-center flex-wrap gap-x-1 text-sm font-mono">
+      <div className="mt-1.5 flex items-center flex-wrap gap-x-1 text-body-small">
         {/* Tender number (if we have a generated title) */}
         {tender.generated_title && (
           <>
-            <span className="text-stone-500">{tender.tender_no}</span>
-            <span className="text-stone-400 mx-1">|</span>
+            <span className="text-muted-foreground">{tender.tender_no}</span>
+            <span className="text-muted-foreground/60 mx-1">|</span>
           </>
         )}
 
         {/* Closes */}
-        <span className="text-stone-500">Closes:</span>
-        <span className="font-bold" style={{ color: getDaysUntilColor() }}>
+        <span className="text-muted-foreground">Closes:</span>
+        <span className="font-semibold" style={{ color: getDaysUntilColor() }}>
           {tender.days_until_close > 0
-            ? `${tender.days_until_close} DAYS`
+            ? `${tender.days_until_close} days`
             : tender.days_until_close === 0
-              ? 'TODAY'
-              : 'CLOSED'}
+              ? 'Today'
+              : 'Closed'}
         </span>
-        <span className="text-stone-400">
+        <span className="text-muted-foreground/80">
           (<DateDisplay date={tender.closing_date} />)
         </span>
 
-        <span className="text-stone-300 mx-1.5">|</span>
+        <span className="text-muted-foreground/40 mx-1.5">|</span>
 
         {/* Briefing */}
-        <span className="text-stone-500">Briefing:</span>
+        <span className="text-muted-foreground">Briefing:</span>
         <span className="font-medium">{getBriefingDisplay()}</span>
 
-        <span className="text-stone-300 mx-1.5">|</span>
+        <span className="text-muted-foreground/40 mx-1.5">|</span>
 
         {/* Score */}
-        <span className="text-stone-500">Score:</span>
+        <span className="text-muted-foreground">Score:</span>
         {tender.score_percentage !== null ? (
-          <span className="font-bold" style={{ color: scoreColor }}>
+          <span className="font-semibold" style={{ color: scoreColor }}>
             {scoreValue}%
           </span>
         ) : (
-          <span className="text-stone-400">N/A</span>
+          <span className="text-muted-foreground/80">N/A</span>
         )}
       </div>
 
@@ -126,45 +126,45 @@ export function TenderDetailHeader({ tender }: TenderDetailHeaderProps) {
       )}
 
       {/* Row 4: Lifecycle action bar (skeleton — coming soon) */}
-      <div className="mt-3 pt-3 border-t border-stone-200">
+      <div className="mt-3 pt-3 border-t border-border">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-mono font-bold text-stone-500 uppercase tracking-wide">
+          <span className="text-caption font-semibold text-muted-foreground">
             Tender Actions
           </span>
-          <span className="text-[10px] font-mono text-stone-400 bg-stone-100 px-1.5 py-0.5 rounded">
+          <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
             coming soon
           </span>
         </div>
         <div className="flex gap-2">
           <button
             onClick={handleLifecycleAction}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded transition-all
-              bg-emerald-50 text-emerald-700 border border-emerald-200
-              hover:bg-emerald-100 hover:border-emerald-300 active:translate-y-px"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-caption font-semibold rounded-md transition-all
+              bg-success/10 text-success border border-success/30
+              hover:bg-success/20 hover:border-success/40 active:translate-y-px shadow-sm"
           >
             <span>&#9733;</span> Shortlist
           </button>
           <button
             onClick={handleLifecycleAction}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded transition-all
-              bg-blue-50 text-blue-700 border border-blue-200
-              hover:bg-blue-100 hover:border-blue-300 active:translate-y-px"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-caption font-semibold rounded-md transition-all
+              bg-info/10 text-info border border-info/30
+              hover:bg-info/20 hover:border-info/40 active:translate-y-px shadow-sm"
           >
             <span>&#9998;</span> Review
           </button>
           <button
             onClick={handleLifecycleAction}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded transition-all
-              bg-amber-50 text-amber-700 border border-amber-200
-              hover:bg-amber-100 hover:border-amber-300 active:translate-y-px"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-caption font-semibold rounded-md transition-all
+              bg-warning/10 text-warning border border-warning/30
+              hover:bg-warning/20 hover:border-warning/40 active:translate-y-px shadow-sm"
           >
             <span>&#9673;</span> Watch
           </button>
           <button
             onClick={handleLifecycleAction}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded transition-all
-              bg-stone-50 text-stone-500 border border-stone-200
-              hover:bg-stone-100 hover:border-stone-300 active:translate-y-px"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-caption font-semibold rounded-md transition-all
+              bg-muted text-muted-foreground border border-border
+              hover:bg-muted/80 hover:border-border active:translate-y-px shadow-sm"
           >
             <span>&#10005;</span> Decline
           </button>

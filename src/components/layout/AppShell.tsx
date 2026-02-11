@@ -1,7 +1,6 @@
 import { ReactNode } from 'react'
 import { Sidebar } from './Sidebar'
 import { Header } from './Header'
-import { PixelStrip } from '@/components/ui'
 import { useSidebar } from '@/contexts/SidebarContext'
 
 interface AppShellProps {
@@ -12,9 +11,8 @@ export function AppShell({ children }: AppShellProps) {
   const { isCollapsed, toggleSidebar } = useSidebar()
 
   return (
-    <div className="min-h-screen bg-[#e8e4dc]">
+    <div className="min-h-screen bg-background">
       <Header onMenuClick={toggleSidebar} />
-      <PixelStrip />
       <div className="flex">
         <Sidebar collapsed={isCollapsed} />
         <main

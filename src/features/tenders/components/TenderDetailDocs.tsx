@@ -8,13 +8,10 @@ export function TenderDetailDocs({ documents }: TenderDetailDocsProps) {
   if (!documents || documents.length === 0) {
     return (
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-teal-500" />
-          <h3 className="text-sm font-black text-teal-700 uppercase tracking-wider">
-            DOCUMENTS
-          </h3>
-        </div>
-        <p className="text-sm text-stone-500">No documents available for this tender.</p>
+        <h3 className="text-subtitle font-serif font-semibold text-foreground">
+          Documents
+        </h3>
+        <p className="text-body text-muted-foreground">No documents available for this tender.</p>
       </div>
     )
   }
@@ -22,16 +19,10 @@ export function TenderDetailDocs({ documents }: TenderDetailDocsProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-teal-500" />
-          <h3 className="text-sm font-black text-teal-700 uppercase tracking-wider">
-            DOCUMENTS
-          </h3>
-        </div>
-        <span
-          className="px-2 py-1 text-xs font-bold text-stone-600 bg-stone-100 rounded"
-          style={{ boxShadow: '0 2px 0 #d6d3d1' }}
-        >
+        <h3 className="text-subtitle font-serif font-semibold text-foreground">
+          Documents
+        </h3>
+        <span className="px-2 py-1 text-caption text-muted-foreground bg-muted rounded">
           {documents.length} file(s)
         </span>
       </div>
@@ -74,67 +65,47 @@ function DocumentItem({ document }: { document: TenderDocument }) {
     }
   }
 
-  const getIconStyle = (extension: string | null): { bg: string; text: string; border: string } => {
+  const getIconStyle = (extension: string | null): string => {
     const ext = extension?.toLowerCase()
     switch (ext) {
       case 'pdf':
-        return { bg: '#fef2f2', text: '#dc2626', border: '#fecaca' }
+        return 'bg-destructive/10 text-destructive border-destructive/20'
       case 'doc':
       case 'docx':
-        return { bg: '#eff6ff', text: '#2563eb', border: '#bfdbfe' }
+        return 'bg-info/10 text-info border-info/20'
       case 'xls':
       case 'xlsx':
-        return { bg: '#ecfdf5', text: '#059669', border: '#a7f3d0' }
+        return 'bg-success/10 text-success border-success/20'
       default:
-        return { bg: '#f0fdfa', text: '#0d9488', border: '#99f6e4' }
+        return 'bg-primary/10 text-primary border-primary/20'
     }
   }
 
   const iconStyle = getIconStyle(document.file_extension)
 
   return (
-    <div
-      className="flex items-center gap-3 p-3 bg-white rounded transition-all hover:translate-x-1"
-      style={{
-        border: '2px solid #e7e5e4',
-        boxShadow: '2px 2px 0 #e7e5e4'
-      }}
-    >
+    <div className="flex items-center gap-3 p-3 rounded-md border border-border hover:bg-muted transition-colors">
       {/* File type icon */}
-      <div
-        className="flex-shrink-0 w-10 h-10 rounded flex items-center justify-center text-xs font-black"
-        style={{
-          backgroundColor: iconStyle.bg,
-          color: iconStyle.text,
-          border: `2px solid ${iconStyle.border}`,
-          boxShadow: '0 2px 0 rgba(0,0,0,0.05)'
-        }}
-      >
+      <div className={`flex-shrink-0 w-10 h-10 rounded border flex items-center justify-center text-caption font-bold ${iconStyle}`}>
         {getFileIcon(document.file_extension)}
       </div>
 
       {/* File info */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-stone-800 truncate" title={document.file_name}>
+        <p className="text-body font-medium text-foreground truncate" title={document.file_name}>
           {document.file_name}
         </p>
-        <div className="flex items-center gap-2 text-xs text-stone-500 mt-0.5">
+        <div className="flex items-center gap-2 text-caption text-muted-foreground mt-0.5">
           {document.document_type && (
-            <span className="bg-stone-100 px-1.5 py-0.5 rounded text-stone-600">
+            <span className="bg-muted px-1.5 py-0.5 rounded text-foreground">
               {document.document_type}
             </span>
           )}
           {document.file_size && (
-            <span className="font-mono">{formatFileSize(document.file_size)}</span>
+            <span>{formatFileSize(document.file_size)}</span>
           )}
           {document.processing_status !== 'available' && (
-            <span
-              className="px-1.5 py-0.5 rounded text-amber-700 font-bold"
-              style={{
-                background: 'linear-gradient(180deg, #fef3c7 0%, #fde68a 100%)',
-                boxShadow: '0 1px 0 rgba(0,0,0,0.1)'
-              }}
-            >
+            <span className="px-1.5 py-0.5 rounded bg-warning/10 text-warning font-medium">
               {document.processing_status}
             </span>
           )}
@@ -147,19 +118,12 @@ function DocumentItem({ document }: { document: TenderDocument }) {
           href={document.download_url!}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-shrink-0 px-3 py-1.5 text-sm font-black text-white rounded transition-all hover:translate-y-0.5"
-          style={{
-            background: 'linear-gradient(180deg, #4ecdc4 0%, #2d8f8f 100%)',
-            boxShadow: '0 3px 0 #1a5f5f'
-          }}
+          className="flex-shrink-0 px-3 py-1.5 text-body-small text-primary hover:underline font-medium"
         >
-          OPEN
+          Open
         </a>
       ) : (
-        <span
-          className="flex-shrink-0 px-3 py-1.5 text-sm text-stone-400 font-bold bg-stone-100 rounded"
-          style={{ boxShadow: '0 2px 0 #d6d3d1' }}
-        >
+        <span className="flex-shrink-0 px-3 py-1.5 text-body-small text-muted-foreground bg-muted rounded">
           N/A
         </span>
       )}

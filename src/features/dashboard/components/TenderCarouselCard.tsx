@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom'
-import { PixelBox } from '@/components/ui'
 import type { TenderListItem } from '@/lib/types'
 
 interface TenderCarouselCardProps {
@@ -34,87 +33,64 @@ export function TenderCarouselCard({ tender }: TenderCarouselCardProps) {
 
   const daysSincePublished = calculateDaysSince(tender.date_published)
 
-  // Determine score color based on percentage - returns gradient colors
-  const getScoreGradient = (score: number): { from: string; to: string; shadow: string } => {
-    if (score >= 80) return { from: '#4ade80', to: '#22c55e', shadow: '#16a34a' } // green
-    if (score >= 60) return { from: '#60a5fa', to: '#3b82f6', shadow: '#2563eb' } // blue
-    return { from: '#fbbf24', to: '#f59e0b', shadow: '#d97706' } // amber
+  // Determine score color based on percentage
+  const getScoreColor = (score: number): string => {
+    if (score >= 80) return 'text-success'
+    if (score >= 60) return 'text-info'
+    return 'text-warning'
   }
 
   // Determine urgency styling for closing date badge
-  const getUrgencyStyle = (days: number): { bg: string; text: string } => {
-    if (days < 7) return { bg: '#ef4444', text: '#ffffff' } // red bg, white text
-    if (days < 14) return { bg: '#fbbf24', text: '#1a1a1a' } // amber bg, dark text
-    return { bg: '#ffffff', text: '#2d8f8f' } // white bg, teal text
+  const getUrgencyStyle = (days: number): string => {
+    if (days < 7) return 'bg-destructive text-white'
+    if (days < 14) return 'bg-warning text-foreground'
+    return 'bg-primary text-primary-foreground'
   }
-
-  const scoreColors = getScoreGradient(tender.score_percentage)
 
   return (
     <button
       onClick={handleClick}
       className="w-full text-left h-full flex flex-col group"
     >
-      <PixelBox color="#2d8f8f" bgColor="#ffffff" className="overflow-hidden h-full flex flex-col">
-        {/* Header bar - teal accent with traffic lights, tender number, and closing date */}
-        <div className="bg-teal-600 px-3 py-2 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="flex gap-1.5 flex-shrink-0">
-              <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-              <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
-              <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
-            </div>
-            <span className="text-teal-100 text-xs font-mono truncate">
-              {tender.tender_no}
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5 flex-shrink-0 text-xs font-mono">
-            <span className="text-teal-200">
+      <div className="rounded-lg border border-border bg-card shadow-sm overflow-hidden h-full flex flex-col card-hover">
+        {/* Header bar with tender number and metadata */}
+        <div className="bg-slate-800 px-3 py-2 flex items-center justify-between gap-2">
+          <span className="text-white text-sm font-semibold truncate">
+            {tender.tender_no}
+          </span>
+          <div className="flex items-center gap-1.5 flex-shrink-0 text-xs">
+            <span className="text-white/70">
               {formatDaysSince(daysSincePublished)}
             </span>
-            <span className="text-teal-300">·</span>
-            <span
-              className="font-bold px-1.5 py-0.5 rounded"
-              style={{
-                color: getUrgencyStyle(tender.days_until_close).text,
-                backgroundColor: getUrgencyStyle(tender.days_until_close).bg,
-              }}
-            >
+            <span className="text-white/40">·</span>
+            <span className={`font-bold px-2 py-0.5 rounded-full ${getUrgencyStyle(tender.days_until_close)}`}>
               {formatDaysUntilClose(tender.days_until_close)}
             </span>
           </div>
         </div>
 
-        {/* Card content - light background */}
-        <div className="p-4 bg-white relative flex-1 flex flex-col">
+        {/* Card content */}
+        <div className="p-4 relative flex-1 flex flex-col">
           {/* Title row with score badge */}
           <div className="flex items-start gap-2 mb-3">
             {/* Title */}
-            <div
-              className="text-[#1a3a4a] font-mono font-bold line-clamp-2 text-sm group-hover:text-teal-600 transition-colors flex-1"
-            >
-              {'>'} {tender.generated_title || tender.tender_no}
+            <div className="text-foreground font-semibold line-clamp-2 text-sm leading-snug group-hover:text-primary transition-colors flex-1">
+              {tender.generated_title || tender.tender_no}
             </div>
-            {/* Compact score badge */}
-            <div
-              className="px-2 py-1 text-xs font-mono font-black text-white rounded flex-shrink-0"
-              style={{
-                background: `linear-gradient(180deg, ${scoreColors.from} 0%, ${scoreColors.to} 100%)`,
-                boxShadow: `0 2px 0 ${scoreColors.shadow}`,
-              }}
-            >
+            {/* Score badge */}
+            <div className={`px-2 py-0.5 text-xs font-bold rounded-full border-2 border-primary ${getScoreColor(tender.score_percentage)} bg-background flex-shrink-0`}>
               {tender.score_percentage}%
             </div>
           </div>
 
-          {/* LLM Notes - prioritized with more space */}
+          {/* LLM Notes */}
           {tender.llm_notes && (
-            <p className="text-xs text-stone-600 line-clamp-5 leading-relaxed font-mono flex-1 border-t border-stone-200 pt-3">
+            <p className="text-xs text-muted-foreground line-clamp-5 leading-relaxed flex-1 border-t border-border pt-3">
               {tender.llm_notes}
             </p>
           )}
         </div>
-      </PixelBox>
+      </div>
     </button>
   )
 }

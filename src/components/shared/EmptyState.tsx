@@ -1,26 +1,20 @@
-import { PixelBox } from '@/components/ui';
-
 interface EmptyStateProps {
   title?: string;
   message?: string;
 }
 
 export function EmptyState({
-  title = 'NO DATA FOUND',
-  message = 'Insert coin to continue...',
+  title = 'No data found',
+  message = 'There are no items to display.',
 }: EmptyStateProps) {
   return (
-    <PixelBox color="#64748b" className="p-8 text-center">
-      <div className="text-6xl mb-4">🎮</div>
-      <div
-        className="font-mono font-black text-xl text-stone-400 tracking-widest mb-2"
-        style={{ textShadow: '2px 2px 0 #1a1a1a' }}
-      >
+    <div className="flex flex-col items-center justify-center p-8 text-center">
+      <div className="text-subtitle font-serif font-semibold text-foreground mb-2">
         {title}
       </div>
-      <div className="text-stone-500 text-sm font-mono">
+      <div className="text-muted-foreground text-sm">
         {message}
       </div>
-    </PixelBox>
+    </div>
   );
 }

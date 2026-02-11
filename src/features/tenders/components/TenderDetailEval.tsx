@@ -28,19 +28,13 @@ export function TenderDetailEval({ tender }: TenderDetailEvalProps) {
   if (!tender.evaluation_pk) {
     return (
       <div className="space-y-4">
-        <div
-          className="bg-white p-6 text-center rounded border-2 border-stone-200"
-          style={{ boxShadow: '3px 3px 0 #d6d3d1' }}
-        >
-          <div
-            className="w-12 h-12 mx-auto mb-3 rounded bg-stone-100 flex items-center justify-center border-2 border-stone-300"
-            style={{ boxShadow: '2px 2px 0 #d6d3d1' }}
-          >
-            <svg className="w-6 h-6 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="rounded-lg border border-border bg-card shadow-sm p-6 text-center">
+          <div className="w-12 h-12 mx-auto mb-3 rounded-lg bg-muted flex items-center justify-center">
+            <svg className="w-6 h-6 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
           </div>
-          <p className="text-sm text-stone-500 font-medium">No evaluation available for this tender.</p>
+          <p className="text-body text-muted-foreground">No evaluation available for this tender.</p>
         </div>
       </div>
     )
@@ -61,29 +55,23 @@ export function TenderDetailEval({ tender }: TenderDetailEvalProps) {
   return (
     <div className="space-y-6">
       {/* Header with overall result */}
-      <div
-        className="flex items-center justify-between p-4 bg-white rounded border-2 border-stone-200"
-        style={{ boxShadow: '3px 3px 0 #d6d3d1' }}
-      >
+      <div className="rounded-lg border border-border bg-card shadow-sm p-6 flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-black text-stone-800 uppercase tracking-wide">Rubric Evaluation</h3>
-          <p className="text-sm text-stone-500 mt-0.5">
+          <h3 className="text-subtitle font-serif font-semibold text-foreground">Rubric Evaluation</h3>
+          <p className="text-body text-muted-foreground mt-0.5">
             How this tender was graded against your criteria
           </p>
         </div>
         <div className="text-right">
           <div
-            className="px-4 py-2 rounded"
-            style={{
-              background: getScoreGradient(tender.score_percentage),
-              boxShadow: '0 3px 0 rgba(0,0,0,0.2)'
-            }}
+            className="px-4 py-2 rounded-lg"
+            style={{ backgroundColor: getScoreColor(tender.score_percentage) }}
           >
-            <span className="text-2xl font-black text-white" style={{ textShadow: '1px 1px 0 rgba(0,0,0,0.2)' }}>
+            <span className="text-h2 font-serif font-semibold tabular-nums text-white">
               {tender.score_percentage !== null ? `${Math.round(tender.score_percentage)}%` : '--'}
             </span>
           </div>
-          <div className="text-xs text-stone-500 mt-1 font-mono">
+          <div className="text-caption text-muted-foreground mt-1 tabular-nums">
             {tender.score_earned ?? 0}/{tender.score_possible ?? 0} pts
           </div>
         </div>
@@ -92,23 +80,21 @@ export function TenderDetailEval({ tender }: TenderDetailEvalProps) {
       {/* Knockout Criteria */}
       {rubricKnockouts.length > 0 && (
         <div>
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-black text-stone-800 uppercase tracking-wide">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-subtitle font-serif font-semibold text-foreground">
               Knockout Criteria
             </h4>
             <span
-              className="px-3 py-1 text-xs font-black text-white rounded"
-              style={{
-                background: failedKnockouts > 0
-                  ? 'linear-gradient(180deg, #f87171 0%, #ef4444 100%)'
-                  : 'linear-gradient(180deg, #4ade80 0%, #22c55e 100%)',
-                boxShadow: '0 2px 0 rgba(0,0,0,0.2)'
-              }}
+              className={`px-3 py-1 text-caption font-medium rounded-full ${
+                failedKnockouts > 0
+                  ? 'bg-destructive text-white'
+                  : 'bg-success text-white'
+              }`}
             >
-              {passedKnockouts}/{rubricKnockouts.length} PASSED
+              {passedKnockouts}/{rubricKnockouts.length} Passed
             </span>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {rubricKnockouts.map((knockout) => {
               const result = knockoutResults?.[knockout.id]
               return (
@@ -127,15 +113,15 @@ export function TenderDetailEval({ tender }: TenderDetailEvalProps) {
       {/* Scoring Criteria */}
       {rubricCriteria.length > 0 && (
         <div>
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-black text-stone-800 uppercase tracking-wide">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-subtitle font-serif font-semibold text-foreground">
               Scoring Criteria
             </h4>
-            <span className="px-2 py-1 bg-stone-100 text-stone-600 text-xs font-mono font-bold rounded">
+            <span className="px-3 py-1 bg-muted text-muted-foreground text-caption font-medium rounded-full tabular-nums">
               {rubricCriteria.length} criteria
             </span>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {rubricCriteria.map((criterion) => {
               const result = criteriaResults?.[criterion.id]
               return (
@@ -153,34 +139,25 @@ export function TenderDetailEval({ tender }: TenderDetailEvalProps) {
 
       {/* Loading state for rubric */}
       {rubricLoading && (
-        <div
-          className="text-center py-4 bg-white rounded border-2 border-stone-200"
-          style={{ boxShadow: '3px 3px 0 #d6d3d1' }}
-        >
-          <p className="text-sm text-stone-500 font-medium">Loading rubric details...</p>
+        <div className="rounded-lg border border-border bg-card shadow-sm p-6 text-center">
+          <p className="text-body text-muted-foreground">Loading rubric details...</p>
         </div>
       )}
 
       {/* LLM Analysis Notes */}
       {tender.llm_notes && (
         <div>
-          <h4 className="text-sm font-black text-stone-800 uppercase tracking-wide mb-3">
+          <h4 className="text-subtitle font-serif font-semibold text-foreground mb-4">
             Evaluator Notes
           </h4>
-          <div
-            className="bg-blue-50 p-4 rounded border-2 border-blue-200"
-            style={{ boxShadow: '3px 3px 0 #bfdbfe' }}
-          >
+          <div className="rounded-lg border border-border bg-info/5 p-6">
             <div className="flex gap-3">
-              <div
-                className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded flex items-center justify-center border-2 border-blue-300"
-                style={{ boxShadow: '2px 2px 0 #93c5fd' }}
-              >
-                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-info/10 flex items-center justify-center">
+                <svg className="w-4 h-4 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <p className="text-sm text-blue-800 leading-relaxed whitespace-pre-wrap">
+              <p className="text-body text-foreground leading-relaxed whitespace-pre-wrap">
                 {tender.llm_notes}
               </p>
             </div>
@@ -203,41 +180,30 @@ function KnockoutChecklistItem({ knockout, answer, reason }: KnockoutChecklistIt
   const isUnsure = answer === 'UNSURE'
   const noAnswer = !answer
 
-  const getBadgeStyle = () => {
-    if (isPassed) return {
-      background: 'linear-gradient(180deg, #4ade80 0%, #22c55e 100%)',
-      boxShadow: '0 2px 0 #16a34a'
-    }
-    if (isFailed) return {
-      background: 'linear-gradient(180deg, #f87171 0%, #ef4444 100%)',
-      boxShadow: '0 2px 0 #dc2626'
-    }
-    if (isUnsure) return {
-      background: 'linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%)',
-      boxShadow: '0 2px 0 #d97706'
-    }
-    return {
-      background: 'linear-gradient(180deg, #a8a29e 0%, #78716c 100%)',
-      boxShadow: '0 2px 0 #57534e'
-    }
+  const getIconBgColor = () => {
+    if (isPassed) return 'bg-success'
+    if (isFailed) return 'bg-destructive'
+    if (isUnsure) return 'bg-warning'
+    return 'bg-muted-foreground'
   }
 
-  const getBgColor = () => {
-    if (isFailed) return 'bg-red-50 border-red-200'
-    return 'bg-white border-stone-200'
+  const getBadgeColor = () => {
+    if (isPassed) return 'bg-success text-white'
+    if (isFailed) return 'bg-destructive text-white'
+    if (isUnsure) return 'bg-warning text-white'
+    return 'bg-muted-foreground text-white'
+  }
+
+  const getCardStyle = () => {
+    if (isFailed) return 'bg-destructive/5 border-destructive/20'
+    return 'bg-card border-border'
   }
 
   return (
-    <div
-      className={`p-4 rounded border-2 ${getBgColor()}`}
-      style={{ boxShadow: isFailed ? '3px 3px 0 #fecaca' : '3px 3px 0 #d6d3d1' }}
-    >
+    <div className={`rounded-lg border shadow-sm p-4 ${getCardStyle()}`}>
       {/* Header row: checkbox, ID, status badge */}
-      <div className="flex items-center gap-3 mb-2">
-        <div
-          className="flex-shrink-0 w-6 h-6 rounded flex items-center justify-center"
-          style={getBadgeStyle()}
-        >
+      <div className="flex items-center gap-3 mb-3">
+        <div className={`flex-shrink-0 w-6 h-6 rounded flex items-center justify-center ${getIconBgColor()}`}>
           {isPassed && (
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -248,41 +214,35 @@ function KnockoutChecklistItem({ knockout, answer, reason }: KnockoutChecklistIt
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
             </svg>
           )}
-          {isUnsure && <span className="text-white font-black text-xs">?</span>}
-          {noAnswer && <span className="text-white text-xs font-bold">--</span>}
+          {isUnsure && <span className="text-white font-semibold text-xs">?</span>}
+          {noAnswer && <span className="text-white text-xs font-medium">--</span>}
         </div>
-        <span className="px-2 py-1 bg-stone-100 text-stone-600 text-xs font-mono font-bold rounded">
+        <span className="px-2 py-1 bg-muted text-muted-foreground text-caption font-medium rounded tabular-nums">
           {knockout.id}
         </span>
         {answer && (
-          <span
-            className="px-3 py-1 text-xs font-black text-white rounded"
-            style={getBadgeStyle()}
-          >
-            {isPassed ? 'PASS' : isFailed ? 'FAIL' : 'UNCERTAIN'}
+          <span className={`px-3 py-1 text-caption font-medium rounded-full ${getBadgeColor()}`}>
+            {isPassed ? 'Pass' : isFailed ? 'Fail' : 'Uncertain'}
           </span>
         )}
       </div>
 
       {/* Question */}
-      <p className={`text-sm font-medium ${isFailed ? 'text-red-800' : 'text-stone-700'} mb-2`}>
+      <p className={`text-body font-medium mb-2 ${isFailed ? 'text-destructive' : 'text-foreground'}`}>
         {knockout.question}
       </p>
 
       {/* Reason - inline, no label */}
       {reason && (
-        <p className="text-sm text-stone-500 leading-relaxed">
+        <p className="text-body text-muted-foreground leading-relaxed">
           {reason}
         </p>
       )}
 
       {/* Fail message */}
       {isFailed && knockout.fail_message && (
-        <div
-          className="mt-3 bg-red-100 border-2 border-red-300 rounded px-3 py-2"
-          style={{ boxShadow: '2px 2px 0 #fca5a5' }}
-        >
-          <p className="text-xs text-red-700 font-medium">{knockout.fail_message}</p>
+        <div className="mt-3 rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2">
+          <p className="text-caption text-destructive font-medium">{knockout.fail_message}</p>
         </div>
       )}
     </div>
@@ -297,42 +257,37 @@ interface CriteriaGradedItemProps {
 
 function CriteriaGradedItem({ criterion, answer, evidence }: CriteriaGradedItemProps) {
   const getGradeConfig = (ans?: string) => {
-    const configs: Record<string, { label: string; color: string; fillBars: number; gradient: string; shadowColor: string }> = {
+    const configs: Record<string, { label: string; color: string; fillBars: number; badgeColor: string }> = {
       YES: {
-        label: 'YES',
-        color: '#22c55e',
+        label: 'Yes',
+        color: 'hsl(142, 71%, 45%)',
         fillBars: 4,
-        gradient: 'linear-gradient(180deg, #4ade80 0%, #22c55e 100%)',
-        shadowColor: '#16a34a'
+        badgeColor: 'bg-success'
       },
       PARTIAL: {
-        label: 'PARTIAL',
-        color: '#3b82f6',
+        label: 'Partial',
+        color: 'hsl(217, 91%, 60%)',
         fillBars: 2,
-        gradient: 'linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%)',
-        shadowColor: '#2563eb'
+        badgeColor: 'bg-info'
       },
       NO: {
-        label: 'NO',
-        color: '#ef4444',
+        label: 'No',
+        color: 'hsl(0, 84%, 60%)',
         fillBars: 0,
-        gradient: 'linear-gradient(180deg, #f87171 0%, #ef4444 100%)',
-        shadowColor: '#dc2626'
+        badgeColor: 'bg-destructive'
       },
       UNSURE: {
-        label: 'UNSURE',
-        color: '#f59e0b',
+        label: 'Unsure',
+        color: 'hsl(38, 92%, 50%)',
         fillBars: 1,
-        gradient: 'linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%)',
-        shadowColor: '#d97706'
+        badgeColor: 'bg-warning'
       },
     }
     return configs[ans || ''] || {
       label: '--',
-      color: '#78716c',
+      color: 'hsl(0, 0%, 50%)',
       fillBars: 0,
-      gradient: 'linear-gradient(180deg, #a8a29e 0%, #78716c 100%)',
-      shadowColor: '#57534e'
+      badgeColor: 'bg-muted-foreground'
     }
   }
 
@@ -347,14 +302,14 @@ function CriteriaGradedItem({ criterion, answer, evidence }: CriteriaGradedItemP
   }
   const score = getScore()
 
-  // Category badge colors - light arcade style
+  // Category badge colors
   const getCategoryStyle = (category: string) => {
     const styles: Record<string, { bg: string; text: string }> = {
-      core_fit: { bg: 'bg-teal-50 border-teal-200', text: 'text-teal-700' },
-      technical: { bg: 'bg-blue-50 border-blue-200', text: 'text-blue-700' },
-      commercial: { bg: 'bg-purple-50 border-purple-200', text: 'text-purple-700' },
-      compliance: { bg: 'bg-orange-50 border-orange-200', text: 'text-orange-700' },
-      default: { bg: 'bg-stone-50 border-stone-200', text: 'text-stone-600' }
+      core_fit: { bg: 'bg-primary/10', text: 'text-primary' },
+      technical: { bg: 'bg-info/10', text: 'text-info' },
+      commercial: { bg: 'bg-accent/10', text: 'text-accent' },
+      compliance: { bg: 'bg-warning/10', text: 'text-warning' },
+      default: { bg: 'bg-muted', text: 'text-muted-foreground' }
     }
     return styles[category] || styles.default
   }
@@ -362,45 +317,36 @@ function CriteriaGradedItem({ criterion, answer, evidence }: CriteriaGradedItemP
   const categoryStyle = getCategoryStyle(criterion.category || 'default')
 
   return (
-    <div
-      className="p-4 bg-white rounded border-2 border-stone-200"
-      style={{ boxShadow: '3px 3px 0 #d6d3d1' }}
-    >
+    <div className="rounded-lg border border-border bg-card shadow-sm p-4">
       {/* Header row: ID, weight/category tags, grade badge */}
-      <div className="flex items-center justify-between gap-2 mb-2">
+      <div className="flex items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="px-2 py-1 bg-stone-100 text-stone-600 text-xs font-mono font-bold rounded">
+          <span className="px-2 py-1 bg-muted text-muted-foreground text-caption font-medium rounded tabular-nums">
             {criterion.id}
           </span>
           {criterion.weight && (
-            <span className="px-2 py-1 bg-stone-100 text-stone-500 text-xs font-bold rounded">
-              x{criterion.weight}
+            <span className="px-2 py-1 bg-muted text-muted-foreground text-caption font-medium rounded tabular-nums">
+              ×{criterion.weight}
             </span>
           )}
           {criterion.category && (
-            <span className={`px-2 py-1 text-xs font-bold rounded border ${categoryStyle.bg} ${categoryStyle.text}`}>
+            <span className={`px-2 py-1 text-caption font-medium rounded ${categoryStyle.bg} ${categoryStyle.text}`}>
               {formatCategory(criterion.category)}
             </span>
           )}
         </div>
-        <span
-          className="flex-shrink-0 px-3 py-1 text-xs font-black text-white rounded"
-          style={{
-            background: grade.gradient,
-            boxShadow: `0 2px 0 ${grade.shadowColor}`
-          }}
-        >
+        <span className={`flex-shrink-0 px-3 py-1 text-caption font-medium text-white rounded-full ${grade.badgeColor}`}>
           {grade.label}
         </span>
       </div>
 
       {/* Question */}
-      <p className="text-sm text-stone-700 font-medium mb-3">
+      <p className="text-body font-medium text-foreground mb-3">
         {criterion.question}
       </p>
 
       {/* Visual grade bar - using HealthBar with light variant */}
-      <div className="bg-stone-100 p-2 rounded mb-3">
+      <div className="bg-muted p-2 rounded-lg mb-3">
         <HealthBar
           current={score.current}
           max={score.max}
@@ -412,7 +358,7 @@ function CriteriaGradedItem({ criterion, answer, evidence }: CriteriaGradedItemP
 
       {/* Evidence - no label, just the text */}
       {evidence && (
-        <p className="text-sm text-stone-500 leading-relaxed">{evidence}</p>
+        <p className="text-body text-muted-foreground leading-relaxed">{evidence}</p>
       )}
     </div>
   )
@@ -425,10 +371,10 @@ function formatCategory(category: string): string {
     .join(' ')
 }
 
-function getScoreGradient(score: number | null): string {
-  if (score === null) return 'linear-gradient(180deg, #a8a29e 0%, #78716c 100%)'
-  if (score >= 80) return 'linear-gradient(180deg, #4ade80 0%, #22c55e 100%)'
-  if (score >= 65) return 'linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%)'
-  if (score >= 50) return 'linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%)'
-  return 'linear-gradient(180deg, #f87171 0%, #ef4444 100%)'
+function getScoreColor(score: number | null): string {
+  if (score === null) return 'hsl(0, 0%, 50%)'
+  if (score >= 80) return 'hsl(142, 71%, 45%)' // success
+  if (score >= 65) return 'hsl(217, 91%, 60%)' // info
+  if (score >= 50) return 'hsl(38, 92%, 50%)' // warning
+  return 'hsl(0, 84%, 60%)' // destructive
 }

@@ -8,7 +8,7 @@ import {
 
 export function DashboardPage() {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 bg-background">
       {/* Header: Stats + Alerts */}
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
         <StatsGrid />

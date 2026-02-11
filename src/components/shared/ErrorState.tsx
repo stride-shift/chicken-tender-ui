@@ -1,5 +1,3 @@
-import { PixelBox, ArcadeButton } from '@/components/ui';
-
 interface ErrorStateProps {
   title?: string;
   message?: string;
@@ -7,24 +5,24 @@ interface ErrorStateProps {
 }
 
 export function ErrorState({
-  title = 'GAME OVER',
+  title = 'Error',
   message = 'Something went wrong',
   onRetry,
 }: ErrorStateProps) {
   return (
-    <PixelBox color="#ef4444" className="p-8 text-center">
-      <div
-        className="font-mono font-black text-4xl text-red-500 tracking-widest mb-4"
-        style={{ textShadow: '0 0 20px #ef4444, 2px 2px 0 #7f1d1d' }}
-      >
+    <div className="flex flex-col items-center justify-center p-8 text-center">
+      <div className="text-subtitle font-serif font-semibold text-destructive mb-2">
         {title}
       </div>
-      <div className="text-red-400 mb-4 font-mono">{message}</div>
+      <div className="text-foreground mb-4">{message}</div>
       {onRetry && (
-        <ArcadeButton variant="danger" onClick={onRetry}>
-          RETRY
-        </ArcadeButton>
+        <button
+          onClick={onRetry}
+          className="px-4 py-2 rounded-lg bg-destructive text-destructive-foreground font-semibold hover:bg-destructive/90 transition-colors"
+        >
+          Retry
+        </button>
       )}
-    </PixelBox>
+    </div>
   );
 }

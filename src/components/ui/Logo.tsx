@@ -55,7 +55,7 @@ export function Logo({ size = 'md', showParentBrand = true }: LogoProps) {
         style={{
           width: s.icon,
           height: s.icon,
-          border: `${s.iconBorder}px solid #2a9d8f`,
+          border: `${s.iconBorder}px solid #17171c`,
         }}
       >
         <div
@@ -63,7 +63,7 @@ export function Logo({ size = 'md', showParentBrand = true }: LogoProps) {
           style={{
             width: s.iconDot,
             height: s.iconDot,
-            backgroundColor: '#2a9d8f',
+            backgroundColor: '#f0b429',
           }}
         />
       </div>
@@ -77,7 +77,7 @@ export function Logo({ size = 'md', showParentBrand = true }: LogoProps) {
                 fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                 fontSize: s.strideshift,
                 fontWeight: 700,
-                color: '#2a9d8f',
+                color: '#17171c',
                 letterSpacing: '0.5px',
                 lineHeight: 1.1,
               }}
@@ -93,7 +93,7 @@ export function Logo({ size = 'md', showParentBrand = true }: LogoProps) {
                   fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   fontSize: s.global,
                   fontWeight: 500,
-                  color: '#6b7c8a',
+                  color: '#555568',
                   letterSpacing: '1px',
                 }}
               >
@@ -107,8 +107,8 @@ export function Logo({ size = 'md', showParentBrand = true }: LogoProps) {
                   letterSpacing: '0.5px',
                 }}
               >
-                <span style={{ color: '#2a9d8f' }}>TENDER</span>
-                <span style={{ color: '#e76f51' }}>RENDER</span>
+                <span style={{ color: '#17171c' }}>TENDER</span>
+                <span style={{ color: '#f0b429' }}>RENDER</span>
               </span>
             </div>
           </>
@@ -122,8 +122,8 @@ export function Logo({ size = 'md', showParentBrand = true }: LogoProps) {
               letterSpacing: '0.5px',
             }}
           >
-            <span style={{ color: '#2a9d8f' }}>TENDER</span>
-            <span style={{ color: '#e76f51' }}>RENDER</span>
+            <span style={{ color: '#17171c' }}>TENDER</span>
+            <span style={{ color: '#f0b429' }}>RENDER</span>
           </span>
         )}
       </div>

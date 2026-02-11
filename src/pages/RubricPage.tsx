@@ -1,5 +1,4 @@
 import { useActiveClientRubric } from '@/features/tenders/hooks/useActiveClientRubric'
-import { PixelBox } from '@/components/ui/PixelBox'
 import type { RubricKnockout, RubricCriterion, ScoringConfig, ThresholdRange } from '@/lib/types'
 
 export function RubricPage() {
@@ -8,68 +7,63 @@ export function RubricPage() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        {/* Loading skeleton with arcade styling */}
-        <div className="h-8 bg-stone-200 w-48 animate-pulse" />
-        <PixelBox color="#d6d3d1" className="p-6">
+        <div className="h-8 bg-muted w-48 animate-pulse rounded" />
+        <div className="rounded-lg border border-border bg-card shadow-sm p-6">
           <div className="space-y-4">
-            <div className="h-6 bg-stone-200 w-64 animate-pulse" />
-            <div className="h-4 bg-stone-100 w-48 animate-pulse" />
+            <div className="h-6 bg-muted w-64 animate-pulse rounded" />
+            <div className="h-4 bg-muted w-48 animate-pulse rounded" />
             <div className="space-y-3 mt-6">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-20 bg-stone-100 animate-pulse" />
+                <div key={i} className="h-20 bg-muted animate-pulse rounded" />
               ))}
             </div>
           </div>
-        </PixelBox>
+        </div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <PixelBox color="#dc2626" bgColor="#fef2f2" className="p-4">
+      <div className="rounded-lg border border-destructive bg-destructive/10 shadow-sm p-4">
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-3 h-3 bg-red-500" />
-          <span className="text-sm font-black text-red-700 uppercase tracking-wider">
-            ERROR
+          <svg className="w-4 h-4 text-destructive" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+          </svg>
+          <span className="font-serif font-semibold text-destructive">
+            Error
           </span>
         </div>
-        <p className="font-medium text-red-800">{(error as Error).message}</p>
-      </PixelBox>
+        <p className="text-sm text-foreground">{(error as Error).message}</p>
+      </div>
     )
   }
 
   if (!rubric) {
     return (
-      <PixelBox color="#d6d3d1" className="p-8">
+      <div className="rounded-lg border border-border bg-card shadow-sm p-8">
         <div className="text-center">
-          {/* Pixel clipboard icon */}
-          <div className="w-16 h-16 mx-auto mb-4 bg-stone-100 flex items-center justify-center"
-            style={{
-              border: '3px solid #a8a29e',
-              boxShadow: '4px 4px 0 #d6d3d133'
-            }}
-          >
+          <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-lg flex items-center justify-center">
             <svg
-              className="w-8 h-8 text-stone-400"
+              className="w-8 h-8 text-muted-foreground"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
               <path
-                strokeLinecap="square"
-                strokeLinejoin="miter"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 strokeWidth={2}
                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
               />
             </svg>
           </div>
-          <p className="font-black text-stone-700 uppercase tracking-wider">No rubric configured</p>
-          <p className="text-sm text-stone-500 mt-2">
+          <p className="font-serif font-semibold text-foreground">No rubric configured</p>
+          <p className="text-sm text-muted-foreground mt-2">
             Contact your administrator to set up an evaluation rubric.
           </p>
         </div>
-      </PixelBox>
+      </div>
     )
   }
 
@@ -87,47 +81,34 @@ export function RubricPage() {
 
   return (
     <div className="space-y-6">
-      <PixelBox color="#2d8f8f" className="p-6">
+      <div className="rounded-lg border border-border bg-card shadow-sm p-6">
         {/* Header Info */}
-        <div className="flex items-center justify-between pb-4 mb-6"
-          style={{ borderBottom: '2px dashed #e7e5e4' }}
-        >
+        <div className="flex items-center justify-between pb-4 mb-6 border-b border-border">
           <div>
-            <p className="font-black text-stone-800 uppercase tracking-wider">{rubric.client_name}</p>
-            <p className="text-xs text-stone-500 mt-1">
+            <h1 className="text-headline font-serif text-foreground">{rubric.client_name}</h1>
+            <p className="text-sm text-muted-foreground mt-1">
               Version {rubric.version} - Last updated {formatDate(rubric.updated_at)}
             </p>
           </div>
           {rubric.is_active && (
-            <span
-              className="inline-flex items-center px-3 py-1 text-xs font-black uppercase tracking-wider"
-              style={{
-                background: 'linear-gradient(180deg, #4ade80 0%, #22c55e 100%)',
-                color: 'white',
-                boxShadow: '0 3px 0 #16a34a'
-              }}
-            >
-              ACTIVE
+            <span className="inline-flex items-center px-3 py-1 text-xs font-semibold text-white bg-success rounded-md shadow-sm">
+              Active
             </span>
           )}
         </div>
 
         {/* Description */}
         {rubric.description && (
-          <div
-            className="mb-6 p-4 bg-sky-50"
-            style={{
-              border: '3px solid #0ea5e9',
-              boxShadow: '4px 4px 0 #0ea5e944'
-            }}
-          >
+          <div className="mb-6 p-4 rounded-lg border border-info/30 bg-info/5">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-3 h-3 bg-sky-500" />
-              <span className="text-sm font-black text-sky-700 uppercase tracking-wider">
-                ABOUT THIS RUBRIC
+              <svg className="w-4 h-4 text-info" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+              <span className="font-serif font-semibold text-info">
+                About this rubric
               </span>
             </div>
-            <p className="text-sm text-sky-900 leading-relaxed whitespace-pre-wrap">
+            <p className="text-sm text-foreground font-light leading-relaxed whitespace-pre-wrap">
               {rubric.description}
             </p>
           </div>
@@ -136,31 +117,20 @@ export function RubricPage() {
         {/* Knockout Criteria */}
         {knockouts.length > 0 && (
           <div className="mb-6">
-            <div
-              className="bg-red-50 px-4 py-3 mb-0"
-              style={{
-                border: '3px solid #ef4444',
-                borderBottom: '2px solid #ef4444'
-              }}
-            >
+            <div className="rounded-t-lg border border-destructive bg-destructive/5 px-4 py-3">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-red-500" />
-                <span className="text-sm font-black text-red-700 uppercase tracking-wider">
-                  KNOCKOUT CRITERIA
+                <svg className="w-4 h-4 text-destructive" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clipRule="evenodd" />
+                </svg>
+                <span className="font-serif font-semibold text-destructive">
+                  Knockout Criteria
                 </span>
               </div>
-              <p className="text-xs text-red-600 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 These must pass for a tender to be considered relevant. A "NO" answer disqualifies the tender.
               </p>
             </div>
-            <div
-              className="bg-white divide-y-2 divide-red-100"
-              style={{
-                border: '3px solid #ef4444',
-                borderTop: 'none',
-                boxShadow: '4px 4px 0 #ef444444'
-              }}
-            >
+            <div className="rounded-b-lg border border-t-0 border-destructive bg-card divide-y divide-border">
               {knockouts.map((knockout, index) => (
                 <KnockoutRow key={knockout.id} knockout={knockout} index={index + 1} />
               ))}
@@ -171,31 +141,21 @@ export function RubricPage() {
         {/* Scoring Criteria */}
         {criteria.length > 0 && (
           <div className="mb-6">
-            <div
-              className="bg-teal-50 px-4 py-3 mb-0"
-              style={{
-                border: '3px solid #2d8f8f',
-                borderBottom: '2px solid #2d8f8f'
-              }}
-            >
+            <div className="rounded-t-lg border border-primary bg-primary/5 px-4 py-3">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-teal-600" />
-                <span className="text-sm font-black text-teal-700 uppercase tracking-wider">
-                  SCORING CRITERIA
+                <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                  <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="font-serif font-semibold text-primary">
+                  Scoring Criteria
                 </span>
               </div>
-              <p className="text-xs text-teal-600 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Tenders are scored on these factors. Higher weights indicate more important criteria.
               </p>
             </div>
-            <div
-              className="bg-white divide-y-2 divide-teal-100"
-              style={{
-                border: '3px solid #2d8f8f',
-                borderTop: 'none',
-                boxShadow: '4px 4px 0 #2d8f8f44'
-              }}
-            >
+            <div className="rounded-b-lg border border-t-0 border-primary bg-card divide-y divide-border">
               {criteria.map((criterion) => (
                 <CriterionRow key={criterion.id} criterion={criterion} />
               ))}
@@ -206,61 +166,46 @@ export function RubricPage() {
         {/* Scoring Thresholds */}
         {scoringConfig?.thresholds && (
           <div>
-            <div
-              className="bg-amber-50 px-4 py-3 mb-0"
-              style={{
-                border: '3px solid #f59e0b',
-                borderBottom: '2px solid #f59e0b'
-              }}
-            >
+            <div className="rounded-t-lg border border-warning bg-warning/5 px-4 py-3">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-amber-500" />
-                <span className="text-sm font-black text-amber-700 uppercase tracking-wider">
-                  RECOMMENDATION THRESHOLDS
+                <svg className="w-4 h-4 text-warning" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clipRule="evenodd" />
+                </svg>
+                <span className="font-serif font-semibold text-warning">
+                  Recommendation Thresholds
                 </span>
               </div>
-              <p className="text-xs text-amber-600 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Score ranges that determine tender recommendations.
               </p>
             </div>
-            <div
-              className="bg-white p-4 space-y-3"
-              style={{
-                border: '3px solid #f59e0b',
-                borderTop: 'none',
-                boxShadow: '4px 4px 0 #f59e0b44'
-              }}
-            >
+            <div className="rounded-b-lg border border-t-0 border-warning bg-card p-4 space-y-3">
               <ThresholdRow
-                label="EXCELLENT FIT"
+                label="Excellent Fit"
                 threshold={scoringConfig.thresholds.excellent_fit}
-                color="#22c55e"
-                bgColor="#f0fdf4"
+                variant="success"
               />
               <ThresholdRow
-                label="GOOD FIT"
+                label="Good Fit"
                 threshold={scoringConfig.thresholds.good_fit}
-                color="#0ea5e9"
-                bgColor="#f0f9ff"
+                variant="info"
               />
               <ThresholdRow
-                label="WORTH REVIEWING"
+                label="Worth Reviewing"
                 threshold={scoringConfig.thresholds.worth_reviewing}
-                color="#f59e0b"
-                bgColor="#fffbeb"
+                variant="warning"
               />
               {scoringConfig.thresholds.not_recommended && (
                 <ThresholdRow
-                  label="NOT RECOMMENDED"
+                  label="Not Recommended"
                   threshold={scoringConfig.thresholds.not_recommended}
-                  color="#78716c"
-                  bgColor="#fafaf9"
+                  variant="muted"
                 />
               )}
             </div>
           </div>
         )}
-      </PixelBox>
+      </div>
     </div>
   )
 }
@@ -269,18 +214,12 @@ function KnockoutRow({ knockout, index }: { knockout: RubricKnockout; index: num
   return (
     <div className="px-4 py-3">
       <div className="flex items-start gap-3">
-        <span
-          className="flex-shrink-0 w-7 h-7 text-xs font-black flex items-center justify-center text-white"
-          style={{
-            background: 'linear-gradient(180deg, #f87171 0%, #ef4444 100%)',
-            boxShadow: '0 2px 0 #b91c1c'
-          }}
-        >
+        <span className="flex-shrink-0 w-7 h-7 text-xs font-semibold flex items-center justify-center text-white bg-destructive rounded-md shadow-sm tabular-nums">
           {index}
         </span>
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-stone-700 font-medium">{knockout.question}</p>
-          <p className="text-xs text-red-600 mt-1 font-medium">
+          <p className="text-sm text-foreground font-light">{knockout.question}</p>
+          <p className="text-xs text-destructive mt-1">
             Fail: "{knockout.fail_message}"
           </p>
         </div>
@@ -293,27 +232,23 @@ function CriterionRow({ criterion }: { criterion: RubricCriterion }) {
   return (
     <div className="px-4 py-3">
       <div className="flex items-start gap-3">
-        <span className="flex-shrink-0 mt-1 w-3 h-3 bg-teal-500" />
+        <svg className="flex-shrink-0 w-4 h-4 mt-1 text-primary" fill="currentColor" viewBox="0 0 20 20">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+        </svg>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <p className="text-sm font-black text-stone-700 uppercase tracking-wider">
+            <p className="font-serif font-semibold text-foreground">
               {criterion.category ? formatCategoryName(criterion.category) : 'General'}
             </p>
             {criterion.weight > 1 && (
-              <span
-                className="text-xs px-2 py-0.5 font-black text-teal-700"
-                style={{
-                  background: '#ccfbf1',
-                  border: '2px solid #2d8f8f'
-                }}
-              >
+              <span className="text-xs px-2 py-0.5 font-semibold text-primary bg-primary/10 rounded border border-primary/30 tabular-nums">
                 {criterion.weight}x
               </span>
             )}
           </div>
-          <p className="text-sm text-stone-600 mt-1">"{criterion.question}"</p>
+          <p className="text-sm text-foreground font-light mt-1">"{criterion.question}"</p>
           {criterion.unsure_handling && criterion.unsure_handling !== 'neutral' && (
-            <p className="text-xs text-stone-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Unsure handling: {criterion.unsure_handling}
             </p>
           )}
@@ -326,36 +261,35 @@ function CriterionRow({ criterion }: { criterion: RubricCriterion }) {
 function ThresholdRow({
   label,
   threshold,
-  color,
-  bgColor,
+  variant,
 }: {
   label: string
   threshold: ThresholdRange
-  color: string
-  bgColor: string
+  variant: 'success' | 'info' | 'warning' | 'muted'
 }) {
+  const variantClasses = {
+    success: 'border-success bg-success/10 text-success',
+    info: 'border-info bg-info/10 text-info',
+    warning: 'border-warning bg-warning/10 text-warning',
+    muted: 'border-border bg-muted text-muted-foreground',
+  }
+
+  const badgeClasses = {
+    success: 'bg-success text-white',
+    info: 'bg-info text-white',
+    warning: 'bg-warning text-white',
+    muted: 'bg-muted-foreground text-white',
+  }
+
   return (
-    <div
-      className="flex items-center justify-between text-sm p-3"
-      style={{
-        backgroundColor: bgColor,
-        border: `2px solid ${color}`,
-        boxShadow: `3px 3px 0 ${color}44`
-      }}
-    >
+    <div className={`flex items-center justify-between text-sm p-3 rounded-lg border ${variantClasses[variant]}`}>
       <div className="flex flex-col">
-        <span className="font-black uppercase tracking-wider text-xs" style={{ color }}>
+        <span className="font-serif font-semibold text-xs">
           {label}
         </span>
-        <span className="text-xs text-stone-500">{threshold.label}</span>
+        <span className="text-xs text-muted-foreground">{threshold.label}</span>
       </div>
-      <span
-        className="font-black px-2 py-1 text-white text-xs"
-        style={{
-          backgroundColor: color,
-          boxShadow: `0 2px 0 ${color}88`
-        }}
-      >
+      <span className={`font-semibold px-2 py-1 text-xs rounded shadow-sm tabular-nums ${badgeClasses[variant]}`}>
         {threshold.min}% - {threshold.max}%
       </span>
     </div>

@@ -5,10 +5,19 @@ interface ImportanceBadgeProps {
   size?: 'sm' | 'md'
 }
 
-const importanceConfig: Record<Importance, { label: string }> = {
-  high: { label: 'High' },
-  medium: { label: 'Medium' },
-  low: { label: 'Low' },
+const importanceConfig: Record<Importance, { label: string; className: string }> = {
+  high: {
+    label: 'High',
+    className: 'bg-destructive/10 text-destructive border-destructive/20',
+  },
+  medium: {
+    label: 'Medium',
+    className: 'bg-warning/10 text-warning border-warning/20',
+  },
+  low: {
+    label: 'Low',
+    className: 'bg-muted text-muted-foreground border-border',
+  },
 }
 
 export function ImportanceBadge({ importance, size = 'sm' }: ImportanceBadgeProps) {
@@ -16,47 +25,9 @@ export function ImportanceBadge({ importance, size = 'sm' }: ImportanceBadgeProp
 
   const sizeClasses = size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-2.5 py-1 text-sm'
 
-  // High - Red with pulse animation
-  if (importance === 'high') {
-    return (
-      <span
-        className={`inline-flex items-center font-black rounded animate-pulse ${sizeClasses}`}
-        style={{
-          background: 'linear-gradient(180deg, #f87171 0%, #ef4444 100%)',
-          boxShadow: '0 2px 0 #991b1b, 0 0 8px #ef444466',
-          color: 'white',
-        }}
-      >
-        {config.label}
-      </span>
-    )
-  }
-
-  // Medium - Amber solid
-  if (importance === 'medium') {
-    return (
-      <span
-        className={`inline-flex items-center font-black rounded ${sizeClasses}`}
-        style={{
-          background: 'linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%)',
-          boxShadow: '0 2px 0 #92400e',
-          color: '#78350f',
-        }}
-      >
-        {config.label}
-      </span>
-    )
-  }
-
-  // Low - Gray subtle
   return (
     <span
-      className={`inline-flex items-center font-bold rounded ${sizeClasses}`}
-      style={{
-        background: '#e7e5e4',
-        color: '#78716c',
-        boxShadow: '0 2px 0 #d6d3d1',
-      }}
+      className={`inline-flex items-center rounded-full border font-semibold transition-colors ${sizeClasses} ${config.className}`}
     >
       {config.label}
     </span>

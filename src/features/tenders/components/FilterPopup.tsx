@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react'
-import { PixelBox } from '@/components/ui/PixelBox'
-import { ArcadeButton } from '@/components/ui/ArcadeButton'
 import type { TenderFilters } from '../hooks/useTenders'
 import type { FilterOption } from '@/lib/types'
 
@@ -149,29 +147,23 @@ export function FilterPopup({
 
   if (!isOpen) return null
 
-  const selectStyles = {
-    border: '3px solid #c75d32',
-    boxShadow: '0 3px 0 #9a3412',
-    borderRadius: '4px',
-  }
-
-  const labelStyles = 'block text-xs font-bold text-stone-600 mb-1 uppercase tracking-wide'
+  const labelStyles = 'block text-label text-muted-foreground uppercase tracking-wider mb-2'
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
       onClick={handleOverlayClick}
     >
-      <PixelBox color="#2d8f8f" bgColor="#fafaf9" className="w-full max-w-lg">
+      <div className="w-full max-w-lg rounded-lg border border-border bg-card shadow-lg">
         <div className="p-4">
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-black text-stone-800 uppercase tracking-wide">
+            <h2 className="text-lg font-serif font-semibold text-foreground">
               Filter Tenders
             </h2>
             <button
               onClick={onClose}
-              className="p-1 text-stone-500 hover:text-stone-700 transition-colors"
+              className="p-1 text-muted-foreground hover:text-foreground transition-colors"
             >
               <CloseIcon className="w-5 h-5" />
             </button>
@@ -185,8 +177,7 @@ export function FilterPopup({
               <select
                 value={relevanceValue}
                 onChange={(e) => handleRelevanceChange(e.target.value as RelevanceFilter)}
-                className="w-full px-3 py-2 text-sm bg-white text-stone-700 appearance-none font-bold cursor-pointer"
-                style={selectStyles}
+                className="w-full px-3 py-2 text-sm bg-background text-foreground border border-border rounded-md appearance-none cursor-pointer hover:bg-muted transition-colors"
               >
                 <option value="all">All Tenders</option>
                 <option value="relevant">Relevant Only</option>
@@ -200,8 +191,7 @@ export function FilterPopup({
               <select
                 value={statusValue}
                 onChange={(e) => handleStatusChange(e.target.value as StatusFilter)}
-                className="w-full px-3 py-2 text-sm bg-white text-stone-700 appearance-none font-bold cursor-pointer"
-                style={selectStyles}
+                className="w-full px-3 py-2 text-sm bg-background text-foreground border border-border rounded-md appearance-none cursor-pointer hover:bg-muted transition-colors"
               >
                 <option value="active">Active</option>
                 <option value="closed">Closed</option>
@@ -215,8 +205,7 @@ export function FilterPopup({
               <select
                 value={localFilters.provinceId ?? ''}
                 onChange={(e) => handleProvinceChange(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-white text-stone-700 appearance-none font-bold cursor-pointer"
-                style={selectStyles}
+                className="w-full px-3 py-2 text-sm bg-background text-foreground border border-border rounded-md appearance-none cursor-pointer hover:bg-muted transition-colors"
               >
                 <option value="">All Provinces</option>
                 {filterOptions.provinces.map((province) => (
@@ -233,8 +222,7 @@ export function FilterPopup({
               <select
                 value={localFilters.departmentId ?? ''}
                 onChange={(e) => handleDepartmentChange(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-white text-stone-700 appearance-none font-bold cursor-pointer"
-                style={selectStyles}
+                className="w-full px-3 py-2 text-sm bg-background text-foreground border border-border rounded-md appearance-none cursor-pointer hover:bg-muted transition-colors"
               >
                 <option value="">All Departments</option>
                 {filterOptions.departments.map((dept) => (
@@ -251,8 +239,7 @@ export function FilterPopup({
               <select
                 value={localFilters.categoryId ?? ''}
                 onChange={(e) => handleCategoryChange(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-white text-stone-700 appearance-none font-bold cursor-pointer"
-                style={selectStyles}
+                className="w-full px-3 py-2 text-sm bg-background text-foreground border border-border rounded-md appearance-none cursor-pointer hover:bg-muted transition-colors"
               >
                 <option value="">All Categories</option>
                 {filterOptions.categories.map((cat) => (
@@ -269,8 +256,7 @@ export function FilterPopup({
               <select
                 value={localFilters.minDaysUntilClose ?? ''}
                 onChange={(e) => handleDaysChange(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-white text-stone-700 appearance-none font-bold cursor-pointer"
-                style={selectStyles}
+                className="w-full px-3 py-2 text-sm bg-background text-foreground border border-border rounded-md appearance-none cursor-pointer hover:bg-muted transition-colors"
               >
                 {DAYS_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -286,8 +272,7 @@ export function FilterPopup({
               <select
                 value={localFilters.sortBy}
                 onChange={(e) => handleSortChange(e.target.value as SortByOption)}
-                className="w-full px-3 py-2 text-sm bg-white text-stone-700 appearance-none font-bold cursor-pointer"
-                style={selectStyles}
+                className="w-full px-3 py-2 text-sm bg-background text-foreground border border-border rounded-md appearance-none cursor-pointer hover:bg-muted transition-colors"
               >
                 {SORT_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -305,15 +290,10 @@ export function FilterPopup({
                   onChange={handleBriefingToggle}
                   className="sr-only peer"
                 />
-                <div
-                  className="w-10 h-6 bg-stone-300 peer-checked:bg-teal-500 rounded-full relative transition-colors"
-                  style={{
-                    border: '2px solid #78716c',
-                  }}
-                >
-                  <div className="absolute w-4 h-4 bg-white rounded-full top-0.5 left-0.5 peer-checked:left-[18px] transition-all shadow" />
+                <div className="w-10 h-6 bg-muted peer-checked:bg-primary rounded-full relative transition-colors border border-border">
+                  <div className="absolute w-4 h-4 bg-background rounded-full top-0.5 left-0.5 peer-checked:left-[18px] transition-all shadow-sm" />
                 </div>
-                <span className="ml-2 text-xs font-bold text-stone-600 uppercase tracking-wide">
+                <span className="ml-2 text-xs text-muted-foreground uppercase tracking-wider">
                   Compulsory Briefing Only
                 </span>
               </label>
@@ -321,24 +301,22 @@ export function FilterPopup({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-stone-200">
-            <ArcadeButton
-              variant="secondary"
-              size="sm"
+          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-border">
+            <button
               onClick={handleClearAll}
+              className="px-4 py-2 text-sm font-medium text-muted-foreground bg-background border border-border rounded-md hover:bg-muted transition-colors"
             >
               Clear All
-            </ArcadeButton>
-            <ArcadeButton
-              variant="primary"
-              size="sm"
+            </button>
+            <button
               onClick={handleApply}
+              className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:opacity-90 transition-opacity"
             >
               Apply Filters
-            </ArcadeButton>
+            </button>
           </div>
         </div>
-      </PixelBox>
+      </div>
     </div>
   )
 }

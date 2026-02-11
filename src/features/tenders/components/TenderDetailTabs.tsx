@@ -7,21 +7,18 @@ const TABS = ['Opportunity', 'Evaluation', 'Documents', 'Changes'] as const
 
 export function TenderDetailTabs({ activeTab, onTabChange }: TenderDetailTabsProps) {
   return (
-    <div className="flex bg-stone-200 p-0.5 rounded gap-0.5 mx-4">
+    <div className="flex items-center gap-1 p-1 bg-muted rounded-lg mx-4">
       {TABS.map((tab) => (
         <button
           key={tab}
           onClick={() => onTabChange(tab)}
-          className="px-3 py-1 font-bold text-xs transition-all"
-          style={activeTab === tab ? {
-            background: 'linear-gradient(180deg, #4ecdc4 0%, #2d8f8f 100%)',
-            color: 'white',
-            borderRadius: '3px',
-            boxShadow: '0 1px 0 #1a5f5f'
-          } : {
-            color: '#57534e',
-            background: 'transparent'
-          }}
+          className={`
+            rounded-md px-4 py-2 text-sm font-bold transition-all
+            ${activeTab === tab
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+            }
+          `}
         >
           {tab}
         </button>

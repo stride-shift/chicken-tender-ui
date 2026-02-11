@@ -1,25 +1,19 @@
 import { NavLink } from 'react-router-dom'
-import { PixelBox } from '@/components/ui'
 
 interface SidebarProps {
   collapsed: boolean
 }
 
-// Animation type for each nav item - adds variety
-type IconAnimation = 'bounce' | 'wiggle' | 'pop'
-
 const navItems: {
   to: string
   label: string
   icon: React.ReactNode
-  animation: IconAnimation
 }[] = [
   {
     to: '/',
     label: 'Dashboard',
-    animation: 'bounce',
     icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -32,9 +26,8 @@ const navItems: {
   {
     to: '/tenders',
     label: 'Tenders',
-    animation: 'wiggle',
     icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -47,9 +40,8 @@ const navItems: {
   {
     to: '/rubric',
     label: 'Rubric',
-    animation: 'pop',
     icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -61,80 +53,45 @@ const navItems: {
   },
 ]
 
-// Map animation types to CSS classes
-const animationClasses: Record<IconAnimation, string> = {
-  bounce: 'group-hover:animate-arcade-bounce',
-  wiggle: 'group-hover:animate-arcade-wiggle',
-  pop: 'group-hover:animate-arcade-pop',
-}
-
 export function Sidebar({ collapsed }: SidebarProps) {
   return (
     <aside
-      className={`fixed left-0 top-[4.5rem] h-[calc(100vh-4.5rem)] transition-all duration-300 z-30 ${
+      className={`fixed left-0 top-[4.5rem] h-[calc(100vh-4.5rem)] transition-all duration-300 z-30 bg-card border-r border-border ${
         collapsed ? 'w-16' : 'w-56'
       }`}
     >
-      <PixelBox color="#2d8f8f" bgColor="#ffffff" className="h-full">
-        <nav className="p-3 space-y-2">
-          {/* Section label with diamond marker */}
-          {!collapsed && (
-            <div className="px-3 py-2 text-xs font-mono tracking-wider text-[#78716c] uppercase">
-              <span className="text-[#c75d32] mr-2">◆</span>
-              Navigation
-            </div>
-          )}
+      <nav className="p-3 space-y-2">
+        {/* Section label */}
+        {!collapsed && (
+          <div className="px-3 py-2 text-xs font-serif font-semibold text-muted-foreground">
+            Navigation
+          </div>
+        )}
 
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.to === '/'}
-              className={({ isActive }) =>
-                `group flex items-center gap-3 px-3 py-2 transition-all font-mono text-sm tracking-wide rounded-md ${
-                  collapsed ? 'justify-center' : ''
-                } ${isActive ? 'nav-active-pulse' : 'hover:bg-[#4ecdc4]/10'}`
-              }
-              style={({ isActive }) =>
+        {navItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.to === '/'}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ${
+                collapsed ? 'justify-center' : ''
+              } ${
                 isActive
-                  ? {
-                      background: 'linear-gradient(180deg, #4ecdc4 0%, #2d8f8f 100%)',
-                      boxShadow: '0 3px 0 #1a5f5f',
-                      color: '#ffffff',
-                    }
-                  : {
-                      color: '#1a3a4a',
-                    }
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <span
-                    className={`flex-shrink-0 transition-all duration-200 ${
-                      animationClasses[item.animation]
-                    } ${
-                      isActive
-                        ? 'animate-arcade-float drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]'
-                        : 'group-hover:scale-110 group-hover:text-[#2d8f8f]'
-                    }`}
-                  >
-                    {item.icon}
-                  </span>
-                  {!collapsed && (
-                    <span className={`transition-all duration-200 ${
-                      isActive
-                        ? 'text-white font-bold'
-                        : 'group-hover:text-[#2d8f8f] group-hover:translate-x-0.5'
-                    }`}>
-                      {item.label}
-                    </span>
-                  )}
-                </>
-              )}
-            </NavLink>
-          ))}
-        </nav>
-      </PixelBox>
+                  ? 'bg-primary/10 text-primary font-medium'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              }`
+            }
+          >
+            <span className="flex-shrink-0">
+              {item.icon}
+            </span>
+            {!collapsed && (
+              <span>{item.label}</span>
+            )}
+          </NavLink>
+        ))}
+      </nav>
     </aside>
   )
 }

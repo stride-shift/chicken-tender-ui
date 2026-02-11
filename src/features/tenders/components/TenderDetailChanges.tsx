@@ -10,13 +10,10 @@ export function TenderDetailChanges({ changes }: TenderDetailChangesProps) {
   if (!changes || changes.length === 0) {
     return (
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-teal-500" />
-          <h3 className="text-sm font-black text-teal-700 uppercase tracking-wider">
-            CHANGE HISTORY
-          </h3>
-        </div>
-        <p className="text-sm text-stone-500">No changes recorded for this tender.</p>
+        <h3 className="text-subtitle font-serif font-semibold text-foreground">
+          Change History
+        </h3>
+        <p className="text-body text-muted-foreground">No changes recorded for this tender.</p>
       </div>
     )
   }
@@ -24,16 +21,10 @@ export function TenderDetailChanges({ changes }: TenderDetailChangesProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-teal-500" />
-          <h3 className="text-sm font-black text-teal-700 uppercase tracking-wider">
-            CHANGE HISTORY
-          </h3>
-        </div>
-        <span
-          className="px-2 py-1 text-xs font-bold text-stone-600 bg-stone-100 rounded"
-          style={{ boxShadow: '0 2px 0 #d6d3d1' }}
-        >
+        <h3 className="text-subtitle font-serif font-semibold text-foreground">
+          Change History
+        </h3>
+        <span className="px-2 py-1 text-caption text-muted-foreground bg-muted rounded">
           {changes.length} change(s)
         </span>
       </div>
@@ -74,53 +65,38 @@ function ChangeItem({ change }: { change: TenderChange }) {
   const getChangeTypeBadge = () => {
     if (change.change_type === 'document') {
       return (
-        <span
-          className="text-xs font-black px-2 py-1 text-white rounded"
-          style={{
-            background: 'linear-gradient(180deg, #c084fc 0%, #a855f7 100%)',
-            boxShadow: '0 2px 0 rgba(0,0,0,0.2)'
-          }}
-        >
-          DOCUMENT
+        <span className="px-2 py-1 rounded text-caption font-medium bg-accent text-accent-foreground">
+          Document
         </span>
       )
     }
     return (
-      <span
-        className="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded"
-        style={{ boxShadow: '0 2px 0 #dbeafe' }}
-      >
-        METADATA
+      <span className="px-2 py-1 rounded text-caption font-medium bg-info text-info-foreground">
+        Metadata
       </span>
     )
   }
 
   return (
-    <div
-      className="bg-white rounded overflow-hidden"
-      style={{
-        border: '2px solid #e7e5e4',
-        boxShadow: '3px 3px 0 #d6d3d1'
-      }}
-    >
+    <div className="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
       {/* Header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-4 py-3 flex items-center justify-between bg-white hover:bg-stone-50 transition-colors text-left"
+        className="w-full px-4 py-3 flex items-center justify-between bg-card hover:bg-muted transition-colors text-left"
       >
         <div className="flex items-center gap-3">
           <ImportanceBadge importance={change.highest_importance} />
           {getChangeTypeBadge()}
-          <span className="text-stone-500 text-sm font-mono">
+          <span className="text-caption text-muted-foreground">
             {formatDateTime(change.observed_at)}
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-stone-400 font-medium">
+          <span className="text-caption text-muted-foreground">
             {fieldChanges.length + (hasDocChanges ? 1 : 0)} item(s)
           </span>
           <svg
-            className={`w-4 h-4 text-stone-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+            className={`w-4 h-4 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -132,7 +108,7 @@ function ChangeItem({ change }: { change: TenderChange }) {
 
       {/* Expanded content */}
       {isExpanded && (
-        <div className="px-4 py-3 bg-stone-50 border-t-2 border-stone-200 space-y-3">
+        <div className="px-4 py-3 bg-muted border-t border-border space-y-3">
           {/* Field changes */}
           {fieldChanges.length > 0 && (
             <div className="space-y-2">
@@ -146,24 +122,18 @@ function ChangeItem({ change }: { change: TenderChange }) {
           {hasDocChanges && (
             <div className="space-y-2">
               {documents.added.length > 0 && (
-                <div
-                  className="bg-white p-3 rounded"
-                  style={{
-                    border: '2px solid #86efac',
-                    boxShadow: '2px 2px 0 #bbf7d0'
-                  }}
-                >
-                  <div className="text-sm font-bold text-green-700 mb-1 flex items-center gap-2">
-                    <span className="text-green-500">+</span> Added
+                <div className="bg-card p-3 rounded-md border border-success">
+                  <div className="text-body-small font-medium text-success mb-1 flex items-center gap-2">
+                    <span>+</span> Added
                   </div>
                   <div className="space-y-1">
                     {documents.added.map((doc, idx) => {
                       const { fileName, sourceId } = normalizeDocument(doc)
                       return (
-                        <div key={idx} className="text-sm text-stone-700 pl-4">
+                        <div key={idx} className="text-body-small text-foreground pl-4">
                           <span className="font-medium">{fileName}</span>
                           {sourceId && (
-                            <span className="text-xs text-stone-400 ml-2 font-mono">ID: {sourceId}</span>
+                            <span className="text-caption text-muted-foreground ml-2">ID: {sourceId}</span>
                           )}
                         </div>
                       )
@@ -172,24 +142,18 @@ function ChangeItem({ change }: { change: TenderChange }) {
                 </div>
               )}
               {documents.removed.length > 0 && (
-                <div
-                  className="bg-white p-3 rounded"
-                  style={{
-                    border: '2px solid #fca5a5',
-                    boxShadow: '2px 2px 0 #fecaca'
-                  }}
-                >
-                  <div className="text-sm font-bold text-red-700 mb-1 flex items-center gap-2">
-                    <span className="text-red-500">-</span> Removed
+                <div className="bg-card p-3 rounded-md border border-destructive">
+                  <div className="text-body-small font-medium text-destructive mb-1 flex items-center gap-2">
+                    <span>-</span> Removed
                   </div>
                   <div className="space-y-1">
                     {documents.removed.map((doc, idx) => {
                       const { fileName, sourceId } = normalizeDocument(doc)
                       return (
-                        <div key={idx} className="text-sm text-stone-700 pl-4">
+                        <div key={idx} className="text-body-small text-foreground pl-4">
                           <span className="font-medium">{fileName}</span>
                           {sourceId && (
-                            <span className="text-xs text-stone-400 ml-2 font-mono">ID: {sourceId}</span>
+                            <span className="text-caption text-muted-foreground ml-2">ID: {sourceId}</span>
                           )}
                         </div>
                       )
@@ -198,24 +162,18 @@ function ChangeItem({ change }: { change: TenderChange }) {
                 </div>
               )}
               {documents.modified.length > 0 && (
-                <div
-                  className="bg-white p-3 rounded"
-                  style={{
-                    border: '2px solid #fcd34d',
-                    boxShadow: '2px 2px 0 #fde68a'
-                  }}
-                >
-                  <div className="text-sm font-bold text-amber-700 mb-1 flex items-center gap-2">
-                    <span className="text-amber-500">~</span> Modified
+                <div className="bg-card p-3 rounded-md border border-warning">
+                  <div className="text-body-small font-medium text-warning mb-1 flex items-center gap-2">
+                    <span>~</span> Modified
                   </div>
                   <div className="space-y-1">
                     {documents.modified.map((doc, idx) => {
                       const { fileName, sourceId } = normalizeDocument(doc)
                       return (
-                        <div key={idx} className="text-sm text-stone-700 pl-4">
+                        <div key={idx} className="text-body-small text-foreground pl-4">
                           <span className="font-medium">{fileName}</span>
                           {sourceId && (
-                            <span className="text-xs text-stone-400 ml-2 font-mono">ID: {sourceId}</span>
+                            <span className="text-caption text-muted-foreground ml-2">ID: {sourceId}</span>
                           )}
                         </div>
                       )
@@ -246,23 +204,17 @@ function FieldChangeItem({ fieldChange }: { fieldChange: FieldChange }) {
   }
 
   return (
-    <div
-      className="bg-white p-3 rounded"
-      style={{
-        border: '2px solid #e7e5e4',
-        boxShadow: '2px 2px 0 #f5f5f4'
-      }}
-    >
+    <div className="bg-card p-3 rounded-md border border-border">
       <div className="flex items-center justify-between mb-1">
-        <span className="text-sm font-bold text-stone-800">
+        <span className="text-body-small font-medium text-foreground">
           {formatFieldName(fieldChange.field)}
         </span>
         <ImportanceBadge importance={fieldChange.importance} size="sm" />
       </div>
-      <div className="text-xs flex items-start gap-2">
-        <span className="text-red-600 line-through bg-red-50 px-1 rounded">{formatValue(fieldChange.previous)}</span>
-        <span className="text-stone-400 font-bold">-&gt;</span>
-        <span className="text-green-700 bg-green-50 px-1 rounded font-medium">{formatValue(fieldChange.current)}</span>
+      <div className="text-caption flex items-start gap-2">
+        <span className="text-destructive line-through bg-destructive/10 px-1 rounded">{formatValue(fieldChange.previous)}</span>
+        <span className="text-muted-foreground">→</span>
+        <span className="text-success bg-success/10 px-1 rounded font-medium">{formatValue(fieldChange.current)}</span>
       </div>
     </div>
   )

@@ -4,34 +4,23 @@ interface LoadingStateProps {
   message?: string;
 }
 
-export function LoadingState({ message = 'LOADING...' }: LoadingStateProps) {
-  // All variants now use the arcade loading animation
+export function LoadingState({ message = 'Loading...' }: LoadingStateProps) {
   return (
     <div className="flex flex-col items-center justify-center p-8">
-      <div className="flex gap-1 mb-4">
-        {[0, 1, 2, 3, 4].map((i) => (
+      <div className="flex gap-2 mb-4">
+        {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className="w-4 h-8 bg-teal-500 rounded-sm"
+            className="w-2 h-2 bg-primary rounded-full animate-pulse"
             style={{
-              animation: `pulse 1s ease-in-out ${i * 0.1}s infinite`,
-              boxShadow: '0 0 10px #2d8f8f66'
+              animationDelay: `${i * 0.15}s`,
             }}
           />
         ))}
       </div>
-      <div
-        className="font-mono font-black text-teal-500 tracking-widest"
-        style={{ textShadow: '0 0 10px #2d8f8f' }}
-      >
+      <div className="text-muted-foreground text-sm">
         {message}
       </div>
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 0.4; transform: scaleY(0.6); }
-          50% { opacity: 1; transform: scaleY(1); }
-        }
-      `}</style>
     </div>
   );
 }

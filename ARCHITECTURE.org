@@ -23,29 +23,32 @@ Multi-tenant application where each client sees only their own evaluated tenders
 |-------|--------|--------|
 | Framework | Vite + React 19 | Fast builds, simple config, no SSR needed |
 | Language | TypeScript | Type safety, Supabase has excellent types |
-| Styling | Tailwind CSS 4 + Arcade Design System | Utility-first styles with retro arcade aesthetic |
-| Components | Custom Arcade UI | PixelBox, LEDNumber, HealthBar, ArcadeButton primitives |
+| Styling | Tailwind CSS 4 + Gold Executive Design System | Semantic token-based theming with Inter + Lora typography |
+| Components | Custom UI Components | PixelBox, HealthBar, ArcadeButton primitives |
 | Charts | Recharts | Composable, React-first charting library |
 | Data | TanStack Query | Caching, loading states, refetching |
 | Routing | React Router v6 | Client-side routing with URL params |
 | Backend | Supabase | Direct RPC connection |
 
-* Arcade Design System
+* Design System (Gold Executive)
 
-Retro arcade-inspired visual language with light mode cream backgrounds and bold colored accents.
+Clean, professional design system using semantic CSS custom properties defined in =globals.css=.
 
 | Element | Implementation |
 |---------|----------------|
-| Containers | PixelBox with 4px offset shadows and pixel corner accents |
-| Numbers | LEDNumber with glowing text shadow effect |
-| Progress | HealthBar with segmented display |
-| Buttons | ArcadeButton with gradient backgrounds and 3D press effect |
-| Effects | Scanlines overlay, PixelStrip dividers |
-| Colors | Cream (#FFFBF0) backgrounds, teal (#2D8F8F) and coral (#FF6B6B) accents |
+| Colors | Semantic tokens: =--color-primary= (gold), =--color-foreground=, =--color-muted=, =--color-destructive=, etc. |
+| Typography | Inter (sans) for body, Lora (serif) for headings; weight 300 body, 600 headings |
+| Containers | PixelBox renders =rounded-lg border border-border bg-card shadow-sm= |
+| Numbers | LEDNumber renders =font-semibold tabular-nums= text |
+| Progress | HealthBar renders rounded-full progress bar |
+| Buttons | ArcadeButton with semantic variant classes (=bg-primary=, =bg-destructive=, etc.) |
+| Badges | Rounded-pill badges with tinted backgrounds (=bg-success/10 text-success=) |
+| Shadows | CSS custom property shadows: =--shadow-primary=, =--shadow-glow= |
+| Animations | Subtle transitions: fade-in, slide-up, scale-in, shimmer |
 
-Badges use arcade-styled variants: hexagon shapes for excellent fit, LED dots for status, gradient fills for importance.
+Business-specific colors for tender domain are defined as tokens: =--color-excellent=, =--color-good=, =--color-review=, =--color-active=, etc.
 
-See =src/components/quick_reference.org= for arcade component implementation details.
+See =src/components/quick_reference.org= for component implementation details.
 
 * Project Structure
 
@@ -59,8 +62,8 @@ src/
 │   └── dashboard/            # Stats, alerts, activity (10 components, 2 hooks)
 ├── components/               # Shared UI components
 │   ├── layout/               # AppShell, Header, Sidebar
-│   ├── shared/               # Arcade-styled Badges, States, Pagination
-│   └── ui/                   # Arcade primitives (PixelBox, LEDNumber, etc.)
+│   ├── shared/               # Badges, States, Pagination
+│   └── ui/                   # UI primitives (PixelBox, HealthBar, ArcadeButton, etc.)
 ├── lib/                      # Utilities and config
 │   ├── supabase.ts           # Supabase client + getClientCode()
 │   └── types.ts              # TypeScript interfaces (23 types)
@@ -308,13 +311,14 @@ Displays the active client evaluation rubric.
 
 #+BEGIN_EXAMPLE
 ┌──────────────────────────────────────────────────────────────┐
-│ Header (fixed top, z-40)                                     │
-│ [≡ burger] [TenderRender]                    [pragma badge]  │
+│ Header (sticky top, z-40, bg-card border-b)                  │
+│ [≡ burger] [Logo] [/ Page]                [profile dropdown] │
 ├────────────┬─────────────────────────────────────────────────┤
 │            │                                                 │
 │  Sidebar   │              Main Content                       │
-│  (fixed)   │              (with margin-left)                 │
-│            │                                                 │
+│  (fixed,   │              (with margin-left, p-3)            │
+│  bg-card,  │                                                 │
+│  border-r) │                                                 │
 │ ┌────────┐ │                                                 │
 │ │  Dash  │ │                                                 │
 │ │ Tender │ │                                                 │
@@ -331,10 +335,10 @@ Displays the active client evaluation rubric.
 | Expanded | 224px (w-56) | ml-56 |
 | Collapsed | 64px (w-16) | ml-16 |
 
-- Burger menu (≡) in header toggles sidebar
+- Burger menu in header toggles sidebar
 - Expanded: shows icon + label
 - Collapsed: shows icon only
-- Active route highlighted with blue background
+- Active route highlighted with =bg-primary/10 text-primary=
 
 See =src/components/quick_reference.org= for layout component details.
 
@@ -358,13 +362,14 @@ Three-tier approach:
 ** ErrorState
 
 - Used in components when queries fail
-- Shows error icon, message, and optional retry callback
-- Red-themed for visibility
+- Shows title ("Error"), message, and optional retry button
+- Uses =text-destructive= styling
 - Location: =src/components/shared/ErrorState.tsx=
 
 ** Toast Notifications
 
-- Three types: success, error, info
+- Three types: success ("Success"), error ("Error"), info ("Info")
+- Card-style with colored left border accent (=border-l-success=, =border-l-destructive=, =border-l-info=)
 - Auto-dismiss after 5 seconds
 - Fixed bottom-right positioning
 - Managed via ToastContext
@@ -406,31 +411,31 @@ Keep together when:
 
 ** Recommendation Levels
 
-| Level | Meaning | Badge Color |
+| Level | Meaning | Badge Style |
 |-------|---------|-------------|
-| excellent_fit | Strong match, high priority | Emerald |
-| good_fit | Good match, worth pursuing | Blue |
-| worth_reviewing | Potential fit, needs review | Amber |
-| not_recommended | Does not match criteria | Slate |
+| excellent_fit | Strong match, high priority | =bg-success/10 text-success= |
+| good_fit | Good match, worth pursuing | =bg-info/10 text-info= |
+| worth_reviewing | Potential fit, needs review | =bg-warning/10 text-warning= |
+| not_recommended | Does not match criteria | =bg-muted text-muted-foreground= |
 
 "Relevant" = any recommendation except =not_recommended=
 
 ** Change Importance
 
-| Level | Meaning | Badge Color |
+| Level | Meaning | Badge Style |
 |-------|---------|-------------|
-| high | Affects bid strategy (closing date, status, compulsory briefing) | Red |
-| medium | Logistics impact (location, contact info) | Amber |
-| low | Informational (description edits) | Slate |
+| high | Affects bid strategy (closing date, status, compulsory briefing) | =bg-destructive/10 text-destructive= |
+| medium | Logistics impact (location, contact info) | =bg-warning/10 text-warning= |
+| low | Informational (description edits) | =bg-muted text-muted-foreground= |
 
 ** Tender Status
 
-| Status | Meaning | Badge Color |
+| Status | Meaning | Badge Style |
 |--------|---------|-------------|
-| active | Open for bids | Green |
-| awarded | Contract awarded | Blue |
-| closed | Bidding closed | Slate |
-| cancelled | Tender cancelled | Red |
+| active | Open for bids | =bg-success/10 text-success= |
+| awarded | Contract awarded | =bg-warning/10 text-warning= |
+| closed | Bidding closed | =bg-muted text-muted-foreground= |
+| cancelled | Tender cancelled | =bg-destructive/10 text-destructive= |
 
 * Authentication Strategy
 
@@ -487,4 +492,4 @@ Header displays logout button when authenticated. Calls =auth.logout()= to clear
 | [[file:context_files/frontend.md][context_files/frontend.md]] | API documentation from backend |
 
 ---
-/Last Updated/: 2026-02-10
+/Last Updated/: 2026-02-11

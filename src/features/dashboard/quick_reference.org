@@ -1,5 +1,5 @@
 #+TITLE: Dashboard Feature - Quick Reference
-#+DATE: 2026-02-10
+#+DATE: 2026-02-11
 
 * Overview
 
@@ -9,23 +9,24 @@ Overview and monitoring feature. Displays stats, alerts, and recent activity for
 
 | Component | File | Purpose |
 |-----------|------|---------|
-| StatsGrid | components/StatsGrid.tsx:19 | Grid of six tender count cards |
-| StatCard | components/StatCard.tsx:14 | Single metric card with label and LED number |
-| AlertCard | components/AlertCard.tsx:13 | Inline alert with urgent styling option |
-| AlertsRow | components/AlertsRow.tsx:9 | Row showing briefings, closing deadlines, and changes |
-| RecentChanges | components/RecentChanges.tsx:8 | Displays high-importance changes count preview |
-| TenderCarousel | components/TenderCarousel.tsx:11 | Auto-scrolling carousel of featured tenders |
-| TenderCarouselCard | components/TenderCarouselCard.tsx:9 | Individual card showing score, dates published/closing |
-| ScoreDistributionChart | components/ScoreDistributionChart.tsx:18 | Recharts donut chart showing score breakdown |
-| DepartmentTreemap | components/DepartmentTreemap.tsx:122 | Recharts treemap of tenders by department |
+| StatsGrid | components/StatsGrid.tsx:17 | Grid of six tender count cards with modern styling |
+| StatCard | components/StatCard.tsx:11 | Single metric card with label and semantic color |
+| AlertCard | components/AlertCard.tsx:24 | Alert indicator with severity-based left border |
+| AlertsRow | components/AlertsRow.tsx:8 | Row showing briefings, closing deadlines, changes |
+| RecentChanges | components/RecentChanges.tsx:7 | Displays 24h high-importance changes with status |
+| TenderCarousel | components/TenderCarousel.tsx:10 | Auto-scrolling carousel with expand/collapse toggle |
+| TenderCarouselCard | components/TenderCarouselCard.tsx:8 | Individual card with score, dates, LLM notes |
+| ScoreDistributionChart | components/ScoreDistributionChart.tsx:17 | Recharts donut chart with center total label |
+| DepartmentTreemap | components/DepartmentTreemap.tsx:56 | Recharts horizontal bar chart of tenders by dept |
+| ClosingTimelineChart | components/ClosingTimelineChart.tsx:19 | Bar chart showing tenders closing by week (unused) |
 
 * Hooks
 
 | Hook | File | RPC Function | Purpose |
 |------|------|--------------|---------|
-| useDashboardStats | hooks/useDashboardStats.ts:9 | get_dashboard_stats | Fetches dashboard statistics for current client |
-| useRelevantTenders | hooks/useRelevantTenders.ts:22 | get_tenders_paginated | Fetches relevant tenders for carousel display |
-| useFilterOptions | @/features/tenders/hooks/useFilterOptions.ts:13 | get_filter_options | Fetches provinces, departments, categories (used by DepartmentTreemap) |
+| useDashboardStats | hooks/useDashboardStats.ts:10 | get_dashboard_stats | Fetches dashboard stats for current client |
+| useRelevantTenders | hooks/useRelevantTenders.ts:22 | get_tenders_paginated | Fetches active, relevant tenders for carousel |
+| useFilterOptions | @/features/tenders/hooks/useFilterOptions.ts:13 | get_filter_options | Fetches departments with counts for bar chart |
 
 ** useRelevantTenders Hook Parameters
 
@@ -81,14 +82,14 @@ Hook interface parameters:
 
 | Feature | Implementation |
 |---------|----------------|
-| Auto-scroll | 5000ms interval (configurable via autoScrollInterval prop) |
-| Pause behavior | Mouse hover pauses auto-scrolling |
+| Auto-scroll | 5000ms interval, configurable via autoScrollInterval prop |
+| Pause behavior | Pauses on mouse hover, resumes on mouse leave |
 | Responsive | 1 card (mobile), 2 cards (tablet), 3 cards (desktop) |
-| Navigation | Prev/Next buttons and progress dots |
-| Data source | useRelevantTenders hook (limit: 8) |
-| Card navigation | Clicking card navigates to /tenders/:tender_pk |
-| Expand/Collapse | Toggle button switches between carousel and responsive grid view |
-| View modes | Carousel view (default) or expanded responsive grid layout |
+| Navigation | Prev/Next buttons and dot indicators in carousel mode |
+| Data source | useRelevantTenders hook (default limit: 8, featured count) |
+| Card navigation | Click card to navigate to /tenders/:tender_pk |
+| View toggle | Button to switch between carousel and expanded grid |
+| Grid mode | Shows all tenders in responsive grid (1/2/3 columns) |
 
 ** ScoreDistributionChart
 
@@ -104,29 +105,30 @@ Hook interface parameters:
 
 | Feature | Implementation |
 |---------|----------------|
-| Chart type | Recharts Treemap |
-| Data source | useFilterOptions hook (departments) |
-| Display limit | Top 12 departments by count |
-| Colors | 10-color palette rotation |
-| Labels | Department name and count (if space allows) |
+| Chart type | Recharts BarChart (horizontal layout) |
+| Data source | useFilterOptions hook (departments with counts) |
+| Display limit | Top 10 departments by count, then "Other" group |
+| Colors | 10-color gold/amber palette, cycles through bars |
+| Labels | Department name (Y-axis), count at end of bar |
+| Height | Fixed 320px, scrollable if needed |
 
 ** StatCard Props
 
 | Prop | Type | Purpose |
 |------|------|---------|
 | label | string | Metric label text |
-| value | number or string | Metric value displayed as LED number |
-| color | string (optional) | LED number color (default: #2d8f8f) |
-| bgColor | string (optional) | Background color for card (default: #f0fdfa) |
+| value | number or string | Metric value in serif font |
+| featured | boolean (optional) | Adds gradient border and bg if true (default: false) |
 
 * Dashboard Page Layout
 
 DashboardPage.tsx displays components in this order:
 1. StatsGrid + AlertsRow (flex row on large screens)
-2. TenderCarousel
-3. ScoreDistributionChart + DepartmentTreemap (2-column grid)
+2. TenderCarousel (auto-scrolling carousel or expanded grid)
+3. ScoreDistributionChart + DepartmentTreemap (side-by-side on desktop)
+4. RecentChanges (activity status card)
 
-Note: ClosingTimelineChart exists but is not currently used in DashboardPage.
+Note: ClosingTimelineChart component exists but is not currently integrated in DashboardPage.
 
 ---
-/Last Updated/: 2026-02-10
+/Last Updated/: 2026-02-11

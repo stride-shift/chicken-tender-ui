@@ -1,8 +1,7 @@
 import { useDashboardStats } from '../hooks/useDashboardStats'
-import { PixelBox, LEDNumber } from '@/components/ui'
 
 /**
- * Displays a preview of recent high-importance changes in terminal log style.
+ * Displays a preview of recent high-importance changes.
  * Currently shows just the count; will integrate with activity feed in the future.
  */
 export function RecentChanges() {
@@ -10,101 +9,80 @@ export function RecentChanges() {
 
   if (isLoading) {
     return (
-      <PixelBox color="#1a3a4a" bgColor="#ffffff" className="overflow-hidden">
+      <div className="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
         {/* Header */}
-        <div className="p-3 bg-white border-b border-stone-200">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-purple-500" />
-            <span className="text-xs tracking-widest font-black text-purple-600">RECENT CHANGES</span>
-          </div>
+        <div className="p-3 bg-muted border-b border-border">
+          <h3 className="font-serif font-semibold text-foreground">Recent Changes</h3>
         </div>
         {/* Loading state */}
-        <div className="bg-stone-50 p-4">
-          <div className="h-6 w-48 bg-stone-200 rounded animate-pulse mb-3" />
-          <div className="h-4 w-32 bg-stone-200 rounded animate-pulse" />
+        <div className="p-4">
+          <div className="h-6 w-48 bg-muted rounded animate-pulse mb-3" />
+          <div className="h-4 w-32 bg-muted rounded animate-pulse" />
         </div>
-      </PixelBox>
+      </div>
     )
   }
 
   if (error) {
     return (
-      <PixelBox color="#1a3a4a" bgColor="#ffffff" className="overflow-hidden">
+      <div className="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
         {/* Header */}
-        <div className="p-3 bg-white border-b border-stone-200">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-purple-500" />
-            <span className="text-xs tracking-widest font-black text-purple-600">RECENT CHANGES</span>
-          </div>
+        <div className="p-3 bg-muted border-b border-border">
+          <h3 className="font-serif font-semibold text-foreground">Recent Changes</h3>
         </div>
         {/* Error state */}
-        <div className="bg-stone-50 p-4 font-mono">
-          <span className="text-red-600">[ERROR]</span>
-          <span className="text-red-500 ml-2">{(error as Error).message}</span>
+        <div className="p-4">
+          <span className="text-destructive font-semibold">Error:</span>
+          <span className="text-muted-foreground ml-2">{(error as Error).message}</span>
         </div>
-      </PixelBox>
+      </div>
     )
   }
 
   const changesCount = stats?.high_importance_changes_24h ?? 0
 
   return (
-    <PixelBox color="#1a3a4a" bgColor="#ffffff" className="overflow-hidden">
+    <div className="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="p-3 bg-white border-b border-stone-200">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-purple-500" />
-          <span className="text-xs tracking-widest font-black text-purple-600">RECENT CHANGES</span>
-        </div>
+      <div className="p-3 bg-muted border-b border-border">
+        <h3 className="font-serif font-semibold text-foreground">Recent Changes</h3>
       </div>
 
-      {/* Log content */}
-      <div className="bg-stone-50 p-4 relative">
-        <div className="relative z-10 font-mono">
+      {/* Content */}
+      <div className="p-4">
+        <div className="border-b border-border py-3 last:border-0">
           {changesCount > 0 ? (
             <div className="flex items-center gap-3">
-              <span className="text-stone-500">[24H]</span>
-              <span
-                className="px-2 py-0.5 text-xs font-bold rounded"
-                style={{
-                  backgroundColor: '#fef3c7',
-                  color: '#d97706'
-                }}
-              >
+              <span className="text-muted-foreground text-sm">24H</span>
+              <span className="px-2 py-0.5 text-xs font-semibold rounded bg-warning/10 text-warning border border-warning/20">
                 ALERT
               </span>
               <div className="flex items-center gap-2">
-                <LEDNumber value={changesCount} color="#f59e0b" size="small" />
-                <span className="text-stone-600 text-sm">
+                <span className="text-h3 font-serif font-semibold text-warning">{changesCount}</span>
+                <span className="text-foreground text-sm">
                   high-importance {changesCount === 1 ? 'change' : 'changes'}
                 </span>
               </div>
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <span className="text-stone-500">[24H]</span>
-              <span
-                className="px-2 py-0.5 text-xs font-bold rounded"
-                style={{
-                  backgroundColor: '#dcfce7',
-                  color: '#16a34a'
-                }}
-              >
+              <span className="text-muted-foreground text-sm">24H</span>
+              <span className="px-2 py-0.5 text-xs font-semibold rounded bg-success/10 text-success border border-success/20">
                 OK
               </span>
-              <span className="text-stone-500 text-sm">
+              <span className="text-muted-foreground text-sm">
                 No high-importance changes
               </span>
             </div>
           )}
+        </div>
 
-          {/* Status line */}
-          <div className="mt-3 text-xs text-stone-500 flex items-center gap-2">
-            <span className="inline-block w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-            <span>Activity feed integration coming soon</span>
-          </div>
+        {/* Status line */}
+        <div className="mt-3 text-caption text-muted-foreground flex items-center gap-2">
+          <span className="inline-block w-2 h-2 rounded-full bg-primary animate-pulse" />
+          <span>Activity feed integration coming soon</span>
         </div>
       </div>
-    </PixelBox>
+    </div>
   )
 }

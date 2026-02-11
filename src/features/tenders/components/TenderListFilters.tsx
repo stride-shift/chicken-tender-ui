@@ -1,7 +1,6 @@
 import type { FilterOption } from '@/lib/types'
 import type { TenderFilters } from '../hooks/useTenders'
 import { FilterPopup } from './FilterPopup'
-import { ArcadeButton } from '@/components/ui'
 
 // Simple search icon component
 const SearchIcon = ({ className }: { className?: string }) => (
@@ -68,55 +67,32 @@ export function TenderListFilters({
     <div className="space-y-2">
       {/* Search input and Filter button row */}
       <div className="flex gap-2">
-        {/* Search input with thick border */}
-        <div className="flex flex-1">
+        {/* Search input with icon inside */}
+        <div className="relative flex-1">
+          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
           <input
             type="text"
             placeholder="Search tenders..."
             value={filters.searchText ?? ''}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="flex-1 px-3 py-2 bg-white text-stone-800 placeholder-stone-400 outline-none font-mono text-sm"
-            style={{
-              border: '3px solid #2d8f8f',
-              borderRight: 'none',
-              borderTopLeftRadius: '4px',
-              borderBottomLeftRadius: '4px'
-            }}
+            className="h-10 w-full rounded-md bg-input px-3 py-2 pl-10 text-sm border border-border focus:ring-2 focus:ring-ring transition-all outline-none"
           />
-          <button
-            className="px-3 flex items-center justify-center"
-            style={{
-              background: 'linear-gradient(180deg, #4ecdc4 0%, #2d8f8f 100%)',
-              boxShadow: '0 3px 0 #1a5f5f',
-              borderTopRightRadius: '4px',
-              borderBottomRightRadius: '4px'
-            }}
-          >
-            <SearchIcon className="w-4 h-4 text-white" />
-          </button>
         </div>
 
         {/* Filter button */}
         <div className="relative">
-          <ArcadeButton
-            variant="secondary"
-            size="sm"
+          <button
             onClick={onOpenFilterPopup}
             disabled={isLoading}
-            icon={<FilterIcon className="w-4 h-4" />}
+            className="h-10 border border-border rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted transition-colors flex items-center gap-2 disabled:opacity-50"
           >
+            <FilterIcon className="w-4 h-4" />
             Filter
-          </ArcadeButton>
+          </button>
 
           {/* Active filter count badge */}
           {activeFilterCount > 0 && (
-            <span
-              className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center text-xs font-black text-white rounded-full"
-              style={{
-                background: 'linear-gradient(180deg, #f87171 0%, #dc2626 100%)',
-                boxShadow: '0 2px 0 #991b1b',
-              }}
-            >
+            <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center text-xs font-semibold text-white bg-primary rounded-full border-2 border-card">
               {activeFilterCount}
             </span>
           )}

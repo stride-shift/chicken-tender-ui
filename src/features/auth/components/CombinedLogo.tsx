@@ -8,11 +8,11 @@ interface CombinedLogoProps {
   showPixelBoot?: boolean;
 }
 
-// Light mode color palette
+// Gold Executive color palette
 const theme = {
-  primary: '#2a9d8f',
-  accent: '#e76f51',
-  textMuted: '#6b7c8a',
+  primary: '#17171c',
+  accent: '#f0b429',
+  textMuted: '#555568',
   cream: '#faf8f5',
 };
 
@@ -64,7 +64,7 @@ const CombinedLogo: React.FC<CombinedLogoProps> = ({ size = 'large', showPixelBo
             style={{
               width: s.icon * 0.4,
               height: s.icon * 0.4,
-              background: theme.primary,
+              background: theme.accent,
               borderRadius: '50%',
             }}
           />
@@ -91,13 +91,14 @@ const CombinedLogo: React.FC<CombinedLogoProps> = ({ size = 'large', showPixelBo
 
       {/* Text Stack */}
       <div style={{ textAlign: 'center' }}>
-        {/* STRIDESHIFT - teal */}
+        {/* STRIDESHIFT - near-black */}
         <div
           style={{
-            fontFamily: '"Press Start 2P", monospace',
+            fontFamily: "'Lora', Georgia, serif",
             fontSize: s.ssTitle,
             color: theme.primary,
-            letterSpacing: '2px',
+            letterSpacing: '0.5px',
+            fontWeight: 600,
           }}
         >
           STRIDESHIFT
@@ -106,23 +107,25 @@ const CombinedLogo: React.FC<CombinedLogoProps> = ({ size = 'large', showPixelBo
         {/* GLOBAL - muted, smaller */}
         <div
           style={{
-            fontFamily: '"Press Start 2P", monospace',
+            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             fontSize: s.ssSubtitle,
             color: theme.textMuted,
-            letterSpacing: '3px',
+            letterSpacing: '1px',
             marginTop: 4,
+            fontWeight: 500,
           }}
         >
           GLOBAL
         </div>
 
-        {/* TENDER (teal) + RENDER (coral) */}
+        {/* TENDER (near-black) + RENDER (gold) */}
         <div
           style={{
-            fontFamily: '"Press Start 2P", monospace',
+            fontFamily: "'Lora', Georgia, serif",
             fontSize: s.trTitle,
-            letterSpacing: '1px',
+            letterSpacing: '0.5px',
             marginTop: s.gap + 4,
+            fontWeight: 600,
           }}
         >
           <span style={{ color: theme.primary }}>TENDER</span>

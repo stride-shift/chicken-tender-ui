@@ -1,66 +1,60 @@
-import { PixelBox } from '@/components/ui';
 import { useDashboardStats } from '../hooks/useDashboardStats';
 import { StatCard } from './StatCard';
 
-// Color-coded stat configurations for arcade scoreboard feel
+// Stat configurations for dashboard metrics
 const statConfigs = [
-  { key: 'total_active', label: 'TOTAL ACTIVE', color: '#2d8f8f', bg: '#f0fdfa' },
-  { key: 'total_relevant', label: 'RELEVANT', color: '#22c55e', bg: '#f0fdf4' },
-  { key: 'total_not_relevant', label: 'NOT RELEVANT', color: '#6b7280', bg: '#f9fafb' },
-  { key: 'excellent_count', label: 'EXCELLENT', color: '#f59e0b', bg: '#fffbeb' },
-  { key: 'good_count', label: 'GOOD FIT', color: '#3b82f6', bg: '#eff6ff' },
-  { key: 'worth_reviewing_count', label: 'REVIEWING', color: '#8b5cf6', bg: '#f5f3ff' },
+  { key: 'total_active', label: 'Total Active' },
+  { key: 'total_relevant', label: 'Relevant' },
+  { key: 'total_not_relevant', label: 'Not Relevant' },
+  { key: 'excellent_count', label: 'Excellent' },
+  { key: 'good_count', label: 'Good Fit' },
+  { key: 'worth_reviewing_count', label: 'Reviewing' },
 ] as const;
 
 /**
- * Arcade scoreboard-style stats display with LED numbers and pixel styling.
- * Shows key tender metrics in a visually prominent grid.
+ * Dashboard stats display showing key tender metrics in a clean grid.
  */
 export function StatsGrid() {
   const { data: stats, isLoading, error } = useDashboardStats();
 
   if (isLoading) {
     return (
-      <PixelBox color="#2d8f8f" bgColor="#ffffff" className="p-4">
+      <div className="rounded-lg border border-border bg-card shadow-sm p-4">
         <div className="grid grid-cols-6 gap-3">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
-              className="h-20 bg-stone-100 animate-pulse"
-              style={{
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)'
-              }}
+              className="h-20 bg-muted animate-pulse rounded-lg"
             />
           ))}
         </div>
-      </PixelBox>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <PixelBox color="#dc2626" bgColor="#fef2f2" className="p-4">
-        <div className="text-red-600 font-mono">
-          <p className="font-bold tracking-widest">ERROR LOADING STATS</p>
-          <p className="text-sm mt-1 text-red-500">{(error as Error).message}</p>
+      <div className="rounded-lg border border-destructive bg-card shadow-sm p-4">
+        <div className="text-destructive">
+          <p className="font-semibold">Error Loading Stats</p>
+          <p className="text-sm mt-1 text-muted-foreground">{(error as Error).message}</p>
         </div>
-      </PixelBox>
+      </div>
     );
   }
 
   return (
-    <PixelBox color="#2d8f8f" bgColor="#ffffff" className="p-4">
+    <div className="rounded-lg border border-border bg-card shadow-sm p-4">
       <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-        {statConfigs.map((config) => (
+        {statConfigs.map((config, index) => (
           <StatCard
             key={config.key}
             label={config.label}
             value={stats?.[config.key] ?? 0}
-            color={config.color}
-            bgColor={config.bg}
+            featured={index === 0}
           />
         ))}
       </div>
-    </PixelBox>
+    </div>
   );
 }

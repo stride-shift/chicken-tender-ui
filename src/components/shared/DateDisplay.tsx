@@ -25,16 +25,13 @@ export function DateDisplay({ date, showRelative = false, className = '' }: Date
     if (diffDays <= 3) {
       return (
         <div
-          className={`bg-stone-900 px-3 py-2 rounded inline-flex items-center gap-2 ${className}`}
+          className={`bg-muted px-3 py-2 rounded-md inline-flex items-center gap-2 ${className}`}
           title={formattedDate}
         >
-          <span
-            className="font-mono font-black text-red-400"
-            style={{ textShadow: '0 0 10px #ef4444' }}
-          >
+          <span className="text-sm font-semibold text-destructive">
             {diffDays}d
           </span>
-          <span className="text-xs text-stone-500 uppercase tracking-wider">left</span>
+          <span className="text-body-small text-muted-foreground">left</span>
         </div>
       )
     }
@@ -42,16 +39,13 @@ export function DateDisplay({ date, showRelative = false, className = '' }: Date
     // Moderate urgency (4-7 days)
     return (
       <div
-        className={`bg-stone-900 px-3 py-2 rounded inline-flex items-center gap-2 ${className}`}
+        className={`bg-muted px-3 py-2 rounded-md inline-flex items-center gap-2 ${className}`}
         title={formattedDate}
       >
-        <span
-          className="font-mono font-black text-amber-400"
-          style={{ textShadow: '0 0 8px #f59e0b' }}
-        >
+        <span className="text-sm font-semibold text-warning">
           {diffDays}d
         </span>
-        <span className="text-xs text-stone-500 uppercase tracking-wider">left</span>
+        <span className="text-body-small text-muted-foreground">left</span>
       </div>
     )
   }
@@ -61,13 +55,10 @@ export function DateDisplay({ date, showRelative = false, className = '' }: Date
     if (diffDays === 0) {
       return (
         <div
-          className={`bg-stone-900 px-3 py-2 rounded inline-flex items-center gap-2 ${className}`}
+          className={`bg-muted px-3 py-2 rounded-md inline-flex items-center gap-2 ${className}`}
           title={formattedDate}
         >
-          <span
-            className="font-mono font-black text-red-400 animate-pulse"
-            style={{ textShadow: '0 0 12px #ef4444' }}
-          >
+          <span className="text-sm font-semibold text-destructive animate-pulse">
             TODAY
           </span>
         </div>
@@ -77,13 +68,10 @@ export function DateDisplay({ date, showRelative = false, className = '' }: Date
     if (diffDays === 1) {
       return (
         <div
-          className={`bg-stone-900 px-3 py-2 rounded inline-flex items-center gap-2 ${className}`}
+          className={`bg-muted px-3 py-2 rounded-md inline-flex items-center gap-2 ${className}`}
           title={formattedDate}
         >
-          <span
-            className="font-mono font-black text-orange-400"
-            style={{ textShadow: '0 0 10px #f97316' }}
-          >
+          <span className="text-sm font-semibold text-accent">
             TOMORROW
           </span>
         </div>
@@ -93,16 +81,16 @@ export function DateDisplay({ date, showRelative = false, className = '' }: Date
     // Past dates
     if (diffDays < 0) {
       return (
-        <span className={`font-mono text-sm text-stone-500 ${className}`} title={formattedDate}>
+        <span className={`text-body-small text-muted-foreground ${className}`} title={formattedDate}>
           {Math.abs(diffDays)}d ago
         </span>
       )
     }
   }
 
-  // Normal monospace date display
+  // Normal date display
   return (
-    <span className={`font-mono text-sm text-stone-600 ${className}`}>
+    <span className={`text-body-small text-muted-foreground ${className}`}>
       {formattedDate}
     </span>
   )

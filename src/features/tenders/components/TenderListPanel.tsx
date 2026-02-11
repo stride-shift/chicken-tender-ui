@@ -5,8 +5,6 @@ import { useDashboardStats } from '@/features/dashboard/hooks/useDashboardStats'
 import { TenderListFilters } from './TenderListFilters'
 import { TenderListItem } from './TenderListItem'
 import { Pagination } from '@/components/shared/Pagination'
-import { PixelBox } from '@/components/ui'
-
 interface TenderListPanelProps {
   selectedTenderId: number | null
   onSelectTender: (tenderId: number) => void
@@ -73,9 +71,9 @@ export function TenderListPanel({ selectedTenderId, onSelectTender }: TenderList
   }, [])
 
   return (
-    <PixelBox color="#2d8f8f" bgColor="#ffffff" className="h-full flex flex-col overflow-hidden">
-      {/* Search header - light bg */}
-      <div className="p-3 bg-white border-b border-stone-200">
+    <div className="h-full flex flex-col overflow-hidden bg-card border-r border-border">
+      {/* Search header */}
+      <div className="p-3 bg-card border-b border-border">
         <TenderListFilters
           filters={filters}
           onFiltersChange={handleFiltersChange}
@@ -90,15 +88,13 @@ export function TenderListPanel({ selectedTenderId, onSelectTender }: TenderList
         {/* Results count */}
         <div className="mt-2 flex items-center gap-2">
           {isLoading ? (
-            <span className="text-stone-500 text-sm font-mono">Loading...</span>
+            <span className="text-muted-foreground text-sm">Loading...</span>
           ) : (
             <>
-              <span
-                className="font-mono font-black text-teal-600"
-              >
+              <span className="font-semibold text-foreground">
                 {totalCount}
               </span>
-              <span className="text-stone-500 text-sm">
+              <span className="text-muted-foreground text-sm">
                 {dashboardStats?.total_active
                   ? `of ${dashboardStats.total_active} active tender${dashboardStats.total_active === 1 ? '' : 's'}`
                   : `tender${totalCount === 1 ? '' : 's'}`}
@@ -109,27 +105,27 @@ export function TenderListPanel({ selectedTenderId, onSelectTender }: TenderList
       </div>
 
       {/* Tender list */}
-      <div className="flex-1 overflow-y-auto bg-stone-50 relative">
+      <div className="flex-1 overflow-y-auto bg-background relative">
         <div className="relative z-0">
           {error ? (
-            <div className="text-sm text-red-600 p-4 font-mono">
-              {'>'} Error loading tenders: {error.message}
+            <div className="text-sm text-destructive p-4">
+              Error loading tenders: {error.message}
             </div>
           ) : isLoading ? (
             <div className="p-2 space-y-0">
               {[1, 2, 3, 4, 5].map((i) => (
                 <div
                   key={i}
-                  className="p-4 border-b border-stone-200 animate-pulse"
+                  className="p-4 border-b border-border animate-pulse"
                 >
-                  <div className="h-4 bg-stone-200 rounded w-3/4 mb-2" />
-                  <div className="h-3 bg-stone-100 rounded w-1/2" />
+                  <div className="h-4 bg-muted rounded w-3/4 mb-2" />
+                  <div className="h-3 bg-muted rounded w-1/2" />
                 </div>
               ))}
             </div>
           ) : tenders.length === 0 ? (
-            <div className="text-sm text-stone-500 text-center py-8 font-mono">
-              {'>'} No tenders found matching your criteria
+            <div className="text-sm text-muted-foreground text-center py-8">
+              No tenders found matching your criteria
             </div>
           ) : (
             <div>
@@ -148,7 +144,7 @@ export function TenderListPanel({ selectedTenderId, onSelectTender }: TenderList
 
       {/* Pagination */}
       {!isLoading && totalPages > 1 && (
-        <div className="p-2 bg-white border-t border-stone-200">
+        <div className="p-2 bg-card border-t border-border">
           <Pagination
             currentPage={page}
             totalPages={totalPages}
@@ -156,6 +152,6 @@ export function TenderListPanel({ selectedTenderId, onSelectTender }: TenderList
           />
         </div>
       )}
-    </PixelBox>
+    </div>
   )
 }

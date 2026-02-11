@@ -1,27 +1,26 @@
-import { PixelBox } from '@/components/ui';
 import { useDashboardStats } from '../hooks/useDashboardStats';
 import { AlertCard } from './AlertCard';
 
 /**
- * LED-style alert row showing upcoming briefings, closing deadlines, and recent changes.
- * Displays time-sensitive counts with arcade glow effects.
+ * Alert row showing upcoming briefings, closing deadlines, and recent changes.
+ * Displays time-sensitive counts with severity-based styling.
  */
 export function AlertsRow() {
   const { data: stats, isLoading, error } = useDashboardStats();
 
   if (isLoading) {
     return (
-      <div className="h-12 bg-stone-100 rounded animate-pulse" />
+      <div className="h-12 bg-muted rounded-lg animate-pulse" />
     );
   }
 
   if (error) {
     return (
-      <PixelBox color="#dc2626" bgColor="#fef2f2" className="px-4 py-2">
-        <span className="text-red-600 font-mono text-sm">
+      <div className="rounded-lg border border-destructive bg-card shadow-sm px-4 py-2">
+        <span className="text-destructive text-sm">
           Error loading alerts: {(error as Error).message}
         </span>
-      </PixelBox>
+      </div>
     );
   }
 
@@ -35,22 +34,19 @@ export function AlertsRow() {
         title="Briefings"
         value={briefingsCount}
         label="7d"
-        urgent={briefingsCount > 0}
-        color="#2dd4bf"
+        severity={briefingsCount > 0 ? 'medium' : 'low'}
       />
       <AlertCard
         title="Closing"
         value={closingCount}
         label="7d"
-        urgent={closingCount > 0}
-        color="#fbbf24"
+        severity={closingCount > 0 ? 'high' : 'low'}
       />
       <AlertCard
         title="Changes"
         value={recentChangesCount}
         label="24h"
-        urgent={recentChangesCount > 0}
-        color="#c084fc"
+        severity={recentChangesCount > 0 ? 'medium' : 'low'}
       />
     </div>
   );

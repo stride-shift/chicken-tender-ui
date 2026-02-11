@@ -1,25 +1,27 @@
 #+TITLE: Auth Feature - Quick Reference
-#+DATE: 2026-02-09
+#+DATE: 2026-02-11
 
 * Overview
 
-Authentication via Supabase Auth with user profiles and multi-client support. Provides arcade-styled login UI, forgot-password flow, auth state management, and client switching for StrideShift admins.
+Authentication via Supabase Auth with user profiles and multi-client support. Provides clean, modern login UI, forgot-password flow, auth state management, and client switching for StrideShift admins.
 
 * Components
 
 | Component | File | Purpose |
 |-----------|------|---------|
-| LoginCard | LoginCard.tsx:24 | Login form with email/password inputs and arcade styling |
-| ForgotPasswordModal | ForgotPasswordModal.tsx:21 | Modal for sending password reset email |
-| CombinedLogo | CombinedLogo.tsx:19 | Logo showing StrideShift Global + TenderRender |
-| PixelBootLoader | PixelBootLoader.tsx:33 | Animated 10x10 pixel grid loader with reveal animation |
+| LoginCard | LoginCard.tsx:10 | Semantic login form with email/password and forgot-password link |
+| ForgotPasswordModal | ForgotPasswordModal.tsx:9 | Modal for sending password reset email via Supabase |
+| CombinedLogo | CombinedLogo.tsx:19 | Logo with StrideShift Global + TenderRender, pixel boot on load |
+| PixelBootLoader | PixelBootLoader.tsx:14 | Animated spinner loader with pulsing text and crossfade |
 
 * Contexts & Hooks
 
 | Item | File | Purpose |
 |------|------|---------|
-| AuthProvider | AuthContext.tsx:40 | Provider component wrapping app with Supabase auth |
-| useAuth | AuthContext.tsx:319 | Hook to access auth state and methods |
+| AuthProvider | AuthContext.tsx:40 | Provider with two-effect auth state management, deadlock-safe |
+| useAuth | AuthContext.tsx:319 | Hook to access auth state and methods (login, logout, etc.) |
+| isAbortError | AuthContext.tsx:19 | Detect AbortError in both DOMException and Supabase-wrapped forms |
+| recoverSupabaseAuth | AuthContext.tsx:33 | Reset cached initializePromise and reinitialize auth client |
 
 * Types
 
@@ -59,31 +61,31 @@ AuthProvider uses two separate effects to avoid deadlocking Supabase's internal 
 ** Effect 1: Auth State Listener (AuthContext.tsx:128)
 
 - Subscribes to =supabase.auth.onAuthStateChange=
-- ONLY sets =user= state from session — never calls DB queries
+- ONLY sets =user= state from session—never calls DB queries
 - Handles =SIGNED_OUT= (clears all state) and =INITIAL_SESSION= without session (stops loading)
-- Calling =supabase.from().select()= from inside this callback deadlocks because the lock is held
+- Avoids deadlock: =from().select()= cannot be called here (lock held by onAuthStateChange)
 
 ** Effect 2: User Data Fetcher (AuthContext.tsx:167)
 
-- Watches =user= state — runs OUTSIDE the onAuthStateChange callback (lock is free)
+- Watches =user= state—runs OUTSIDE onAuthStateChange callback (lock free)
 - Calls =fetchUserData(userId)= (AuthContext.tsx:56) to load profile and clients
-- Guarded by =isFetchingRef= (prevents concurrent calls) and =isManualLoginRef= (prevents race with login)
-- On AbortError: calls =recoverSupabaseAuth()= to reset cached =initializePromise=, then retries
-- Always sets =isLoading=false= in finally block (no cancelled pattern — critical for StrictMode)
+- Guarded by =isFetchingRef= (prevents concurrent) and =isManualLoginRef= (prevents login race)
+- On AbortError: calls =recoverSupabaseAuth()=, then retries fetchUserData
+- Always sets =isLoading=false= in finally (critical for React StrictMode)
 
 ** Login Flow (AuthContext.tsx:193)
 
-1. =signInWithPassword()= — bypasses =initializePromise=, always works
+1. =signInWithPassword()=—bypasses =initializePromise=, always works
 2. Sets =user= state
-3. Calls =fetchUserData()= directly (lock is free after sign-in)
-4. On AbortError: recovers auth client and retries fetchUserData
+3. Calls =fetchUserData()= directly (lock free after sign-in)
+4. On AbortError: recovers auth, retries fetchUserData
 5. =isManualLoginRef= prevents Effect 2 from racing
 
 ** AbortError Recovery
 
-- =isAbortError()= (AuthContext.tsx:19) detects both DOMException and Supabase-wrapped error objects
-- =recoverSupabaseAuth()= (AuthContext.tsx:33) resets =auth.initializePromise = null= then re-initializes
-- React StrictMode double-mount can abort =navigator.locks.request()=, permanently rejecting the cached promise
+- =isAbortError()= detects both DOMException and Supabase-wrapped error objects
+- =recoverSupabaseAuth()= resets =auth.initializePromise = null= and reinitializes
+- React StrictMode double-mount can abort =navigator.locks.request()=, rejecting cached promise permanently
 
 * LoginCard Props
 
@@ -112,8 +114,8 @@ AuthProvider uses two separate effects to avoid deadlocking Supabase's internal 
 
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
-| size | 'small' \vert 'medium' \vert 'large' | No | 'medium' | Pixel size |
-| color | string | No | '#2a9d8f' | Pixel color |
+| size | 'small' \vert 'medium' \vert 'large' | No | 'medium' | Spinner size (h-8, h-12, h-16) |
+| color | string | No | hsl(45, 93%, 58%) | Border-top color for spinner |
 
 * Client Switching (StrideShift Only)
 
@@ -122,17 +124,18 @@ AuthProvider uses two separate effects to avoid deadlocking Supabase's internal 
 - Regular users have single client, cannot switch
 - StrideShift users see all active clients from clients table
 
-* Theme Colors
+* Theme Colors (HSL Semantic Tokens)
 
-| Color | Hex | Used For |
-|-------|-----|----------|
-| primary | #2a9d8f | Borders, logos, labels, primary text |
-| accent | #e76f51 | Racing stripes, secondary highlights |
-| bg | #faf8f5 | Page background |
-| bgCard | #ffffff | Card background |
-| textMuted | #6b7c8a | Secondary text, muted labels |
-| text | #2d3436 | Primary text |
-| border | #d4cfc5 | Input borders |
+| Color | HSL Value | Used For |
+|-------|-----------|----------|
+| primary | hsl(45, 93%, 58%) | Gold buttons, links, primary accents |
+| primary-foreground | hsl(240, 10%, 3.9%) | Text on primary background |
+| muted | hsl(220, 14%, 96%) | Muted backgrounds, disabled states |
+| muted-foreground | hsl(240, 8%, 35%) | Muted text, secondary labels |
+| border | hsl(220, 14%, 90%) | Input/card borders, dividers |
+| input | hsl(220, 14%, 96%) | Input field backgrounds |
+| card | hsl(0, 0%, 100%) | Card backgrounds |
+| foreground | hsl(240, 10%, 10%) | Primary text color |
 
 * Database Tables Accessed
 
@@ -142,4 +145,4 @@ AuthProvider uses two separate effects to avoid deadlocking Supabase's internal 
 | clients | SELECT active by is_active or client_pk | Fetch available clients for user |
 
 ---
-/Last Updated/: 2026-02-09
+/Last Updated/: 2026-02-11

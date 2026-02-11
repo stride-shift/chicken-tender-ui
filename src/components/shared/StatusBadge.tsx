@@ -5,46 +5,35 @@ interface StatusBadgeProps {
   size?: 'sm' | 'md'
 }
 
-const statusColors: Record<TenderStatus, string> = {
-  active: '#22c55e',
-  closed: '#64748b',
-  cancelled: '#ef4444',
-  awarded: '#f59e0b',
-}
-
-const statusLabels: Record<TenderStatus, string> = {
-  active: 'Active',
-  closed: 'Closed',
-  cancelled: 'Cancelled',
-  awarded: 'Awarded',
+const statusConfig: Record<TenderStatus, { label: string; className: string }> = {
+  active: {
+    label: 'Active',
+    className: 'bg-success/10 text-success border-success/20',
+  },
+  closed: {
+    label: 'Closed',
+    className: 'bg-muted text-muted-foreground border-border',
+  },
+  cancelled: {
+    label: 'Cancelled',
+    className: 'bg-destructive/10 text-destructive border-destructive/20',
+  },
+  awarded: {
+    label: 'Awarded',
+    className: 'bg-warning/10 text-warning border-warning/20',
+  },
 }
 
 export function StatusBadge({ status, size = 'sm' }: StatusBadgeProps) {
-  const statusColor = statusColors[status]
-  const label = statusLabels[status]
+  const config = statusConfig[status]
 
-  const sizeClasses = size === 'sm' ? 'px-2.5 py-1' : 'px-3 py-1.5'
+  const sizeClasses = size === 'sm' ? 'px-2.5 py-0.5' : 'px-3 py-1'
 
   return (
-    <div
-      className={`flex items-center gap-2 bg-stone-900 rounded ${sizeClasses}`}
+    <span
+      className={`inline-flex items-center rounded-full border text-xs font-semibold transition-colors ${sizeClasses} ${config.className}`}
     >
-      <div
-        className="w-2.5 h-2.5 rounded-full"
-        style={{
-          backgroundColor: statusColor,
-          boxShadow: `0 0 8px ${statusColor}, 0 0 16px ${statusColor}66`,
-        }}
-      />
-      <span
-        className="font-mono font-bold text-xs uppercase"
-        style={{
-          color: statusColor,
-          textShadow: `0 0 5px ${statusColor}`,
-        }}
-      >
-        {label}
-      </span>
-    </div>
+      {config.label}
+    </span>
   )
 }

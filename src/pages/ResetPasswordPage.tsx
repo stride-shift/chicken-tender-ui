@@ -1,20 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/contexts/AuthContext';
-import { ArcadeButton } from '@/components/ui/ArcadeButton';
 import CombinedLogo from '@/features/auth/components/CombinedLogo';
-
-const theme = {
-  bg: '#faf8f5',
-  bgCard: '#ffffff',
-  primary: '#2a9d8f',
-  accent: '#e76f51',
-  border: '#d4cfc5',
-  textMuted: '#6b7c8a',
-  text: '#2d3436',
-  inputBg: '#ffffff',
-  cream: '#faf8f5',
-};
 
 export function ResetPasswordPage() {
   const navigate = useNavigate();
@@ -68,15 +55,7 @@ export function ResetPasswordPage() {
   // Show loading while auth state is being determined
   if (authLoading) {
     return (
-      <div
-        style={{
-          minHeight: '100vh',
-          background: theme.bg,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <CombinedLogo size="large" showPixelBoot={true} />
       </div>
     );
@@ -85,343 +64,118 @@ export function ResetPasswordPage() {
   // If not authenticated, the link may be invalid or expired
   if (!isAuthenticated && !authLoading) {
     return (
-      <div
-        style={{
-          minHeight: '100vh',
-          background: theme.bg,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: 24,
-        }}
-      >
-        <div
-          style={{
-            width: 380,
-            background: theme.bgCard,
-            border: `4px solid ${theme.accent}`,
-            position: 'relative',
-          }}
-        >
-          <div
-            style={{
-              height: 8,
-              background: `repeating-linear-gradient(90deg, ${theme.accent} 0px, ${theme.accent} 12px, ${theme.cream} 12px, ${theme.cream} 24px)`,
-            }}
-          />
-          <div style={{ padding: '32px' }}>
-            <h2
-              style={{
-                fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                fontSize: 14,
-                fontWeight: 700,
-                color: theme.accent,
-                textAlign: 'center',
-                marginBottom: 16,
-              }}
-            >
-              LINK EXPIRED
-            </h2>
-            <p
-              style={{
-                fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                fontSize: 11,
-                color: theme.textMuted,
-                textAlign: 'center',
-                marginBottom: 24,
-                lineHeight: 1.5,
-              }}
-            >
-              This reset link is invalid or has expired. Please request a new one.
-            </p>
-            <ArcadeButton
-              type="button"
-              variant="primary"
-              size="lg"
-              onClick={handleGoToLogin}
-              style={{
-                fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                fontSize: 11,
-                width: '100%',
-              }}
-            >
-              BACK TO LOGIN
-            </ArcadeButton>
-          </div>
-          <div
-            style={{
-              height: 8,
-              background: `repeating-linear-gradient(90deg, ${theme.cream} 0px, ${theme.cream} 12px, ${theme.accent} 12px, ${theme.accent} 24px)`,
-            }}
-          />
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+        <div className="w-full max-w-md rounded-lg border border-border bg-card shadow-lg p-8">
+          <h2 className="font-serif font-semibold text-2xl text-destructive text-center mb-4">
+            Link Expired
+          </h2>
+          <p className="text-sm text-muted-foreground text-center mb-6 leading-relaxed">
+            This reset link is invalid or has expired. Please request a new one.
+          </p>
+          <button
+            type="button"
+            onClick={handleGoToLogin}
+            className="w-full h-10 rounded-md bg-primary text-primary-foreground font-semibold hover:bg-primary/90 shadow-sm transition-all"
+          >
+            Back to Login
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: theme.bg,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 24,
-      }}
-    >
-      <div
-        style={{
-          width: 380,
-          background: theme.bgCard,
-          border: `4px solid ${theme.primary}`,
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Top stripe */}
-        <div
-          style={{
-            height: 8,
-            background: `repeating-linear-gradient(90deg, ${theme.accent} 0px, ${theme.accent} 12px, ${theme.cream} 12px, ${theme.cream} 24px)`,
-          }}
-        />
-
-        <div style={{ padding: '32px' }}>
-          {/* Logo */}
-          <div style={{ marginBottom: 24 }}>
-            <CombinedLogo size="large" />
-          </div>
-
-          {/* Header */}
-          <h2
-            style={{
-              fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-              fontSize: 14,
-              fontWeight: 700,
-              color: theme.primary,
-              textAlign: 'center',
-              marginBottom: 8,
-              letterSpacing: 1,
-            }}
-          >
-            SET NEW PASSWORD
-          </h2>
-
-          <p
-            style={{
-              fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-              fontSize: 11,
-              color: theme.textMuted,
-              textAlign: 'center',
-              marginBottom: 24,
-              lineHeight: 1.5,
-            }}
-          >
-            Enter your new password below.
-          </p>
-
-          {success ? (
-            <div>
-              <div
-                style={{
-                  fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                  fontSize: 11,
-                  color: theme.primary,
-                  background: '#e6f7f5',
-                  border: `3px solid ${theme.primary}`,
-                  padding: '16px',
-                  textAlign: 'center',
-                  lineHeight: 1.6,
-                  marginBottom: 24,
-                }}
-              >
-                Password updated successfully!
-              </div>
-              <ArcadeButton
-                type="button"
-                variant="primary"
-                size="lg"
-                onClick={handleGoToLogin}
-                style={{
-                  fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                  fontSize: 11,
-                  width: '100%',
-                }}
-              >
-                GO TO LOGIN
-              </ArcadeButton>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {/* New Password */}
-              <div>
-                <label
-                  style={{
-                    fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                    fontSize: 9,
-                    color: theme.textMuted,
-                    display: 'block',
-                    marginBottom: 8,
-                    letterSpacing: 1,
-                    fontWeight: 600,
-                  }}
-                >
-                  NEW PASSWORD
-                </label>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    background: theme.inputBg,
-                    border: `3px solid ${theme.border}`,
-                    padding: '0 12px',
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                      fontSize: 12,
-                      color: theme.primary,
-                      marginRight: 10,
-                    }}
-                  >
-                    *
-                  </span>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Min 8 characters"
-                    disabled={isLoading}
-                    style={{
-                      flex: 1,
-                      fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                      fontSize: 11,
-                      color: theme.text,
-                      background: 'transparent',
-                      border: 'none',
-                      outline: 'none',
-                      padding: '14px 0',
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      fontSize: 14,
-                      color: theme.textMuted,
-                      padding: '4px',
-                    }}
-                  >
-                    {showPassword ? '◉' : '○'}
-                  </button>
-                </div>
-              </div>
-
-              {/* Confirm Password */}
-              <div>
-                <label
-                  style={{
-                    fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                    fontSize: 9,
-                    color: theme.textMuted,
-                    display: 'block',
-                    marginBottom: 8,
-                    letterSpacing: 1,
-                    fontWeight: 600,
-                  }}
-                >
-                  CONFIRM PASSWORD
-                </label>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    background: theme.inputBg,
-                    border: `3px solid ${theme.border}`,
-                    padding: '0 12px',
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                      fontSize: 12,
-                      color: theme.primary,
-                      marginRight: 10,
-                    }}
-                  >
-                    *
-                  </span>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Re-enter password"
-                    disabled={isLoading}
-                    style={{
-                      flex: 1,
-                      fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                      fontSize: 11,
-                      color: theme.text,
-                      background: 'transparent',
-                      border: 'none',
-                      outline: 'none',
-                      padding: '14px 0',
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Error message */}
-              {error && (
-                <div
-                  style={{
-                    fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                    fontSize: 10,
-                    color: '#dc2626',
-                    background: '#fef2f2',
-                    border: '3px solid #dc2626',
-                    padding: '12px',
-                    textAlign: 'center',
-                    lineHeight: 1.5,
-                  }}
-                >
-                  {error}
-                </div>
-              )}
-
-              {/* Submit button */}
-              <ArcadeButton
-                type="submit"
-                variant="primary"
-                size="lg"
-                disabled={isLoading}
-                style={{
-                  fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                  fontSize: 11,
-                  marginTop: 8,
-                  width: '100%',
-                }}
-              >
-                {isLoading ? 'UPDATING...' : 'UPDATE PASSWORD'}
-              </ArcadeButton>
-            </form>
-          )}
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+      <div className="w-full max-w-md rounded-lg border border-border bg-card shadow-lg p-8">
+        {/* Logo */}
+        <div className="mb-6">
+          <CombinedLogo size="large" />
         </div>
 
-        {/* Bottom stripe */}
-        <div
-          style={{
-            height: 8,
-            background: `repeating-linear-gradient(90deg, ${theme.cream} 0px, ${theme.cream} 12px, ${theme.accent} 12px, ${theme.accent} 24px)`,
-          }}
-        />
+        {/* Header */}
+        <h2 className="font-serif font-semibold text-2xl text-foreground text-center mb-2">
+          Set New Password
+        </h2>
+
+        <p className="text-sm text-muted-foreground text-center mb-6 leading-relaxed">
+          Enter your new password below.
+        </p>
+
+        {success ? (
+          <div>
+            <div className="bg-primary/10 border border-primary rounded-md p-4 text-center mb-6">
+              <p className="text-sm text-primary">
+                Password updated successfully!
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleGoToLogin}
+              className="w-full h-10 rounded-md bg-primary text-primary-foreground font-semibold hover:bg-primary/90 shadow-sm transition-all"
+            >
+              Go to Login
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            {/* New Password */}
+            <div>
+              <label className="block text-xs font-medium text-muted-foreground mb-2">
+                New Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Min 8 characters"
+                  disabled={isLoading}
+                  className="h-10 w-full rounded-md bg-input px-3 py-2 text-sm border border-border focus:ring-2 focus:ring-ring focus:outline-none pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1"
+                >
+                  {showPassword ? '👁' : '👁‍🗨'}
+                </button>
+              </div>
+            </div>
+
+            {/* Confirm Password */}
+            <div>
+              <label className="block text-xs font-medium text-muted-foreground mb-2">
+                Confirm Password
+              </label>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Re-enter password"
+                disabled={isLoading}
+                className="h-10 w-full rounded-md bg-input px-3 py-2 text-sm border border-border focus:ring-2 focus:ring-ring focus:outline-none"
+              />
+            </div>
+
+            {/* Error message */}
+            {error && (
+              <div className="rounded-md bg-destructive/10 border border-destructive p-3">
+                <p className="text-sm text-destructive text-center">
+                  {error}
+                </p>
+              </div>
+            )}
+
+            {/* Submit button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full h-10 rounded-md bg-primary text-primary-foreground font-semibold hover:bg-primary/90 shadow-sm transition-all disabled:opacity-50 mt-2"
+            >
+              {isLoading ? 'Updating...' : 'Update Password'}
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

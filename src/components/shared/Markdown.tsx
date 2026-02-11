@@ -8,60 +8,53 @@ interface MarkdownProps {
 
 export function Markdown({ content, className = '' }: MarkdownProps) {
   const components: Components = {
-    // Headings with arcade styling - border-left accent
+    // Headings with clean executive styling
     h1: ({ children }) => (
-      <h1
-        className="text-2xl font-black text-stone-800 uppercase tracking-wider mb-4 mt-6 first:mt-0 pl-4"
-        style={{ borderLeft: '4px solid #2d8f8f' }}
-      >
+      <h1 className="text-2xl font-serif font-semibold text-foreground mb-4 mt-6 first:mt-0 border-l-4 border-primary/30 pl-4">
         {children}
       </h1>
     ),
     h2: ({ children }) => (
-      <h2
-        className="text-xl font-black text-stone-800 uppercase tracking-wider mb-3 mt-5 first:mt-0 pl-3"
-        style={{ borderLeft: '3px solid #0ea5e9' }}
-      >
+      <h2 className="text-xl font-serif font-semibold text-foreground mb-3 mt-5 first:mt-0 border-l-3 border-primary/30 pl-3">
         {children}
       </h2>
     ),
     h3: ({ children }) => (
-      <h3 className="text-lg font-black text-stone-700 mb-2 mt-4 first:mt-0 flex items-center gap-2">
-        <span className="w-2 h-2 bg-teal-500" />
+      <h3 className="text-lg font-serif font-semibold text-foreground mb-2 mt-4 first:mt-0">
         {children}
       </h3>
     ),
     h4: ({ children }) => (
-      <h4 className="text-base font-bold text-stone-700 mb-2 mt-3 first:mt-0">
+      <h4 className="text-base font-serif font-semibold text-foreground mb-2 mt-3 first:mt-0">
         {children}
       </h4>
     ),
     h5: ({ children }) => (
-      <h5 className="text-sm font-bold text-stone-700 mb-1 mt-2 first:mt-0">
+      <h5 className="text-sm font-serif font-semibold text-foreground mb-1 mt-2 first:mt-0">
         {children}
       </h5>
     ),
     h6: ({ children }) => (
-      <h6 className="text-sm font-semibold text-stone-600 mb-1 mt-2 first:mt-0">
+      <h6 className="text-sm font-serif font-semibold text-muted-foreground mb-1 mt-2 first:mt-0">
         {children}
       </h6>
     ),
 
     // Paragraphs with good line height
     p: ({ children }) => (
-      <p className="text-sm leading-relaxed text-stone-600 mb-3">
+      <p className="text-body text-foreground font-light leading-relaxed mb-3">
         {children}
       </p>
     ),
 
-    // Lists with arcade bullet styling - teal square bullets
+    // Lists with clean styling
     ul: ({ children }) => (
-      <ul className="pl-5 mb-3 space-y-2 text-sm text-stone-600">
+      <ul className="pl-5 mb-3 space-y-2 text-sm text-foreground font-light">
         {children}
       </ul>
     ),
     ol: ({ children }) => (
-      <ol className="pl-5 mb-3 space-y-2 text-sm text-stone-600 list-none counter-reset-item">
+      <ol className="pl-5 mb-3 space-y-2 text-sm text-foreground font-light list-none counter-reset-item">
         {children}
       </ol>
     ),
@@ -72,13 +65,7 @@ export function Markdown({ content, className = '' }: MarkdownProps) {
       if (isOrdered) {
         return (
           <li className="flex items-start gap-2">
-            <span
-              className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-xs font-black text-white mt-0.5"
-              style={{
-                background: 'linear-gradient(180deg, #4ecdc4 0%, #2d8f8f 100%)',
-                boxShadow: '0 2px 0 #1a5f5f'
-              }}
-            >
+            <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-xs font-semibold text-white bg-primary rounded-sm mt-0.5 tabular-nums">
               {(props.index as number) + 1}
             </span>
             <span>{children}</span>
@@ -88,7 +75,7 @@ export function Markdown({ content, className = '' }: MarkdownProps) {
 
       return (
         <li className="flex items-start gap-2">
-          <span className="flex-shrink-0 w-2 h-2 bg-teal-500 mt-1.5" />
+          <span className="flex-shrink-0 w-1.5 h-1.5 bg-primary rounded-full mt-2" />
           <span>{children}</span>
         </li>
       )
@@ -96,21 +83,21 @@ export function Markdown({ content, className = '' }: MarkdownProps) {
 
     // Inline formatting
     strong: ({ children }) => (
-      <strong className="font-bold text-stone-800">
+      <strong className="font-semibold text-foreground">
         {children}
       </strong>
     ),
     em: ({ children }) => (
-      <em className="italic text-stone-600">
+      <em className="italic text-muted-foreground">
         {children}
       </em>
     ),
 
-    // Links with teal arcade styling
+    // Links with primary color
     a: ({ href, children }) => (
       <a
         href={href}
-        className="text-teal-600 font-medium hover:text-teal-700 underline decoration-teal-300 hover:decoration-teal-500 decoration-2 underline-offset-2 transition-colors"
+        className="text-primary hover:underline"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -118,116 +105,79 @@ export function Markdown({ content, className = '' }: MarkdownProps) {
       </a>
     ),
 
-    // Inline code with light background - NOT dark
+    // Inline code with clean styling
     code: ({ children, className }) => {
       // If className contains 'language-', it's a code block (handled by pre)
       const isCodeBlock = className?.includes('language-')
       if (!isCodeBlock) {
         return (
-          <code
-            className="text-teal-700 px-1.5 py-0.5 text-xs font-mono"
-            style={{
-              backgroundColor: '#f5f5f4',
-              border: '2px solid #d6d3d1'
-            }}
-          >
+          <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-foreground">
             {children}
           </code>
         )
       }
       // For code blocks, just return the children (handled by pre)
-      return <code className="text-xs">{children}</code>
+      return <code className="text-sm">{children}</code>
     },
 
-    // Code blocks with LIGHT styling - NOT dark
+    // Code blocks with clean styling
     pre: ({ children }) => (
-      <pre
-        className="p-4 overflow-x-auto mb-3"
-        style={{
-          backgroundColor: '#fafaf9',
-          border: '3px solid #d6d3d1',
-          boxShadow: '4px 4px 0 #d6d3d144'
-        }}
-      >
-        <code className="text-xs font-mono leading-relaxed text-stone-700">
+      <pre className="bg-muted rounded-md p-4 overflow-x-auto mb-3">
+        <code className="text-sm font-mono leading-relaxed text-foreground">
           {children}
         </code>
       </pre>
     ),
 
-    // Blockquotes with teal left border
+    // Blockquotes with clean border
     blockquote: ({ children }) => (
-      <blockquote
-        className="pl-4 py-2 my-3 text-stone-600 italic"
-        style={{
-          borderLeft: '4px solid #2d8f8f',
-          backgroundColor: '#f0fdfa'
-        }}
-      >
+      <blockquote className="border-l-4 border-primary/30 pl-4 py-2 my-3 text-muted-foreground italic">
         {children}
       </blockquote>
     ),
 
-    // Horizontal rule with arcade dashed style
+    // Horizontal rule with clean style
     hr: () => (
-      <hr
-        className="my-6"
-        style={{
-          border: 'none',
-          borderTop: '3px dashed #d6d3d1'
-        }}
-      />
+      <hr className="my-6 border-0 border-t border-border" />
     ),
 
-    // Tables with arcade styling
+    // Tables with clean styling
     table: ({ children }) => (
       <div className="overflow-x-auto my-4">
-        <table
-          className="min-w-full text-sm"
-          style={{
-            border: '3px solid #2d8f8f',
-            boxShadow: '4px 4px 0 #2d8f8f44'
-          }}
-        >
+        <table className="min-w-full text-sm border border-border rounded-lg overflow-hidden">
           {children}
         </table>
       </div>
     ),
     thead: ({ children }) => (
-      <thead
-        className="text-left"
-        style={{
-          background: 'linear-gradient(180deg, #f0fdfa 0%, #ccfbf1 100%)',
-          borderBottom: '3px solid #2d8f8f'
-        }}
-      >
+      <thead className="text-left bg-muted border-b border-border">
         {children}
       </thead>
     ),
     tbody: ({ children }) => (
-      <tbody className="bg-white">
+      <tbody className="bg-card">
         {children}
       </tbody>
     ),
     tr: ({ children }) => (
-      <tr style={{ borderBottom: '2px solid #e7e5e4' }}>
+      <tr className="border-b border-border last:border-0">
         {children}
       </tr>
     ),
     th: ({ children }) => (
-      <th className="px-4 py-2 font-black text-teal-700 uppercase tracking-wider text-xs">
+      <th className="px-4 py-2 font-serif font-semibold text-foreground text-left">
         {children}
       </th>
     ),
     td: ({ children }) => (
-      <td className="px-4 py-2 text-stone-600">
+      <td className="px-4 py-2 text-foreground font-light">
         {children}
       </td>
     ),
   }
 
   return (
-    <div className={`text-stone-700 ${className}`}>
+    <div className={`text-foreground ${className}`}>
       <ReactMarkdown components={components}>
         {content}
       </ReactMarkdown>

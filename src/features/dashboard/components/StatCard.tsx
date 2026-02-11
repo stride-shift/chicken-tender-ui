@@ -1,30 +1,24 @@
-import { LEDNumber } from '@/components/ui';
-
 interface StatCardProps {
   label: string;
   value: number | string;
-  color?: string;
-  bgColor?: string;
+  featured?: boolean;
 }
 
 /**
- * Arcade-style stat display with LED numbers and pixel corner accents.
- * Used in the dashboard stats row for key metrics.
+ * Clean stat display card showing key metrics.
+ * Used in the dashboard stats grid.
  */
-export function StatCard({ label, value, color = '#2d8f8f', bgColor = '#f0fdfa' }: StatCardProps) {
+export function StatCard({ label, value, featured = false }: StatCardProps) {
   return (
-    <div
-      className="relative p-5 text-center"
-      style={{ backgroundColor: bgColor }}
-    >
-      {/* Pixel corner accents */}
-      <div className="absolute top-0 left-0 w-2 h-2" style={{ backgroundColor: color }} />
-      <div className="absolute top-0 right-0 w-2 h-2" style={{ backgroundColor: color }} />
-      <div className="absolute bottom-0 left-0 w-2 h-2" style={{ backgroundColor: color }} />
-      <div className="absolute bottom-0 right-0 w-2 h-2" style={{ backgroundColor: color }} />
-
-      <LEDNumber value={value} color={color} size="medium" />
-      <div className="text-stone-500 text-xs tracking-widest mt-2 font-bold uppercase">
+    <div className={`rounded-lg border border-border bg-card shadow-sm p-6 text-center ${
+      featured
+        ? 'border-t-2 border-t-primary bg-gradient-to-b from-primary/5 to-transparent'
+        : 'border-t-2 border-t-primary/30'
+    }`}>
+      <div className="text-3xl font-serif font-semibold text-foreground tabular-nums">
+        {value}
+      </div>
+      <div className="text-caption text-muted-foreground mt-1">
         {label}
       </div>
     </div>

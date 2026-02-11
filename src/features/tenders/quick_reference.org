@@ -1,5 +1,5 @@
 #+TITLE: Tenders Feature - Quick Reference
-#+DATE: 2026-02-10
+#+DATE: 2026-02-11
 
 * Overview
 
@@ -9,11 +9,11 @@ Primary feature module for viewing and filtering tenders. Contains list/detail c
 
 | Component | File | Purpose |
 |-----------|------|---------|
-| TenderListPanel | TenderListPanel.tsx:29 | Container managing filters, pagination, "X of Y active tenders" count |
-| TenderListItem | components/TenderListItem.tsx:10 | Single tender row: title, department, published date, closing date, recommendation badge |
-| TenderListFilters | TenderListFilters.tsx:48 | Search box + Filter button (opens FilterPopup) |
-| FilterPopup | FilterPopup.tsx:57 | Modal popup for applying tender filters with Apply/Clear |
-| TenderDetailPanel | TenderDetailPanel.tsx:15 | Main detail panel with tabs and content |
+| TenderListPanel | TenderListPanel.tsx:27 | Container managing filters, pagination, "X of Y active tenders" count |
+| TenderListItem | TenderListItem.tsx:11 | Single tender row: title, department, published date, closing date, recommendation badge |
+| TenderListFilters | TenderListFilters.tsx:47 | Search box + Filter button (opens FilterPopup) |
+| FilterPopup | FilterPopup.tsx:55 | Modal popup for applying tender filters with Apply/Clear |
+| TenderDetailPanel | TenderDetailPanel.tsx:14 | Main detail panel with tabs and content |
 | TenderDetailHeader | TenderDetailHeader.tsx:11 | Header with title, recommendation, key stats, lifecycle action bar |
 | TenderDetailTabs | TenderDetailTabs.tsx:8 | Four-tab navigation bar |
 | TenderDetailOverview | TenderDetailOverview.tsx:7 | Overview tab with description and metadata |
@@ -22,17 +22,17 @@ Primary feature module for viewing and filtering tenders. Contains list/detail c
 | TenderDetailContact | TenderDetailContact.tsx:8 | Contact information and briefing details |
 | TenderDetailEval | TenderDetailEval.tsx:22 | Evaluation tab displaying rubric scores |
 | TenderOpportunityTab | TenderOpportunityTab.tsx:10 | Opportunity tab with evaluator notes, AI summary, description, metadata |
-| TenderRubricTab | TenderRubricTab.tsx:9 | Rubric definition display tab |
+| TenderRubricTab | TenderRubricTab.tsx:8 | Rubric definition display tab |
 
 * Hooks
 
 | Hook | File | RPC Function | Purpose |
 |------|------|--------------|---------|
-| useTenders | hooks/useTenders.ts:33 | get_tenders_paginated | Fetches paginated tender list with filters |
-| useTenderDetail | hooks/useTenderDetail.ts:16 | get_tender_detail | Fetches single tender detail by PK |
-| useFilterOptions | hooks/useFilterOptions.ts:14 | get_filter_options | Fetches province, department, category filter options |
-| useClientRubric | hooks/useClientRubric.ts:5 | get_client_rubric | Fetches rubric definition by rubric PK |
-| useActiveClientRubric | hooks/useActiveClientRubric.ts:10 | get_active_client_rubric | Fetches active rubric for current client |
+| useTenders | useTenders.ts:33 | get_tenders_paginated | Fetches paginated tender list with filters |
+| useTenderDetail | useTenderDetail.ts:16 | get_tender_detail | Fetches single tender detail by PK |
+| useFilterOptions | useFilterOptions.ts:14 | get_filter_options | Fetches province, department, category filter options |
+| useClientRubric | useClientRubric.ts:5 | get_client_rubric | Fetches rubric definition by rubric PK |
+| useActiveClientRubric | useActiveClientRubric.ts:10 | get_active_client_rubric | Fetches active rubric for current client |
 
 * RPC Function Usage
 
@@ -100,7 +100,7 @@ TenderDetailChanges handles document changes with =normalizeDocument= helper:
 
 * TenderListFilters Component Details
 
-TenderListFilters (components/TenderListFilters.tsx:48) is a simplified filter UI with:
+TenderListFilters (TenderListFilters.tsx:47) is a simplified filter UI with:
 - Search input (controls searchText filter)
 - Filter button with active filter count badge
 - FilterPopup modal that opens on button click
@@ -112,7 +112,7 @@ Filter badge count increments when isRelevant !== true (default is true, so badg
 
 * FilterPopup Component Details
 
-FilterPopup (components/FilterPopup.tsx:57) is a modal dialog with:
+FilterPopup (FilterPopup.tsx:55) is a modal dialog with:
 - Local state for filters (not applied until user clicks Apply)
 - 6 dropdown filters: Relevance, Status, Province, Department, Category, Days Until Close
 - Sort By dropdown (affects sortDesc automatically)
@@ -123,35 +123,35 @@ Default sort logic: closing_date sorts ascending (sortDesc=false), all others so
 
 * TenderDetailHeader Component Details
 
-TenderDetailHeader (components/TenderDetailHeader.tsx:11) displays tender header with:
+TenderDetailHeader (TenderDetailHeader.tsx:11) displays tender header with:
 - Title (generated_title or tender_no), recommendation badge, closing date status
 - Meta line: Tender number (if generated title), Closes (with days color coding), Briefing, Score
 - Health bar showing score percentage (when score exists)
 - Lifecycle action bar (skeleton, coming soon): Shortlist, Review, Watch, Decline buttons
   * All buttons call handleLifecycleAction which shows "Coming soon" toast via useToast hook
-  * Button colors: Shortlist (emerald), Review (blue), Watch (amber), Decline (stone)
+  * Button colors: Shortlist (success), Review (info), Watch (warning), Decline (muted)
 
 * TenderListItem Component Details
 
-TenderListItem (components/TenderListItem.tsx:10) displays a single tender row with:
+TenderListItem (TenderListItem.tsx:11) displays a single tender row with:
 
 | Element | Details | Line(s) |
 |---------|---------|---------|
-| Title | Generated title or truncated description (80 chars) | 12 |
-| Department | Truncated to max-width 100px with ellipsis | 54 |
-| Published Date | "X days ago" or "today" format | 18, 95-99 |
-| Closing Date | "X days left", "today", or "Closed" with color coding | 19, 101-106 |
-| Recommendation Badge | Pushed to far right with ml-auto | 75-76 |
-| Urgent Indicator | Red text color when 1-3 days until close | 20, 68 |
-| Closed Indicator | Gray text and "Closed" label when days_until_close < 0 | 21, 68, 102 |
+| Title | Generated title or truncated description (80 chars) | 13 |
+| Department | Truncated to max-width 100px with ellipsis | 53 |
+| Published Date | "X days ago" or "today" format | 19, 62 |
+| Closing Date | "X days left", "today", or "Closed" with color coding | 20, 67-71 |
+| Recommendation Badge | Pushed to far right with ml-auto | 74-75 |
+| Urgent Indicator | Red text color when 1-3 days until close | 21, 67 |
+| Closed Indicator | Gray text and "Closed" label when days_until_close < 0 | 22, 67, 101 |
 
 Helper functions:
-- =calculateDaysSince()= (line 88): Computes days between published_date and now
-- =formatDaysSince()= (line 95): Formats as "today", "1d ago", or "Xd ago"
-- =formatDaysUntilClose()= (line 101): Formats as "today", "1d left", "Xd left", or "Closed"
-- =truncateText()= (line 83): Truncates with ellipsis
+- =truncateText()= (line 82): Truncates with ellipsis
+- =calculateDaysSince()= (line 87): Computes days between published_date and now
+- =formatDaysSince()= (line 94): Formats as "today", "1d ago", or "Xd ago"
+- =formatDaysUntilClose()= (line 100): Formats as "today", "1d left", "Xd left", or "Closed"
 
 Date display: Published text is muted (stone-400), closing text uses conditional color (urgent=red-600, normal=stone-600, closed=stone-400).
 
 ---
-/Last Updated/: 2026-02-10
+/Last Updated/: 2026-02-11

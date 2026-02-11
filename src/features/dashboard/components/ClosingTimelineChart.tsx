@@ -1,13 +1,12 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import { useRelevantTenders } from '../hooks/useRelevantTenders'
-import { PixelBox, Scanlines } from '@/components/ui'
 
-// Arcade-style urgency colors with gradients
+// Gold Executive urgency colors with gradients
 const URGENCY_COLORS = {
-  week1: { solid: '#ef4444', gradient: ['#f87171', '#ef4444', '#dc2626'] },
-  week2: { solid: '#f59e0b', gradient: ['#fbbf24', '#f59e0b', '#d97706'] },
-  week3: { solid: '#4ecdc4', gradient: ['#5eead4', '#4ecdc4', '#2d8f8f'] },
-  week4: { solid: '#64748b', gradient: ['#94a3b8', '#64748b', '#475569'] },
+  week1: { solid: 'hsl(0, 84%, 60%)', gradient: ['hsl(0, 84%, 70%)', 'hsl(0, 84%, 60%)', 'hsl(0, 84%, 50%)'] },
+  week2: { solid: 'hsl(38, 92%, 50%)', gradient: ['hsl(38, 92%, 60%)', 'hsl(38, 92%, 50%)', 'hsl(38, 92%, 40%)'] },
+  week3: { solid: 'hsl(45, 93%, 58%)', gradient: ['hsl(45, 93%, 68%)', 'hsl(45, 93%, 58%)', 'hsl(45, 93%, 48%)'] },
+  week4: { solid: 'hsl(220, 14%, 65%)', gradient: ['hsl(220, 14%, 75%)', 'hsl(220, 14%, 65%)', 'hsl(220, 14%, 55%)'] },
 }
 
 interface TimelineData {
@@ -22,35 +21,27 @@ export function ClosingTimelineChart() {
 
   if (isLoading) {
     return (
-      <PixelBox color="#f59e0b" bgColor="#1c1917">
-        <div className="p-4 border-b border-stone-700 bg-stone-800">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-amber-500" />
-            <span className="text-xs tracking-widest font-black text-amber-400">CLOSING TIMELINE</span>
-          </div>
+      <div className="rounded-lg border border-border bg-card shadow-sm p-6">
+        <div className="mb-4">
+          <h3 className="font-serif font-semibold text-foreground">Closing Timeline</h3>
         </div>
-        <div className="h-56 flex items-center justify-center bg-stone-900">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-700 border-t-amber-500" />
+        <div className="h-56 flex items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-primary" />
         </div>
-      </PixelBox>
+      </div>
     )
   }
 
   if (error) {
     return (
-      <PixelBox color="#f59e0b" bgColor="#1c1917">
-        <div className="p-4 border-b border-stone-700 bg-stone-800">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-amber-500" />
-            <span className="text-xs tracking-widest font-black text-amber-400">CLOSING TIMELINE</span>
-          </div>
+      <div className="rounded-lg border border-border bg-card shadow-sm p-6">
+        <div className="mb-4">
+          <h3 className="font-serif font-semibold text-foreground">Closing Timeline</h3>
         </div>
-        <div className="p-4 bg-stone-900">
-          <div className="bg-red-900/50 border border-red-500 text-red-400 px-4 py-3">
-            <p className="text-sm font-mono">{error.message}</p>
-          </div>
+        <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-md">
+          <p className="text-sm">{error.message}</p>
         </div>
-      </PixelBox>
+      </div>
     )
   }
 
@@ -73,17 +64,14 @@ export function ClosingTimelineChart() {
 
   if (totalClosing === 0) {
     return (
-      <PixelBox color="#f59e0b" bgColor="#1c1917">
-        <div className="p-4 border-b border-stone-700 bg-stone-800">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-amber-500" />
-            <span className="text-xs tracking-widest font-black text-amber-400">CLOSING TIMELINE</span>
-          </div>
+      <div className="rounded-lg border border-border bg-card shadow-sm p-6">
+        <div className="mb-4">
+          <h3 className="font-serif font-semibold text-foreground">Closing Timeline</h3>
         </div>
-        <div className="h-56 flex items-center justify-center bg-stone-900 text-stone-500">
-          <p className="font-mono text-sm">NO TENDERS CLOSING IN 28 DAYS</p>
+        <div className="h-56 flex items-center justify-center text-muted-foreground">
+          <p className="text-sm">No tenders closing in 28 days</p>
         </div>
-      </PixelBox>
+      </div>
     )
   }
 
@@ -95,17 +83,11 @@ export function ClosingTimelineChart() {
     const colors = URGENCY_COLORS[data.colorKey]
 
     return (
-      <div
-        className="bg-stone-900 border-2 px-3 py-2"
-        style={{
-          borderColor: colors.solid,
-          boxShadow: `4px 4px 0 ${colors.solid}44`
-        }}
-      >
-        <p className="text-sm font-black font-mono" style={{ color: colors.solid }}>{data.week}</p>
-        <p className="text-xs text-stone-500 font-mono">{data.label}</p>
-        <p className="text-sm text-stone-300 font-mono mt-1">
-          <span className="font-bold text-stone-100">{data.count}</span> tender{data.count !== 1 ? 's' : ''}
+      <div className="bg-card border border-border shadow-md rounded-md p-3">
+        <p className="text-sm font-semibold" style={{ color: colors.solid }}>{data.week}</p>
+        <p className="text-xs text-muted-foreground">{data.label}</p>
+        <p className="text-sm text-foreground mt-1">
+          <span className="font-bold">{data.count}</span> tender{data.count !== 1 ? 's' : ''}
         </p>
       </div>
     )
@@ -114,22 +96,18 @@ export function ClosingTimelineChart() {
   const maxCount = Math.max(...chartData.map((d) => d.count), 1)
 
   return (
-    <PixelBox color="#f59e0b" bgColor="#1c1917">
+    <div className="rounded-lg border border-border bg-card shadow-sm p-6">
       {/* Header */}
-      <div className="p-4 border-b border-stone-700 bg-stone-800">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-amber-500" />
-          <span className="text-xs tracking-widest font-black text-amber-400">CLOSING TIMELINE</span>
-        </div>
-        <div className="text-stone-400 text-sm mt-1 font-mono">
+      <div className="mb-4">
+        <h3 className="font-serif font-semibold text-foreground">Closing Timeline</h3>
+        <p className="text-muted-foreground text-sm mt-1">
           {totalClosing} tender{totalClosing !== 1 ? 's' : ''} closing in next 28 days
-        </div>
+        </p>
       </div>
 
-      {/* Chart area with dark bg */}
-      <div className="relative bg-stone-900 p-4">
-        <Scanlines opacity={0.02} />
-        <div className="h-48 relative z-0">
+      {/* Chart area */}
+      <div className="relative">
+        <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 20 }}>
               <defs>
@@ -140,27 +118,20 @@ export function ClosingTimelineChart() {
                     <stop offset="100%" stopColor={colors.gradient[2]} />
                   </linearGradient>
                 ))}
-                <filter id="barGlow">
-                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                  <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                  </feMerge>
-                </filter>
               </defs>
               <XAxis
                 type="number"
                 domain={[0, maxCount]}
                 tickLine={false}
                 axisLine={false}
-                tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'monospace' }}
+                tick={{ fill: 'hsl(240, 8%, 35%)', fontSize: 10, fontFamily: 'system-ui, sans-serif' }}
               />
               <YAxis
                 type="category"
                 dataKey="week"
                 tickLine={false}
                 axisLine={false}
-                tick={{ fill: '#a1a1aa', fontSize: 11, fontWeight: 900, fontFamily: 'monospace' }}
+                tick={{ fill: 'hsl(240, 10%, 10%)', fontSize: 11, fontWeight: 600, fontFamily: 'system-ui, sans-serif' }}
                 width={70}
               />
               <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
@@ -168,14 +139,13 @@ export function ClosingTimelineChart() {
                 dataKey="count"
                 radius={[0, 4, 4, 0]}
                 maxBarSize={28}
-                stroke="#0a0a0a"
+                stroke="hsl(220, 14%, 90%)"
                 strokeWidth={1}
               >
                 {chartData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={`url(#bar-gradient-${entry.colorKey})`}
-                    style={{ filter: 'url(#barGlow)' }}
                   />
                 ))}
               </Bar>
@@ -185,48 +155,36 @@ export function ClosingTimelineChart() {
       </div>
 
       {/* Legend */}
-      <div className="p-4 bg-stone-800 flex flex-wrap justify-center gap-4">
+      <div className="mt-4 flex flex-wrap justify-center gap-4">
         <div className="flex items-center gap-2">
           <div
-            className="w-3 h-3"
-            style={{
-              backgroundColor: URGENCY_COLORS.week1.solid,
-              boxShadow: `0 0 8px ${URGENCY_COLORS.week1.solid}66`
-            }}
+            className="w-3 h-3 rounded-sm"
+            style={{ backgroundColor: URGENCY_COLORS.week1.solid }}
           />
-          <span className="text-stone-400 text-xs font-mono">CRITICAL</span>
+          <span className="text-muted-foreground text-xs">Critical</span>
         </div>
         <div className="flex items-center gap-2">
           <div
-            className="w-3 h-3"
-            style={{
-              backgroundColor: URGENCY_COLORS.week2.solid,
-              boxShadow: `0 0 8px ${URGENCY_COLORS.week2.solid}66`
-            }}
+            className="w-3 h-3 rounded-sm"
+            style={{ backgroundColor: URGENCY_COLORS.week2.solid }}
           />
-          <span className="text-stone-400 text-xs font-mono">URGENT</span>
+          <span className="text-muted-foreground text-xs">Urgent</span>
         </div>
         <div className="flex items-center gap-2">
           <div
-            className="w-3 h-3"
-            style={{
-              backgroundColor: URGENCY_COLORS.week3.solid,
-              boxShadow: `0 0 8px ${URGENCY_COLORS.week3.solid}66`
-            }}
+            className="w-3 h-3 rounded-sm"
+            style={{ backgroundColor: URGENCY_COLORS.week3.solid }}
           />
-          <span className="text-stone-400 text-xs font-mono">NORMAL</span>
+          <span className="text-muted-foreground text-xs">Normal</span>
         </div>
         <div className="flex items-center gap-2">
           <div
-            className="w-3 h-3"
-            style={{
-              backgroundColor: URGENCY_COLORS.week4.solid,
-              boxShadow: `0 0 8px ${URGENCY_COLORS.week4.solid}66`
-            }}
+            className="w-3 h-3 rounded-sm"
+            style={{ backgroundColor: URGENCY_COLORS.week4.solid }}
           />
-          <span className="text-stone-400 text-xs font-mono">FUTURE</span>
+          <span className="text-muted-foreground text-xs">Future</span>
         </div>
       </div>
-    </PixelBox>
+    </div>
   )
 }

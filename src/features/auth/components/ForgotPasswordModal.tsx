@@ -1,22 +1,10 @@
 import React, { useState } from 'react';
-import { ArcadeButton } from '@/components/ui/ArcadeButton';
 
 interface ForgotPasswordModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (email: string) => Promise<void>;
 }
-
-const theme = {
-  bg: '#faf8f5',
-  bgCard: '#ffffff',
-  primary: '#2a9d8f',
-  accent: '#e76f51',
-  border: '#d4cfc5',
-  textMuted: '#6b7c8a',
-  text: '#2d3436',
-  inputBg: '#ffffff',
-};
 
 export function ForgotPasswordModal({ isOpen, onClose, onSubmit }: ForgotPasswordModalProps) {
   const [email, setEmail] = useState('');
@@ -56,210 +44,83 @@ export function ForgotPasswordModal({ isOpen, onClose, onSubmit }: ForgotPasswor
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000,
-        padding: 24,
-      }}
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-6"
       onClick={handleClose}
     >
       <div
-        style={{
-          width: 380,
-          background: theme.bgCard,
-          border: `4px solid ${theme.primary}`,
-          position: 'relative',
-        }}
+        className="w-full max-w-md rounded-lg border border-border bg-card shadow-xl p-6"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top stripe */}
-        <div
-          style={{
-            height: 8,
-            background: `repeating-linear-gradient(90deg, ${theme.accent} 0px, ${theme.accent} 12px, ${theme.bg} 12px, ${theme.bg} 24px)`,
-          }}
-        />
+        {/* Header */}
+        <h2 className="font-serif font-semibold text-2xl text-foreground text-center mb-2">
+          Reset Password
+        </h2>
 
-        <div style={{ padding: '32px 32px' }}>
-          {/* Header */}
-          <h2
-            style={{
-              fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-              fontSize: 14,
-              fontWeight: 700,
-              color: theme.primary,
-              textAlign: 'center',
-              marginBottom: 8,
-              letterSpacing: 1,
-            }}
-          >
-            RESET PASSWORD
-          </h2>
+        <p className="text-sm text-muted-foreground text-center mb-6">
+          Enter your email and we'll send you a reset link.
+        </p>
 
-          <p
-            style={{
-              fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-              fontSize: 11,
-              color: theme.textMuted,
-              textAlign: 'center',
-              marginBottom: 24,
-              lineHeight: 1.5,
-            }}
-          >
-            Enter your email and we'll send you a reset link.
-          </p>
-
-          {success ? (
-            <div>
-              <div
-                style={{
-                  fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                  fontSize: 11,
-                  color: theme.primary,
-                  background: '#e6f7f5',
-                  border: `3px solid ${theme.primary}`,
-                  padding: '16px',
-                  textAlign: 'center',
-                  lineHeight: 1.6,
-                  marginBottom: 24,
-                }}
-              >
+        {success ? (
+          <div>
+            <div className="bg-primary/10 border border-primary rounded-md p-4 text-center mb-6">
+              <p className="text-sm text-primary">
                 Check your email for the reset link!
-              </div>
-              <ArcadeButton
-                type="button"
-                variant="secondary"
-                size="lg"
-                onClick={handleClose}
-                style={{
-                  fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                  fontSize: 11,
-                  width: '100%',
-                }}
-              >
-                CLOSE
-              </ArcadeButton>
+              </p>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {/* Email input */}
-              <div>
-                <label
-                  style={{
-                    fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                    fontSize: 9,
-                    color: theme.textMuted,
-                    display: 'block',
-                    marginBottom: 8,
-                    letterSpacing: 1,
-                    fontWeight: 600,
-                  }}
-                >
-                  EMAIL
-                </label>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    background: theme.inputBg,
-                    border: `3px solid ${theme.border}`,
-                    padding: '0 12px',
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                      fontSize: 12,
-                      color: theme.primary,
-                      marginRight: 10,
-                    }}
-                  >
-                    @
-                  </span>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="your.email@company.com"
-                    disabled={isLoading}
-                    style={{
-                      flex: 1,
-                      fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                      fontSize: 11,
-                      color: theme.text,
-                      background: 'transparent',
-                      border: 'none',
-                      outline: 'none',
-                      padding: '14px 0',
-                    }}
-                  />
-                </div>
-              </div>
+            <button
+              type="button"
+              onClick={handleClose}
+              className="w-full h-10 rounded-md bg-muted text-foreground font-semibold hover:bg-muted/80 shadow-sm transition-all"
+            >
+              Close
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            {/* Email input */}
+            <div>
+              <label className="block text-xs font-medium text-muted-foreground mb-2">
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your.email@company.com"
+                disabled={isLoading}
+                className="h-10 w-full rounded-md bg-input px-3 py-2 text-sm border border-border focus:ring-2 focus:ring-ring focus:outline-none"
+              />
+            </div>
 
-              {/* Error message */}
-              {error && (
-                <div
-                  style={{
-                    fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                    fontSize: 10,
-                    color: '#dc2626',
-                    background: '#fef2f2',
-                    border: '3px solid #dc2626',
-                    padding: '12px',
-                    textAlign: 'center',
-                    lineHeight: 1.5,
-                  }}
-                >
+            {/* Error message */}
+            {error && (
+              <div className="rounded-md bg-destructive/10 border border-destructive p-3">
+                <p className="text-sm text-destructive text-center">
                   {error}
-                </div>
-              )}
-
-              {/* Buttons */}
-              <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-                <ArcadeButton
-                  type="button"
-                  variant="secondary"
-                  size="lg"
-                  onClick={handleClose}
-                  disabled={isLoading}
-                  style={{
-                    fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                    fontSize: 11,
-                    flex: 1,
-                  }}
-                >
-                  CANCEL
-                </ArcadeButton>
-                <ArcadeButton
-                  type="submit"
-                  variant="primary"
-                  size="lg"
-                  disabled={isLoading}
-                  style={{
-                    fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                    fontSize: 11,
-                    flex: 1,
-                  }}
-                >
-                  {isLoading ? 'SENDING...' : 'SEND LINK'}
-                </ArcadeButton>
+                </p>
               </div>
-            </form>
-          )}
-        </div>
+            )}
 
-        {/* Bottom stripe */}
-        <div
-          style={{
-            height: 8,
-            background: `repeating-linear-gradient(90deg, ${theme.bg} 0px, ${theme.bg} 12px, ${theme.accent} 12px, ${theme.accent} 24px)`,
-          }}
-        />
+            {/* Buttons */}
+            <div className="flex gap-3 mt-2">
+              <button
+                type="button"
+                onClick={handleClose}
+                disabled={isLoading}
+                className="flex-1 h-10 rounded-md bg-muted text-foreground font-semibold hover:bg-muted/80 shadow-sm transition-all disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="flex-1 h-10 rounded-md bg-primary text-primary-foreground font-semibold hover:bg-primary/90 shadow-sm transition-all disabled:opacity-50"
+              >
+                {isLoading ? 'Sending...' : 'Send Link'}
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );

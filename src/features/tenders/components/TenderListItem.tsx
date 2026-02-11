@@ -25,10 +25,10 @@ export const TenderListItem = memo(function TenderListItem({ tender, isSelected,
     <div
       onClick={() => onClick(tender.tender_pk)}
       className={`
-        p-3 cursor-pointer border-l-4 transition-all border-b border-stone-200
+        px-4 py-3 cursor-pointer transition-colors border-b border-border
         ${isSelected
-          ? 'bg-teal-50 border-l-teal-500'
-          : 'bg-white border-l-transparent hover:bg-stone-50'
+          ? 'bg-primary/5 border-l-2 border-l-primary'
+          : 'hover:bg-muted'
         }
       `}
       role="button"
@@ -41,14 +41,12 @@ export const TenderListItem = memo(function TenderListItem({ tender, isSelected,
       }}
     >
       {/* Title row */}
-      <div
-        className={`text-sm font-semibold leading-tight line-clamp-2 ${isSelected ? 'text-teal-700' : 'text-stone-800'}`}
-      >
-        {'>'} {displayTitle}
+      <div className="font-medium text-foreground text-sm leading-tight line-clamp-2">
+        {displayTitle}
       </div>
 
       {/* Meta row: department, date info, badge (far right) */}
-      <div className="flex items-center gap-1.5 mt-1.5 text-xs text-stone-500">
+      <div className="flex items-center gap-1.5 mt-1.5 text-caption text-muted-foreground">
         {/* Department - truncated */}
         {tender.department_name && (
           <span
@@ -60,13 +58,13 @@ export const TenderListItem = memo(function TenderListItem({ tender, isSelected,
         )}
 
         {/* Date info: published · closes */}
-        <span className="text-stone-400">·</span>
-        <span className="text-stone-400 whitespace-nowrap" title={`Published ${daysSincePublished} days ago`}>
+        <span>·</span>
+        <span className="whitespace-nowrap" title={`Published ${daysSincePublished} days ago`}>
           {publishedText}
         </span>
-        <span className="text-stone-400">·</span>
+        <span>·</span>
         <span
-          className={`font-medium whitespace-nowrap ${isClosed ? 'text-stone-400' : isUrgent ? 'text-red-600' : 'text-stone-600'}`}
+          className={`font-medium whitespace-nowrap ${isClosed ? 'text-muted-foreground' : isUrgent ? 'text-destructive' : 'text-foreground'}`}
           title={isClosed ? 'Tender closed' : `Closes in ${tender.days_until_close} days`}
         >
           {closesText}

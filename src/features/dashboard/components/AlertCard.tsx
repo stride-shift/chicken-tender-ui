@@ -2,30 +2,35 @@ interface AlertCardProps {
   title: string;
   value: number;
   label: string;
-  urgent: boolean;
-  color: string;
+  severity: 'high' | 'medium' | 'low';
 }
 
+const severityStyles = {
+  high: 'border-l-4 border-l-destructive',
+  medium: 'border-l-4 border-l-warning',
+  low: 'border-l-4 border-l-muted-foreground',
+};
+
+const severityTextColors = {
+  high: 'text-destructive',
+  medium: 'text-warning',
+  low: 'text-muted-foreground',
+};
+
 /**
- * LED-style alert indicator for time-sensitive metrics.
- * Shows glowing numbers on dark background with urgency styling.
+ * Alert indicator card for time-sensitive metrics.
+ * Shows counts with severity-based border styling.
  */
-export function AlertCard({ title, value, label, urgent, color }: AlertCardProps) {
+export function AlertCard({ title, value, label, severity }: AlertCardProps) {
   return (
-    <div
-      className="flex items-center gap-2 px-3 py-2 bg-white rounded border-2"
-      style={{ borderColor: urgent ? color : '#e5e5e5' }}
-    >
-      <span className="text-stone-600 font-medium">{title}:</span>
-      <span
-        className="font-mono font-black"
-        style={{
-          color: urgent ? color : '#6b7280',
-        }}
-      >
-        {value}
-      </span>
-      <span className="text-stone-500 text-xs">in {label}</span>
+    <div className={`rounded-lg border bg-card p-4 shadow-sm ${severityStyles[severity]}`}>
+      <div className="flex items-center gap-2">
+        <span className="text-foreground font-semibold">{title}:</span>
+        <span className={`font-semibold ${severityTextColors[severity]}`}>
+          {value}
+        </span>
+        <span className="text-muted-foreground text-xs">in {label}</span>
+      </div>
     </div>
   );
 }

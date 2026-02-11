@@ -6,7 +6,6 @@ import { TenderOpportunityTab } from './TenderOpportunityTab'
 import { TenderDetailEval } from './TenderDetailEval'
 import { TenderDetailDocs } from './TenderDetailDocs'
 import { TenderDetailChanges } from './TenderDetailChanges'
-import { PixelBox } from '@/components/ui'
 
 interface TenderDetailPanelProps {
   tenderId: number | null
@@ -19,12 +18,12 @@ export function TenderDetailPanel({ tenderId }: TenderDetailPanelProps) {
   // No tender selected
   if (tenderId === null) {
     return (
-      <PixelBox color="#2d8f8f" className="h-full flex flex-col overflow-hidden" bgColor="#ffffff">
-        <div className="h-full flex items-center justify-center p-6 relative z-10">
+      <div className="h-full flex flex-col overflow-hidden bg-background">
+        <div className="h-full flex items-center justify-center p-6">
           <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-stone-100 border-2 border-stone-300">
+            <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-muted border border-border rounded-lg">
               <svg
-                className="w-8 h-8 text-stone-400"
+                className="w-8 h-8 text-muted-foreground"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -37,83 +36,83 @@ export function TenderDetailPanel({ tenderId }: TenderDetailPanelProps) {
                 />
               </svg>
             </div>
-            <p className="text-stone-600 font-mono font-bold">SELECT A TENDER</p>
-            <p className="text-sm text-stone-500 mt-1 font-mono">
+            <p className="text-foreground font-semibold">Select a Tender</p>
+            <p className="text-body-small text-muted-foreground mt-1">
               Choose from the list to view details
             </p>
           </div>
         </div>
-      </PixelBox>
+      </div>
     )
   }
 
   // Loading state
   if (isLoading) {
     return (
-      <PixelBox color="#2d8f8f" className="h-full flex flex-col overflow-hidden" bgColor="#ffffff">
-        <div className="p-6 space-y-6 relative z-10">
+      <div className="h-full flex flex-col overflow-hidden bg-background">
+        <div className="p-6 space-y-6">
           {/* Header skeleton */}
           <div className="space-y-4">
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <div className="h-6 bg-stone-200 rounded w-3/4 mb-2 animate-pulse" />
-                <div className="h-4 bg-stone-100 rounded w-1/4 animate-pulse" />
+                <div className="h-6 bg-muted rounded w-3/4 mb-2 animate-pulse" />
+                <div className="h-4 bg-muted/50 rounded w-1/4 animate-pulse" />
               </div>
-              <div className="h-8 bg-stone-200 rounded w-24 animate-pulse" />
+              <div className="h-8 bg-muted rounded w-24 animate-pulse" />
             </div>
             <div className="grid grid-cols-3 gap-3">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-20 bg-stone-100 animate-pulse" />
+                <div key={i} className="h-20 bg-muted/50 rounded animate-pulse" />
               ))}
             </div>
           </div>
 
           {/* Tab bar skeleton */}
-          <div className="flex border-b border-stone-200 gap-4">
+          <div className="flex border-b border-border gap-4">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="h-8 bg-stone-200 w-20 animate-pulse" />
+              <div key={i} className="h-8 bg-muted rounded w-20 animate-pulse" />
             ))}
           </div>
 
           {/* Content skeleton */}
           {[1, 2, 3].map((i) => (
             <div key={i} className="space-y-3">
-              <div className="h-5 bg-stone-200 w-32 animate-pulse" />
+              <div className="h-5 bg-muted w-32 rounded animate-pulse" />
               <div className="space-y-2">
-                <div className="h-4 bg-stone-100 w-full animate-pulse" />
-                <div className="h-4 bg-stone-100 w-5/6 animate-pulse" />
-                <div className="h-4 bg-stone-100 w-4/6 animate-pulse" />
+                <div className="h-4 bg-muted/50 w-full rounded animate-pulse" />
+                <div className="h-4 bg-muted/50 w-5/6 rounded animate-pulse" />
+                <div className="h-4 bg-muted/50 w-4/6 rounded animate-pulse" />
               </div>
             </div>
           ))}
         </div>
-      </PixelBox>
+      </div>
     )
   }
 
   // Error state
   if (error) {
     return (
-      <PixelBox color="#2d8f8f" className="h-full flex flex-col overflow-hidden" bgColor="#ffffff">
-        <div className="p-6 relative z-10">
-          <div className="bg-red-50 border-2 border-red-300 text-red-600 px-4 py-3 font-mono">
-            <p className="font-bold">ERROR LOADING TENDER</p>
-            <p className="text-sm mt-1">{error.message}</p>
+      <div className="h-full flex flex-col overflow-hidden bg-background">
+        <div className="p-6">
+          <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-lg">
+            <p className="font-semibold">Error Loading Tender</p>
+            <p className="text-body-small mt-1">{error.message}</p>
           </div>
         </div>
-      </PixelBox>
+      </div>
     )
   }
 
   // Tender not found
   if (!tender) {
     return (
-      <PixelBox color="#2d8f8f" className="h-full flex flex-col overflow-hidden" bgColor="#ffffff">
-        <div className="h-full flex items-center justify-center p-6 relative z-10">
+      <div className="h-full flex flex-col overflow-hidden bg-background">
+        <div className="h-full flex items-center justify-center p-6">
           <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-amber-50 border-2 border-amber-300">
+            <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-warning/10 border border-warning/30 rounded-lg">
               <svg
-                className="w-8 h-8 text-amber-500"
+                className="w-8 h-8 text-warning"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -126,36 +125,36 @@ export function TenderDetailPanel({ tenderId }: TenderDetailPanelProps) {
                 />
               </svg>
             </div>
-            <p className="text-amber-600 font-mono font-bold">TENDER NOT FOUND</p>
-            <p className="text-sm text-stone-500 mt-1 font-mono">
+            <p className="text-warning font-semibold">Tender Not Found</p>
+            <p className="text-body-small text-muted-foreground mt-1">
               This tender may have been removed
             </p>
           </div>
         </div>
-      </PixelBox>
+      </div>
     )
   }
 
   // Success - render tender details with tabs
   return (
-    <PixelBox color="#2d8f8f" className="h-full flex flex-col overflow-hidden" bgColor="#ffffff">
+    <div className="h-full flex flex-col overflow-hidden bg-background">
       {/* Header section */}
-      <div className="relative z-10">
+      <div>
         <TenderDetailHeader tender={tender} />
       </div>
 
       {/* Tabs */}
-      <div className="px-4 py-2 bg-stone-100 relative z-10">
+      <div className="px-4 py-2 bg-muted">
         <TenderDetailTabs activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
 
       {/* Content area */}
-      <div className="flex-1 overflow-y-auto p-4 bg-stone-50 relative z-10">
+      <div className="flex-1 overflow-y-auto p-4 bg-muted/50">
         {activeTab === 'Opportunity' && <TenderOpportunityTab tender={tender} />}
         {activeTab === 'Evaluation' && <TenderDetailEval tender={tender} />}
         {activeTab === 'Documents' && <TenderDetailDocs documents={tender.documents} />}
         {activeTab === 'Changes' && <TenderDetailChanges changes={tender.recent_changes} />}
       </div>
-    </PixelBox>
+    </div>
   )
 }

@@ -16,45 +16,25 @@ interface ArcadeButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement
   iconAnimation?: IconAnimation;
 }
 
-const variantStyles: Record<ButtonVariant, { bg: string; shadow: string; text: string }> = {
-  primary: {
-    bg: 'linear-gradient(180deg, #4ecdc4 0%, #2d8f8f 50%, #1a5f5f 100%)',
-    shadow: '#134e4a',
-    text: 'white'
-  },
-  secondary: {
-    bg: 'linear-gradient(180deg, #f5f5f4 0%, #e7e5e4 100%)',
-    shadow: '#a8a29e',
-    text: '#1a3a4a'
-  },
-  success: {
-    bg: 'linear-gradient(180deg, #4ade80 0%, #22c55e 50%, #16a34a 100%)',
-    shadow: '#166534',
-    text: 'white'
-  },
-  warning: {
-    bg: 'linear-gradient(180deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%)',
-    shadow: '#92400e',
-    text: 'white'
-  },
-  danger: {
-    bg: 'linear-gradient(180deg, #f87171 0%, #ef4444 50%, #dc2626 100%)',
-    shadow: '#991b1b',
-    text: 'white'
-  }
+const variantStyles: Record<ButtonVariant, string> = {
+  primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
+  secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+  success: 'bg-success text-success-foreground hover:bg-success/90',
+  warning: 'bg-warning text-warning-foreground hover:bg-warning/90',
+  danger: 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-5 py-2.5 text-base',
-  lg: 'px-8 py-4 text-lg'
+  sm: 'h-9 px-3 text-sm',
+  md: 'h-10 px-4 text-sm',
+  lg: 'h-11 px-8 text-base'
 };
 
 // Map animation types to CSS classes for icons
 const iconAnimationClasses: Record<IconAnimation, string> = {
-  wiggle: 'group-hover:animate-arcade-wiggle',
-  bounce: 'group-hover:animate-arcade-bounce',
-  spin: 'group-hover:animate-arcade-spin',
+  wiggle: 'group-hover:animate-fade-in',
+  bounce: 'group-hover:animate-scale-in',
+  spin: 'group-hover:animate-fade-in',
   none: ''
 };
 
@@ -67,29 +47,24 @@ export const ArcadeButton = forwardRef<HTMLButtonElement, ArcadeButtonProps>(
     style,
     icon,
     iconRight,
-    iconAnimation = 'wiggle',
+    iconAnimation = 'none',
     ...props
   }, ref) => {
-    const styles = variantStyles[variant];
     const animClass = iconAnimationClasses[iconAnimation];
 
     return (
       <button
         ref={ref}
         className={`
-          group font-black tracking-wider transition-all
-          hover:translate-y-0.5 active:translate-y-1
-          disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0
-          flex items-center justify-center gap-2
-          ${sizeStyles[size]} ${className}
+          group inline-flex items-center justify-center gap-2
+          rounded-md font-bold shadow-sm
+          transition-all duration-200
+          disabled:opacity-50 disabled:cursor-not-allowed
+          ${variantStyles[variant]}
+          ${sizeStyles[size]}
+          ${className}
         `}
-        style={{
-          background: styles.bg,
-          color: styles.text,
-          boxShadow: `0 4px 0 ${styles.shadow}, inset 0 2px 0 rgba(255,255,255,0.3)`,
-          borderRadius: '6px',
-          ...style
-        }}
+        style={style}
         {...props}
       >
         {icon && (

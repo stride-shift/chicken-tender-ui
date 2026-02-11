@@ -1,12 +1,11 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import type { PieLabelRenderProps } from 'recharts'
 import { useDashboardStats } from '../hooks/useDashboardStats'
-import { PixelBox } from '@/components/ui'
 
 const COLORS = {
-  excellent: '#10b981',
-  good: '#3b82f6',
-  review: '#f59e0b',
+  excellent: 'hsl(142, 76%, 36%)',
+  good: 'hsl(199, 89%, 48%)',
+  review: 'hsl(38, 92%, 50%)',
 }
 
 interface ChartData {
@@ -20,35 +19,27 @@ export function ScoreDistributionChart() {
 
   if (isLoading) {
     return (
-      <PixelBox color="#2d8f8f" bgColor="#ffffff">
-        <div className="p-4 border-b border-stone-200 bg-white">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-teal-500" />
-            <span className="text-xs tracking-widest font-black text-teal-600">SCORE DISTRIBUTION</span>
-          </div>
+      <div className="rounded-lg border border-border bg-card shadow-sm p-6">
+        <div className="mb-4">
+          <h3 className="font-serif font-semibold text-foreground">Score Distribution</h3>
         </div>
-        <div className="h-56 flex items-center justify-center bg-stone-50">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-teal-500" />
+        <div className="h-56 flex items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-primary" />
         </div>
-      </PixelBox>
+      </div>
     )
   }
 
   if (error) {
     return (
-      <PixelBox color="#2d8f8f" bgColor="#ffffff">
-        <div className="p-4 border-b border-stone-200 bg-white">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-teal-500" />
-            <span className="text-xs tracking-widest font-black text-teal-600">SCORE DISTRIBUTION</span>
-          </div>
+      <div className="rounded-lg border border-border bg-card shadow-sm p-6">
+        <div className="mb-4">
+          <h3 className="font-serif font-semibold text-foreground">Score Distribution</h3>
         </div>
-        <div className="p-4 bg-stone-50">
-          <div className="bg-red-50 border-2 border-red-400 text-red-600 px-4 py-3">
-            <p className="text-sm font-mono">{(error as Error).message}</p>
-          </div>
+        <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-md">
+          <p className="text-sm">{(error as Error).message}</p>
         </div>
-      </PixelBox>
+      </div>
     )
   }
 
@@ -65,17 +56,14 @@ export function ScoreDistributionChart() {
 
   if (total === 0) {
     return (
-      <PixelBox color="#2d8f8f" bgColor="#ffffff">
-        <div className="p-4 border-b border-stone-200 bg-white">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-teal-500" />
-            <span className="text-xs tracking-widest font-black text-teal-600">SCORE DISTRIBUTION</span>
-          </div>
+      <div className="rounded-lg border border-border bg-card shadow-sm p-6">
+        <div className="mb-4">
+          <h3 className="font-serif font-semibold text-foreground">Score Distribution</h3>
         </div>
-        <div className="h-56 flex items-center justify-center bg-stone-50 text-stone-500">
-          <p className="font-mono text-sm">NO RELEVANT TENDERS</p>
+        <div className="h-56 flex items-center justify-center text-muted-foreground">
+          <p className="text-sm">No relevant tenders</p>
         </div>
-      </PixelBox>
+      </div>
     )
   }
 
@@ -106,8 +94,8 @@ export function ScoreDistributionChart() {
         textAnchor="middle"
         dominantBaseline="central"
         fontSize={12}
-        fontWeight="bold"
-        fontFamily="monospace"
+        fontWeight="600"
+        fontFamily="system-ui, sans-serif"
         stroke="rgba(0,0,0,0.3)"
         strokeWidth={0.5}
         paintOrder="stroke"
@@ -125,9 +113,9 @@ export function ScoreDistributionChart() {
     const percentage = ((data.value / total) * 100).toFixed(1)
 
     return (
-      <div className="bg-white border-2 border-teal-500 px-3 py-2" style={{ boxShadow: '4px 4px 0 rgba(45, 143, 143, 0.3)' }}>
-        <p className="text-sm font-black text-teal-700 font-mono">{data.name}</p>
-        <p className="text-sm text-stone-600 font-mono">
+      <div className="bg-card border border-border shadow-md rounded-md p-3">
+        <p className="text-sm font-semibold text-foreground">{data.name}</p>
+        <p className="text-sm text-muted-foreground">
           {data.value} tender{data.value !== 1 ? 's' : ''} ({percentage}%)
         </p>
       </div>
@@ -135,19 +123,16 @@ export function ScoreDistributionChart() {
   }
 
   return (
-    <PixelBox color="#2d8f8f" bgColor="#ffffff">
-      {/* Header - light */}
-      <div className="p-4 border-b border-stone-200 bg-white">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-teal-500" />
-          <span className="text-xs tracking-widest font-black text-teal-600">SCORE DISTRIBUTION</span>
-        </div>
-        <div className="text-stone-500 text-sm mt-1 font-mono">{total} relevant tenders</div>
+    <div className="rounded-lg border border-border bg-card shadow-sm p-6">
+      {/* Header */}
+      <div className="mb-4">
+        <h3 className="font-serif font-semibold text-foreground">Score Distribution</h3>
+        <p className="text-muted-foreground text-sm mt-1">{total} relevant tenders</p>
       </div>
 
-      {/* Chart area - light background */}
-      <div className="relative bg-stone-50 p-6">
-        <div className="h-48 relative z-0">
+      {/* Chart area */}
+      <div className="relative">
+        <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -160,7 +145,7 @@ export function ScoreDistributionChart() {
                 dataKey="value"
                 labelLine={false}
                 label={renderCustomLabel}
-                stroke="#f5f5f4"
+                stroke="hsl(0, 0%, 100%)"
                 strokeWidth={2}
               >
                 {chartData.map((entry, index) => (
@@ -177,29 +162,27 @@ export function ScoreDistributionChart() {
           {/* Center label */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="text-center">
-              <span className="text-3xl font-black font-mono text-teal-600">{total}</span>
-              <div className="text-stone-500 text-xs font-mono mt-1">TOTAL</div>
+              <span className="text-3xl font-bold text-foreground">{total}</span>
+              <div className="text-muted-foreground text-xs mt-1">Total</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Legend - light */}
-      <div className="p-4 bg-stone-50 flex flex-wrap justify-center gap-4">
+      {/* Legend */}
+      <div className="mt-4 flex flex-wrap justify-center gap-4">
         {chartData.map((item, index) => (
           <div key={index} className="flex items-center gap-2">
             <div
-              className="w-3 h-3"
-              style={{
-                backgroundColor: item.color,
-              }}
+              className="w-3 h-3 rounded-sm"
+              style={{ backgroundColor: item.color }}
             />
-            <span className="text-stone-600 text-xs font-mono">
-              {item.name}: <span className="text-stone-800 font-bold">{item.value}</span>
+            <span className="text-muted-foreground text-xs">
+              {item.name}: <span className="text-foreground font-semibold">{item.value}</span>
             </span>
           </div>
         ))}
       </div>
-    </PixelBox>
+    </div>
   )
 }

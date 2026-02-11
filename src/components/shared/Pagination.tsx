@@ -50,34 +50,13 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
 
   const visiblePages = getVisiblePages();
 
-  const navButtonStyle = {
-    background: 'linear-gradient(180deg, #f5f5f4 0%, #e7e5e4 100%)',
-    boxShadow: '0 3px 0 #a8a29e',
-    borderRadius: '6px'
-  };
-
-  const activePageStyle = {
-    background: 'linear-gradient(180deg, #4ecdc4 0%, #2d8f8f 100%)',
-    color: 'white',
-    boxShadow: '0 3px 0 #1a5f5f',
-    borderRadius: '6px'
-  };
-
-  const inactivePageStyle = {
-    background: 'linear-gradient(180deg, #ffffff 0%, #f5f5f4 100%)',
-    color: '#78716c',
-    boxShadow: '0 2px 0 #d6d3d1',
-    borderRadius: '6px'
-  };
-
   return (
     <nav className="flex items-center justify-center gap-2" aria-label="Pagination">
       {/* Previous button */}
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="w-10 h-10 flex items-center justify-center font-black transition-all hover:translate-y-0.5 active:translate-y-1 disabled:opacity-40 disabled:hover:translate-y-0"
-        style={navButtonStyle}
+        className="w-10 h-10 flex items-center justify-center rounded-md text-muted-foreground hover:bg-muted transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
         aria-label="Previous page"
       >
         {'<'}
@@ -89,7 +68,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
           return (
             <span
               key={`ellipsis-${index}`}
-              className="w-10 h-10 flex items-center justify-center font-mono font-black text-stone-400"
+              className="w-10 h-10 flex items-center justify-center text-muted-foreground"
             >
               ...
             </span>
@@ -102,8 +81,11 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
             key={page}
             onClick={() => onPageChange(page)}
             disabled={isCurrentPage}
-            className="w-10 h-10 flex items-center justify-center font-mono font-black transition-all hover:translate-y-0.5 active:translate-y-1 disabled:hover:translate-y-0"
-            style={isCurrentPage ? activePageStyle : inactivePageStyle}
+            className={`w-10 h-10 flex items-center justify-center rounded-md transition-colors ${
+              isCurrentPage
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:bg-muted'
+            }`}
             aria-current={isCurrentPage ? 'page' : undefined}
           >
             {page}
@@ -115,8 +97,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="w-10 h-10 flex items-center justify-center font-black transition-all hover:translate-y-0.5 active:translate-y-1 disabled:opacity-40 disabled:hover:translate-y-0"
-        style={navButtonStyle}
+        className="w-10 h-10 flex items-center justify-center rounded-md text-muted-foreground hover:bg-muted transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
         aria-label="Next page"
       >
         {'>'}

@@ -3,11 +3,11 @@ interface FormattedSummaryProps {
 }
 
 /**
- * Parses and formats AI-generated tender summaries with arcade-style light mode.
+ * Parses and formats AI-generated tender summaries with Gold Executive styling.
  *
  * Expected patterns:
- * - "1. ALL CAPS TITLE" -> Main heading (h3, bold, larger)
- * - "* Subtitle text" followed by sub-bullets -> Subheading (h4, semibold)
+ * - "1. ALL CAPS TITLE" -> Main heading (h3, serif, semibold)
+ * - "* Subtitle text" followed by sub-bullets -> Subheading (h4, serif, semibold)
  * - "* Content bullet" (sub-bullets) -> Normal list item
  */
 export function FormattedSummary({ content }: FormattedSummaryProps) {
@@ -17,8 +17,8 @@ export function FormattedSummary({ content }: FormattedSummaryProps) {
     <div className="space-y-6">
       {sections.map((section, sectionIdx) => (
         <div key={sectionIdx}>
-          {/* Main heading (ALL CAPS title) with arcade accent */}
-          <h3 className="text-base font-black text-stone-800 mb-3 border-l-4 border-teal-500 pl-3 uppercase tracking-wide">
+          {/* Main heading (ALL CAPS title) with clean accent */}
+          <h3 className="text-base font-serif font-semibold text-foreground mb-3 border-l-4 border-primary/30 pl-3">
             {section.title}
           </h3>
 
@@ -28,8 +28,7 @@ export function FormattedSummary({ content }: FormattedSummaryProps) {
               <div key={subIdx} className="pl-1">
                 {/* Subheading */}
                 {subsection.subtitle && (
-                  <h4 className="text-sm font-bold text-stone-700 mb-2 flex items-center gap-2">
-                    <span className="w-2 h-2 bg-orange-400" />
+                  <h4 className="text-sm font-serif font-semibold text-foreground mb-2">
                     {subsection.subtitle}
                   </h4>
                 )}
@@ -40,9 +39,10 @@ export function FormattedSummary({ content }: FormattedSummaryProps) {
                     {subsection.items.map((item, itemIdx) => (
                       <li
                         key={itemIdx}
-                        className="text-sm text-stone-600 leading-relaxed flex items-start gap-2"
+                        className="text-body text-foreground font-light leading-relaxed flex items-start gap-2"
                       >
-                        <span className="text-teal-500 mt-0.5 flex-shrink-0">*</span>
+                        <span className="text-primary mt-1 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-primary">
+                        </span>
                         <span>{item}</span>
                       </li>
                     ))}
