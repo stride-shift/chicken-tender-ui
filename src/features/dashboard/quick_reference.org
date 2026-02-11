@@ -14,8 +14,10 @@ Overview and monitoring feature. Displays stats, alerts, and recent activity for
 | AlertCard | components/AlertCard.tsx:24 | Alert indicator with severity-based left border |
 | AlertsRow | components/AlertsRow.tsx:8 | Row showing briefings, closing deadlines, changes |
 | RecentChanges | components/RecentChanges.tsx:7 | Displays 24h high-importance changes with status |
-| TenderCarousel | components/TenderCarousel.tsx:10 | Auto-scrolling carousel with expand/collapse toggle |
+| TenderCarousel | components/TenderCarousel.tsx:157 | Auto-scrolling carousel with weekly grouping and grid toggle |
 | TenderCarouselCard | components/TenderCarouselCard.tsx:8 | Individual card with score, dates, LLM notes |
+| CarouselSection | components/TenderCarousel.tsx:42 | Reusable section with auto-scroll, navigation, dot indicators |
+| groupTendersByRecency | components/TenderCarousel.tsx:11 | Helper function grouping tenders into "New This Week" and "Earlier" |
 | ScoreDistributionChart | components/ScoreDistributionChart.tsx:17 | Recharts donut chart with center total label |
 | DepartmentTreemap | components/DepartmentTreemap.tsx:56 | Recharts horizontal bar chart of tenders by dept |
 | ClosingTimelineChart | components/ClosingTimelineChart.tsx:19 | Bar chart showing tenders closing by week (unused) |
@@ -39,7 +41,7 @@ The hook passes the following fixed parameters to get_tenders_paginated to ensur
 | p_min_days_until_close | 0 | Ensure closing_date >= NOW() (not yet closed) |
 | p_sort_by | 'score' | Sort by relevance score (best first) |
 | p_sort_desc | true | Descending order (highest scores first) |
-| p_limit | limit parameter (default 12) | Control carousel display count |
+| p_limit | limit parameter (default 12) | Control total tenders fetched for display |
 | p_offset | 0 | Start from first result |
 
 All other parameters (province_id, department_id, category_id, closing_from, closing_to, has_compulsory_briefing, search_text) are set to null to retrieve all relevant tenders without additional filtering.
@@ -82,14 +84,17 @@ Hook interface parameters:
 
 | Feature | Implementation |
 |---------|----------------|
-| Auto-scroll | 5000ms interval, configurable via autoScrollInterval prop |
-| Pause behavior | Pauses on mouse hover, resumes on mouse leave |
+| Data source | useRelevantTenders hook (default limit: 12) |
+| Grouping | groupTendersByRecency() splits tenders into "New This Week" (last 7 days) and "Earlier", each sorted most recent first |
+| Carousel mode | Renders two independent CarouselSection components, one per group (hidden if empty) |
+| Grid mode | Shows both groups in responsive grid (1/2/3 columns), with divider between sections if both exist |
+| Auto-scroll | Per-section 5000ms interval, configurable via autoScrollInterval prop |
+| Pause behavior | Per-section pause on mouse hover, resume on mouse leave |
 | Responsive | 1 card (mobile), 2 cards (tablet), 3 cards (desktop) |
-| Navigation | Prev/Next buttons and dot indicators in carousel mode |
-| Data source | useRelevantTenders hook (default limit: 8, featured count) |
+| Navigation | Prev/Next buttons (w-8 h-8) and dot indicators per section |
 | Card navigation | Click card to navigate to /tenders/:tender_pk |
-| View toggle | Button to switch between carousel and expanded grid |
-| Grid mode | Shows all tenders in responsive grid (1/2/3 columns) |
+| View toggle | Button to switch between carousel and grid, positioned top-right of card |
+| Hover effect | Carousel container allows overflow-y-visible to support card hover lift |
 
 ** TenderCarouselCard
 
@@ -139,6 +144,25 @@ DashboardPage.tsx displays components in this order:
 4. RecentChanges (activity status card)
 
 Note: ClosingTimelineChart component exists but is not currently integrated in DashboardPage.
+
+* CarouselSection Component
+
+Internal component within TenderCarousel that renders a single section (group) with independent carousel behavior.
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| tenders | TenderListItem[] | Array of tenders to display in this section |
+| title | string | Section header text ("New This Week" or "Earlier") |
+| autoScrollInterval | number | Interval in ms for auto-scroll (passed from parent) |
+
+| Feature | Implementation |
+|---------|----------------|
+| Auto-scroll | Triggers goNext() every autoScrollInterval ms if not paused |
+| Pause behavior | Paused on mouse enter, resumed on mouse leave |
+| Navigation visibility | Prev/Next buttons and dots shown only if tenders.length > visibleCount |
+| Responsive layout | Updates visibleCount on window resize: 1 (mobile), 2 (tablet), 3 (desktop) |
+| Keyboard-friendly | Dot indicators clickable to jump to slide, nav buttons with aria-labels |
+| Reset behavior | Index resets to 0 when tenders prop changes |
 
 ---
 /Last Updated/: 2026-02-11
