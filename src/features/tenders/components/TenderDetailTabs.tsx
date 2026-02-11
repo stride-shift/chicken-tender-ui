@@ -7,7 +7,7 @@ const TABS = ['Opportunity', 'Evaluation', 'Documents', 'Changes'] as const
 
 export function TenderDetailTabs({ activeTab, onTabChange }: TenderDetailTabsProps) {
   return (
-    <div className="flex items-center gap-1 p-1 bg-muted rounded-lg mx-4">
+    <div className="flex items-center gap-1 p-1 bg-muted rounded-lg">
       {TABS.map((tab) => (
         <button
           key={tab}

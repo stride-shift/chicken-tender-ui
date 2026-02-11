@@ -6,6 +6,7 @@ import { TenderOpportunityTab } from './TenderOpportunityTab'
 import { TenderDetailEval } from './TenderDetailEval'
 import { TenderDetailDocs } from './TenderDetailDocs'
 import { TenderDetailChanges } from './TenderDetailChanges'
+import { useToast } from '@/hooks/useToast'
 
 interface TenderDetailPanelProps {
   tenderId: number | null
@@ -14,6 +15,11 @@ interface TenderDetailPanelProps {
 export function TenderDetailPanel({ tenderId }: TenderDetailPanelProps) {
   const [activeTab, setActiveTab] = useState('Opportunity')
   const { tender, isLoading, error } = useTenderDetail({ tenderId })
+  const { addToast } = useToast()
+
+  const handleLifecycleAction = () => {
+    addToast('Coming soon — Tender lifecycle management is on the way!', 'info')
+  }
 
   // No tender selected
   if (tenderId === null) {
@@ -143,9 +149,43 @@ export function TenderDetailPanel({ tenderId }: TenderDetailPanelProps) {
         <TenderDetailHeader tender={tender} />
       </div>
 
-      {/* Tabs */}
-      <div className="px-4 py-2 bg-muted">
+      {/* Tabs + Actions row */}
+      <div className="px-4 py-2 bg-muted flex items-center justify-between gap-2">
         <TenderDetailTabs activeTab={activeTab} onTabChange={setActiveTab} />
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          <button
+            onClick={handleLifecycleAction}
+            className="flex items-center gap-1 px-2.5 py-1.5 text-label font-semibold rounded-md transition-all
+              bg-success/10 text-success border border-success/30
+              hover:bg-success/20 hover:border-success/40 active:translate-y-px"
+          >
+            <span>&#9733;</span> Shortlist
+          </button>
+          <button
+            onClick={handleLifecycleAction}
+            className="flex items-center gap-1 px-2.5 py-1.5 text-label font-semibold rounded-md transition-all
+              bg-info/10 text-info border border-info/30
+              hover:bg-info/20 hover:border-info/40 active:translate-y-px"
+          >
+            <span>&#9998;</span> Review
+          </button>
+          <button
+            onClick={handleLifecycleAction}
+            className="flex items-center gap-1 px-2.5 py-1.5 text-label font-semibold rounded-md transition-all
+              bg-warning/10 text-warning border border-warning/30
+              hover:bg-warning/20 hover:border-warning/40 active:translate-y-px"
+          >
+            <span>&#9673;</span> Watch
+          </button>
+          <button
+            onClick={handleLifecycleAction}
+            className="flex items-center gap-1 px-2.5 py-1.5 text-label font-semibold rounded-md transition-all
+              bg-muted text-muted-foreground border border-border
+              hover:bg-muted/80 active:translate-y-px"
+          >
+            <span>&#10005;</span> Decline
+          </button>
+        </div>
       </div>
 
       {/* Content area */}

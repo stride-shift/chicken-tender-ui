@@ -19,7 +19,7 @@ export const HealthBar = ({
 
   return (
     <div className="flex items-center gap-2">
-      <div className="h-3 w-full overflow-hidden rounded-full bg-secondary">
+      <div className="h-3 w-full overflow-hidden rounded-full bg-muted-foreground/20">
         <div
           className="h-full rounded-full bg-primary transition-all duration-500"
           style={{ width: `${percentage}%` }}

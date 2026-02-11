@@ -2,19 +2,12 @@ import type { TenderDetail } from '@/lib/types'
 import { RecommendationBadge } from '@/components/shared'
 import { DateDisplay } from '@/components/shared'
 import { HealthBar } from '@/components/ui'
-import { useToast } from '@/hooks/useToast'
 
 interface TenderDetailHeaderProps {
   tender: TenderDetail
 }
 
 export function TenderDetailHeader({ tender }: TenderDetailHeaderProps) {
-  const { addToast } = useToast()
-
-  const handleLifecycleAction = () => {
-    addToast('Coming soon — Tender lifecycle management is on the way!', 'info')
-  }
-
   // Determine title: prefer generated_title, fall back to tender_no
   const title = tender.generated_title || tender.tender_no
 
@@ -61,10 +54,10 @@ export function TenderDetailHeader({ tender }: TenderDetailHeaderProps) {
   }
 
   return (
-    <div className="p-4 bg-card border-b border-border">
+    <div className="px-4 py-2.5 bg-card border-b border-border">
       {/* Row 1: Title + Recommendation Badge */}
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-title font-serif font-semibold text-foreground truncate flex-1">
+        <h1 className="text-h3 font-serif font-semibold text-foreground truncate flex-1">
           {title}
         </h1>
         {tender.recommendation && (
@@ -77,7 +70,7 @@ export function TenderDetailHeader({ tender }: TenderDetailHeaderProps) {
       </div>
 
       {/* Row 2: Compact meta line with bullet separators */}
-      <div className="mt-1.5 flex items-center flex-wrap gap-x-1 text-body-small">
+      <div className="mt-0.5 flex items-center flex-wrap gap-x-1 text-body-small">
         {/* Tender number (if we have a generated title) */}
         {tender.generated_title && (
           <>
@@ -120,56 +113,10 @@ export function TenderDetailHeader({ tender }: TenderDetailHeaderProps) {
 
       {/* Row 3: Health bar - full width, integrated */}
       {tender.score_percentage !== null && (
-        <div className="mt-2">
+        <div className="mt-1">
           <HealthBar current={scoreValue} max={100} color={scoreColor} segments={20} />
         </div>
       )}
-
-      {/* Row 4: Lifecycle action bar (skeleton — coming soon) */}
-      <div className="mt-3 pt-3 border-t border-border">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-caption font-semibold text-muted-foreground">
-            Tender Actions
-          </span>
-          <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
-            coming soon
-          </span>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={handleLifecycleAction}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-caption font-semibold rounded-md transition-all
-              bg-success/10 text-success border border-success/30
-              hover:bg-success/20 hover:border-success/40 active:translate-y-px shadow-sm"
-          >
-            <span>&#9733;</span> Shortlist
-          </button>
-          <button
-            onClick={handleLifecycleAction}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-caption font-semibold rounded-md transition-all
-              bg-info/10 text-info border border-info/30
-              hover:bg-info/20 hover:border-info/40 active:translate-y-px shadow-sm"
-          >
-            <span>&#9998;</span> Review
-          </button>
-          <button
-            onClick={handleLifecycleAction}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-caption font-semibold rounded-md transition-all
-              bg-warning/10 text-warning border border-warning/30
-              hover:bg-warning/20 hover:border-warning/40 active:translate-y-px shadow-sm"
-          >
-            <span>&#9673;</span> Watch
-          </button>
-          <button
-            onClick={handleLifecycleAction}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-caption font-semibold rounded-md transition-all
-              bg-muted text-muted-foreground border border-border
-              hover:bg-muted/80 hover:border-border active:translate-y-px shadow-sm"
-          >
-            <span>&#10005;</span> Decline
-          </button>
-        </div>
-      </div>
     </div>
   )
 }
