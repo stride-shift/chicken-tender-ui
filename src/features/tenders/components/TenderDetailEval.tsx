@@ -57,7 +57,7 @@ export function TenderDetailEval({ tender }: TenderDetailEvalProps) {
       {/* Header with overall result */}
       <div className="rounded-lg border border-border bg-card shadow-sm p-6 flex items-center justify-between">
         <div>
-          <h3 className="text-subtitle font-serif font-semibold text-foreground">Rubric Evaluation</h3>
+          <h3 className="text-subtitle font-semibold text-foreground">Rubric Evaluation</h3>
           <p className="text-body text-muted-foreground mt-0.5">
             How this tender was graded against your criteria
           </p>
@@ -67,7 +67,7 @@ export function TenderDetailEval({ tender }: TenderDetailEvalProps) {
             className="px-4 py-2 rounded-lg"
             style={{ backgroundColor: getScoreColor(tender.score_percentage) }}
           >
-            <span className="text-h2 font-serif font-semibold tabular-nums text-white">
+            <span className="text-h2 font-semibold tabular-nums text-white">
               {tender.score_percentage !== null ? `${Math.round(tender.score_percentage)}%` : '--'}
             </span>
           </div>
@@ -81,7 +81,7 @@ export function TenderDetailEval({ tender }: TenderDetailEvalProps) {
       {rubricKnockouts.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h4 className="text-subtitle font-serif font-semibold text-foreground">
+            <h4 className="text-subtitle font-semibold text-foreground">
               Knockout Criteria
             </h4>
             <span
@@ -114,7 +114,7 @@ export function TenderDetailEval({ tender }: TenderDetailEvalProps) {
       {rubricCriteria.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h4 className="text-subtitle font-serif font-semibold text-foreground">
+            <h4 className="text-subtitle font-semibold text-foreground">
               Scoring Criteria
             </h4>
             <span className="px-3 py-1 bg-muted text-muted-foreground text-caption font-medium rounded-full tabular-nums">
@@ -147,7 +147,7 @@ export function TenderDetailEval({ tender }: TenderDetailEvalProps) {
       {/* LLM Analysis Notes */}
       {tender.llm_notes && (
         <div>
-          <h4 className="text-subtitle font-serif font-semibold text-foreground mb-4">
+          <h4 className="text-subtitle font-semibold text-foreground mb-4">
             Evaluator Notes
           </h4>
           <div className="rounded-lg border border-border bg-info/5 p-6">

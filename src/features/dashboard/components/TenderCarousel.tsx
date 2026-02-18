@@ -89,7 +89,7 @@ function CarouselSection({ tenders, title, autoScrollInterval }: CarouselSection
     <div className="mb-6 last:mb-0">
       {/* Section header + nav controls */}
       <div className="flex items-center gap-2 mb-3">
-        <h3 className="font-serif font-semibold text-foreground text-lg">{title}</h3>
+        <h3 className="font-sans font-semibold text-foreground text-lg">{title}</h3>
         <span className="text-caption text-muted-foreground">{tenders.length} tenders</span>
         {showNavigation && (
           <div className="flex items-center gap-2 ml-auto">
@@ -161,7 +161,7 @@ export function TenderCarousel({ autoScrollInterval = 5000 }: TenderCarouselProp
   if (isLoading) {
     return (
       <div className="rounded-lg border border-border bg-card shadow-sm p-6">
-        <h2 className="font-serif font-semibold text-foreground mb-4">Featured Tenders</h2>
+        <h2 className="font-sans font-semibold text-foreground mb-4">Featured Tenders</h2>
         <LoadingState variant="list" count={3} />
       </div>
     )
@@ -170,7 +170,7 @@ export function TenderCarousel({ autoScrollInterval = 5000 }: TenderCarouselProp
   if (error) {
     return (
       <div className="rounded-lg border border-border bg-card shadow-sm p-6">
-        <h2 className="font-serif font-semibold text-foreground mb-4">Featured Tenders</h2>
+        <h2 className="font-sans font-semibold text-foreground mb-4">Featured Tenders</h2>
         <div className="rounded-lg border border-destructive bg-destructive/5 px-4 py-3">
           <p className="font-semibold text-destructive">Error loading tenders</p>
           <p className="text-sm mt-1 text-muted-foreground">{error.message}</p>
@@ -182,7 +182,7 @@ export function TenderCarousel({ autoScrollInterval = 5000 }: TenderCarouselProp
   if (tenders.length === 0) {
     return (
       <div className="rounded-lg border border-border bg-card shadow-sm p-6">
-        <h2 className="font-serif font-semibold text-foreground mb-4">Featured Tenders</h2>
+        <h2 className="font-sans font-semibold text-foreground mb-4">Featured Tenders</h2>
         <div className="text-center py-8 text-muted-foreground">
           <p>No relevant tenders at this time.</p>
         </div>
@@ -196,7 +196,7 @@ export function TenderCarousel({ autoScrollInterval = 5000 }: TenderCarouselProp
     <div className="rounded-lg border border-border bg-card shadow-sm p-6 relative overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between mb-4 relative z-20">
-        <h2 className="font-serif font-semibold text-foreground">Featured Tenders</h2>
+        <h2 className="font-sans font-semibold text-foreground">Featured Tenders</h2>
 
         {/* Expand/Collapse toggle */}
         <button
@@ -223,7 +223,7 @@ export function TenderCarousel({ autoScrollInterval = 5000 }: TenderCarouselProp
           {newThisWeek.length > 0 && (
             <div className="mb-6 last:mb-0">
               <div className="flex items-center gap-2 mb-3">
-                <h3 className="font-serif font-semibold text-foreground text-lg">New This Week</h3>
+                <h3 className="font-sans font-semibold text-foreground text-lg">New This Week</h3>
                 <span className="text-caption text-muted-foreground">{newThisWeek.length} tenders</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -240,7 +240,7 @@ export function TenderCarousel({ autoScrollInterval = 5000 }: TenderCarouselProp
                 <div className="border-t border-border my-6" />
               )}
               <div className="flex items-center gap-2 mb-3">
-                <h3 className="font-serif font-semibold text-foreground text-lg">Earlier</h3>
+                <h3 className="font-sans font-semibold text-foreground text-lg">Earlier</h3>
                 <span className="text-caption text-muted-foreground">{earlier.length} tenders</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

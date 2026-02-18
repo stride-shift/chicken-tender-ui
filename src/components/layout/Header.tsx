@@ -52,7 +52,7 @@ export function Header({ onMenuClick }: HeaderProps) {
   const displayName = profile?.display_name || 'User'
 
   return (
-    <header className="sticky top-0 z-40 bg-card border-b border-border shadow-sm">
+    <header className="sticky top-0 z-40 bg-white border-b border-gray-200">
       <div className="h-16 flex items-center px-4">
         {/* Burger menu */}
         <button
@@ -143,7 +143,7 @@ export function Header({ onMenuClick }: HeaderProps) {
               {/* Client selector for StrideShift */}
               {isStrideShift && availableClients.length > 0 && (
                 <div className="px-4 py-3 border-b border-border">
-                  <div className="text-xs font-serif font-semibold text-muted-foreground mb-2">
+                  <div className="text-xs font-sans font-semibold text-muted-foreground mb-2">
                     Switch Client
                   </div>
                   <div className="space-y-1 max-h-48 overflow-y-auto">

@@ -1,0 +1,69 @@
+#+TITLE: Pages - Quick Reference
+#+DATE: 2026-02-18
+
+* Overview
+
+Route-level components that compose feature modules into full screens. Each page maps to a React Router route defined in App.tsx.
+
+* Pages
+
+| Page | File | Route | Purpose |
+|------|------|-------|---------|
+| LoginPage | LoginPage.tsx:7 | /login | Full-screen login form with forgot password |
+| ResetPasswordPage | ResetPasswordPage.tsx:6 | /reset-password | Supabase magic-link password reset form |
+| DashboardPage | DashboardPage.tsx:8 | / | Dashboard: stats, charts, tender carousel |
+| TendersPage | TendersPage.tsx:6 | /tenders, /tenders/:tenderId | Split-panel tender list and detail view |
+| RubricPage | RubricPage.tsx:4 | /rubric | Active client rubric: knockouts, criteria, thresholds |
+
+* Key Patterns
+
+| Pattern | Pages | Details |
+|---------|-------|---------|
+| Auth guard | DashboardPage, TendersPage, RubricPage | Wrapped in ProtectedRoute in App.tsx; redirects to /login if not authenticated |
+| Outside AppShell | LoginPage, ResetPasswordPage | Full-screen layout; no sidebar or header |
+| Lazy loading | All except LoginPage | App.tsx uses React.lazy + Suspense for code splitting |
+| URL param | TendersPage | =useParams()= extracts =tenderId=; parsed to int or null |
+| Auto-collapse sidebar | TendersPage | =useSidebar().collapseSidebar()= fires once on first tender selection (ref guard) |
+| Auth state gate | ResetPasswordPage | Shows "Link Expired" if =!isAuthenticated= after auth resolves |
+| Inline sub-components | RubricPage | KnockoutRow (line 213), CriterionRow (line 231), ThresholdRow (line 261) defined in same file |
+| Local loading/error | RubricPage | Renders inline skeleton, error box, or empty state before main content |
+
+* Dependencies
+
+| Page | Hooks / Contexts | Feature Components |
+|------|------------------|--------------------|
+| LoginPage | useAuth (login, forgotPassword), useNavigate | LoginCard, ForgotPasswordModal |
+| ResetPasswordPage | useAuth (updatePassword, isAuthenticated, isLoading), useNavigate | CombinedLogo |
+| DashboardPage | none (delegates to feature components) | StatsGrid, TenderCarousel, ScoreDistributionChart, DepartmentTreemap |
+| TendersPage | useParams, useNavigate, useSidebar | TenderListPanel, TenderDetailPanel |
+| RubricPage | useActiveClientRubric | none (renders rubric data directly) |
+
+* RPC Function Usage
+
+Pages do not call Supabase RPC functions directly. All data fetching is delegated to feature hooks or feature components.
+
+| Indirect Call | Via Hook | Called In Page |
+|---------------|----------|----------------|
+| get_active_client_rubric | useActiveClientRubric | RubricPage.tsx:5 |
+
+* RubricPage Sub-Components
+
+| Component | Line | Purpose |
+|-----------|------|---------|
+| KnockoutRow | RubricPage.tsx:213 | Renders single knockout question and fail message |
+| CriterionRow | RubricPage.tsx:231 | Renders criterion category, weight badge, question, unsure handling |
+| ThresholdRow | RubricPage.tsx:261 | Renders score threshold range with variant color styling |
+| formatCategoryName | RubricPage.tsx:299 | Converts snake_case category to Title Case |
+| ensureArray | RubricPage.tsx:307 | Parses JSONB field (string or array) into typed array |
+
+* RubricPage States
+
+| State | Condition | Renders |
+|-------|-----------|---------|
+| Loading | isLoading === true | Animated pulse skeleton (title + 3 rows) |
+| Error | error is set | Destructive border card with error message |
+| Empty | rubric is null | Card with "No rubric configured" message |
+| Success | rubric exists | Header, description, knockouts, criteria, thresholds |
+
+---
+/Last Updated/: 2026-02-18

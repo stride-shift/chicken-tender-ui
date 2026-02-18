@@ -1,5 +1,5 @@
 #+TITLE: Components - Quick Reference
-#+DATE: 2026-02-11
+#+DATE: 2026-02-18
 
 * Overview
 
@@ -218,4 +218,4 @@ Toast system (=ui/Toast.tsx:39=, =ui/Toaster.tsx:4=) for transient messages:
 - Managed via ToastContext, fixed bottom-right z-50
 
 ---
-/Last Updated/: 2026-02-11
+/Last Updated/: 2026-02-18

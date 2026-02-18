@@ -8,12 +8,12 @@ interface CombinedLogoProps {
   showPixelBoot?: boolean;
 }
 
-// Gold Executive color palette
+// Blue/neutral color palette
 const theme = {
   primary: '#17171c',
-  accent: '#f0b429',
+  accent: '#3b82f6',
   textMuted: '#555568',
-  cream: '#faf8f5',
+  cream: '#f8fafc',
 };
 
 const CombinedLogo: React.FC<CombinedLogoProps> = ({ size = 'large', showPixelBoot = false }) => {
@@ -94,7 +94,7 @@ const CombinedLogo: React.FC<CombinedLogoProps> = ({ size = 'large', showPixelBo
         {/* STRIDESHIFT - near-black */}
         <div
           style={{
-            fontFamily: "'Lora', Georgia, serif",
+            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             fontSize: s.ssTitle,
             color: theme.primary,
             letterSpacing: '0.5px',
@@ -118,10 +118,10 @@ const CombinedLogo: React.FC<CombinedLogoProps> = ({ size = 'large', showPixelBo
           GLOBAL
         </div>
 
-        {/* TENDER (near-black) + RENDER (gold) */}
+        {/* TENDER (near-black) + RENDER (blue) */}
         <div
           style={{
-            fontFamily: "'Lora', Georgia, serif",
+            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             fontSize: s.trTitle,
             letterSpacing: '0.5px',
             marginTop: s.gap + 4,

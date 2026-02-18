@@ -13,7 +13,7 @@ const SIZE_CONFIG: Record<PixelBootLoaderSize, { spinnerSize: string; logoSize: 
 
 export function PixelBootLoader({
   size = 'medium',
-  color = 'hsl(45, 93%, 58%)',
+  color = '#3b82f6',
 }: PixelBootLoaderProps) {
   const { spinnerSize, logoSize } = SIZE_CONFIG[size];
 
@@ -31,7 +31,7 @@ export function PixelBootLoader({
 
       {/* App name */}
       <div className="text-center">
-        <h2 className={`font-serif font-semibold ${logoSize} text-foreground animate-pulse`}>
+        <h2 className={`font-sans font-semibold ${logoSize} text-foreground animate-pulse`}>
           TenderRender
         </h2>
         <p className="text-sm text-muted-foreground mt-1">

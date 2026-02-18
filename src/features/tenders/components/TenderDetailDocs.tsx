@@ -8,7 +8,7 @@ export function TenderDetailDocs({ documents }: TenderDetailDocsProps) {
   if (!documents || documents.length === 0) {
     return (
       <div className="space-y-4">
-        <h3 className="text-subtitle font-serif font-semibold text-foreground">
+        <h3 className="text-subtitle font-semibold text-foreground">
           Documents
         </h3>
         <p className="text-body text-muted-foreground">No documents available for this tender.</p>
@@ -19,7 +19,7 @@ export function TenderDetailDocs({ documents }: TenderDetailDocsProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-subtitle font-serif font-semibold text-foreground">
+        <h3 className="text-subtitle font-semibold text-foreground">
           Documents
         </h3>
         <span className="px-2 py-1 text-caption text-muted-foreground bg-muted rounded">

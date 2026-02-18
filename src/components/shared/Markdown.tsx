@@ -10,32 +10,32 @@ export function Markdown({ content, className = '' }: MarkdownProps) {
   const components: Components = {
     // Headings with clean executive styling
     h1: ({ children }) => (
-      <h1 className="text-2xl font-serif font-semibold text-foreground mb-4 mt-6 first:mt-0 border-l-4 border-primary/30 pl-4">
+      <h1 className="text-2xl font-sans font-semibold text-foreground mb-4 mt-6 first:mt-0 border-l-4 border-primary/30 pl-4">
         {children}
       </h1>
     ),
     h2: ({ children }) => (
-      <h2 className="text-xl font-serif font-semibold text-foreground mb-3 mt-5 first:mt-0 border-l-3 border-primary/30 pl-3">
+      <h2 className="text-xl font-sans font-semibold text-foreground mb-3 mt-5 first:mt-0 border-l-3 border-primary/30 pl-3">
         {children}
       </h2>
     ),
     h3: ({ children }) => (
-      <h3 className="text-lg font-serif font-semibold text-foreground mb-2 mt-4 first:mt-0">
+      <h3 className="text-lg font-sans font-semibold text-foreground mb-2 mt-4 first:mt-0">
         {children}
       </h3>
     ),
     h4: ({ children }) => (
-      <h4 className="text-base font-serif font-semibold text-foreground mb-2 mt-3 first:mt-0">
+      <h4 className="text-base font-sans font-semibold text-foreground mb-2 mt-3 first:mt-0">
         {children}
       </h4>
     ),
     h5: ({ children }) => (
-      <h5 className="text-sm font-serif font-semibold text-foreground mb-1 mt-2 first:mt-0">
+      <h5 className="text-sm font-sans font-semibold text-foreground mb-1 mt-2 first:mt-0">
         {children}
       </h5>
     ),
     h6: ({ children }) => (
-      <h6 className="text-sm font-serif font-semibold text-muted-foreground mb-1 mt-2 first:mt-0">
+      <h6 className="text-sm font-sans font-semibold text-muted-foreground mb-1 mt-2 first:mt-0">
         {children}
       </h6>
     ),
@@ -165,7 +165,7 @@ export function Markdown({ content, className = '' }: MarkdownProps) {
       </tr>
     ),
     th: ({ children }) => (
-      <th className="px-4 py-2 font-serif font-semibold text-foreground text-left">
+      <th className="px-4 py-2 font-sans font-semibold text-foreground text-left">
         {children}
       </th>
     ),

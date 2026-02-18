@@ -1,18 +1,17 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip, Cell } from 'recharts'
 import { useFilterOptions } from '@/features/tenders/hooks/useFilterOptions'
 
-// Gold gradient palette for bars
 const BAR_COLORS = [
-  'hsl(45, 93%, 58%)', // primary gold
-  'hsl(32, 80%, 45%)', // accent deep gold
-  'hsl(40, 88%, 60%)', // bright gold
-  'hsl(38, 92%, 50%)', // amber
-  'hsl(45, 85%, 65%)', // medium gold
-  'hsl(32, 75%, 55%)', // medium amber
-  'hsl(45, 90%, 70%)', // soft gold
-  'hsl(35, 78%, 50%)', // darker amber
-  'hsl(45, 93%, 78%)', // light gold
-  'hsl(220, 14%, 80%)', // neutral gray
+  '#3b82f6', // blue
+  '#22c55e', // green
+  '#f59e0b', // amber
+  '#ec4899', // pink
+  '#8b5cf6', // violet
+  '#14b8a6', // teal
+  '#f97316', // orange
+  '#06b6d4', // cyan
+  '#ef4444', // red
+  '#64748b', // slate (for "Other")
 ]
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -60,9 +59,9 @@ export function DepartmentTreemap() {
     return (
       <div className="rounded-lg border border-border bg-card shadow-sm p-6">
         <div className="mb-4">
-          <h3 className="font-serif font-semibold text-foreground">Tenders by Department</h3>
+          <h3 className="font-sans font-semibold text-foreground">Tenders by Department</h3>
         </div>
-        <div className="h-80 flex items-center justify-center">
+        <div className="h-64 flex items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-primary" />
         </div>
       </div>
@@ -73,7 +72,7 @@ export function DepartmentTreemap() {
     return (
       <div className="rounded-lg border border-border bg-card shadow-sm p-6">
         <div className="mb-4">
-          <h3 className="font-serif font-semibold text-foreground">Tenders by Department</h3>
+          <h3 className="font-sans font-semibold text-foreground">Tenders by Department</h3>
         </div>
         <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-md">
           <p className="text-sm">{error.message}</p>
@@ -85,15 +84,8 @@ export function DepartmentTreemap() {
   // Sort by count descending and take top departments
   const allDepartments = [...departments].filter((d) => d.count > 0).sort((a, b) => b.count - a.count)
 
-  // Take top 10, group the rest as "Other"
-  const topDepartments = allDepartments.slice(0, 10)
-  const otherDepartments = allDepartments.slice(10)
-
-  const sortedDepartments = [...topDepartments]
-  if (otherDepartments.length > 0) {
-    const otherCount = otherDepartments.reduce((sum, d) => sum + d.count, 0)
-    sortedDepartments.push({ id: -1, name: 'Other', count: otherCount })
-  }
+  // Take top 10 departments
+  const sortedDepartments = allDepartments.slice(0, 10)
 
   const total = departments.reduce((sum, d) => sum + d.count, 0)
 
@@ -101,9 +93,9 @@ export function DepartmentTreemap() {
     return (
       <div className="rounded-lg border border-border bg-card shadow-sm p-6">
         <div className="mb-4">
-          <h3 className="font-serif font-semibold text-foreground">Tenders by Department</h3>
+          <h3 className="font-sans font-semibold text-foreground">Tenders by Department</h3>
         </div>
-        <div className="h-80 flex items-center justify-center text-muted-foreground">
+        <div className="h-64 flex items-center justify-center text-muted-foreground">
           <p className="text-sm">No department data</p>
         </div>
       </div>
@@ -120,14 +112,14 @@ export function DepartmentTreemap() {
     <div className="rounded-lg border border-border bg-card shadow-sm p-6">
       {/* Header */}
       <div className="mb-4">
-        <h3 className="font-serif font-semibold text-foreground">Tenders by Department</h3>
+        <h3 className="font-sans font-semibold text-foreground">Tenders by Department</h3>
         <p className="text-muted-foreground text-sm mt-1">
           {total} tender{total !== 1 ? 's' : ''} across {departments.filter((d) => d.count > 0).length} department{departments.filter((d) => d.count > 0).length !== 1 ? 's' : ''}
         </p>
       </div>
 
       {/* Bar chart area */}
-      <div className="h-80">
+      <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={chartData}

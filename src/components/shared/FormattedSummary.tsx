@@ -3,7 +3,7 @@ interface FormattedSummaryProps {
 }
 
 /**
- * Parses and formats AI-generated tender summaries with Gold Executive styling.
+ * Parses and formats AI-generated tender summaries with clean sans-serif styling.
  *
  * Expected patterns:
  * - "1. ALL CAPS TITLE" -> Main heading (h3, serif, semibold)
@@ -18,7 +18,7 @@ export function FormattedSummary({ content }: FormattedSummaryProps) {
       {sections.map((section, sectionIdx) => (
         <div key={sectionIdx}>
           {/* Main heading (ALL CAPS title) with clean accent */}
-          <h3 className="text-base font-serif font-semibold text-foreground mb-3 border-l-4 border-primary/30 pl-3">
+          <h3 className="text-base font-sans font-semibold text-foreground mb-3 border-l-4 border-primary/30 pl-3">
             {section.title}
           </h3>
 
@@ -28,7 +28,7 @@ export function FormattedSummary({ content }: FormattedSummaryProps) {
               <div key={subIdx} className="pl-1">
                 {/* Subheading */}
                 {subsection.subtitle && (
-                  <h4 className="text-sm font-serif font-semibold text-foreground mb-2">
+                  <h4 className="text-sm font-sans font-semibold text-foreground mb-2">
                     {subsection.subtitle}
                   </h4>
                 )}

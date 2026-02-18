@@ -13,7 +13,7 @@ export function TenderDetailTabs({ activeTab, onTabChange }: TenderDetailTabsPro
           key={tab}
           onClick={() => onTabChange(tab)}
           className={`
-            rounded-md px-4 py-2 text-sm font-bold transition-all
+            rounded-md px-3 py-1 text-sm font-medium transition-all
             ${activeTab === tab
               ? 'bg-primary text-primary-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'

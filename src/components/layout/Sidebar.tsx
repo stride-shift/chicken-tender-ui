@@ -63,7 +63,7 @@ export function Sidebar({ collapsed }: SidebarProps) {
       <nav className="p-3 space-y-2">
         {/* Section label */}
         {!collapsed && (
-          <div className="px-3 py-2 text-xs font-serif font-semibold text-muted-foreground">
+          <div className="px-3 py-2 text-xs font-sans font-semibold text-muted-foreground">
             Navigation
           </div>
         )}

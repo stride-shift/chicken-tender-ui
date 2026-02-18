@@ -1,5 +1,5 @@
 #+TITLE: Auth Feature - Quick Reference
-#+DATE: 2026-02-11
+#+DATE: 2026-02-18
 
 * Overview
 
@@ -137,12 +137,21 @@ AuthProvider uses two separate effects to avoid deadlocking Supabase's internal 
 | card | hsl(0, 0%, 100%) | Card backgrounds |
 | foreground | hsl(240, 10%, 10%) | Primary text color |
 
-* Database Tables Accessed
+* Supabase Auth Calls
 
-| Table | Query Type | Purpose |
-|-------|-----------|---------|
-| user_profiles | SELECT by user_id | Fetch user profile, is_strideshift flag |
-| clients | SELECT active by is_active or client_pk | Fetch available clients for user |
+| Method | Used By | Purpose |
+|--------|---------|---------|
+| signInWithPassword | login() | Authenticate user with email and password |
+| signOut | logout() | Sign out user and clear session |
+| updateUser | updatePassword() | Update user password via Auth |
+| resetPasswordForEmail | forgotPassword() | Send password reset email |
+
+* Database Access (Direct Queries)
+
+| Table | Query Type | Used By | Purpose |
+|-------|-----------|---------|---------|
+| user_profiles | SELECT by user_id | fetchUserData | Fetch user profile and is_strideshift flag |
+| clients | SELECT by is_active or client_pk | fetchUserData | Fetch available clients for user |
 
 ---
-/Last Updated/: 2026-02-11
+/Last Updated/: 2026-02-18

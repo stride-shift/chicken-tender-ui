@@ -9,7 +9,7 @@ export function TenderDetailOverview({ tender }: TenderDetailOverviewProps) {
     <div className="space-y-6">
       {/* Description Section */}
       <div className="space-y-3">
-        <h3 className="text-subtitle font-serif font-semibold text-foreground">
+        <h3 className="text-subtitle font-semibold text-foreground">
           Description
         </h3>
         <div className="rounded-lg border border-border bg-card shadow-sm p-6">
@@ -23,7 +23,7 @@ export function TenderDetailOverview({ tender }: TenderDetailOverviewProps) {
       {tender.final_report_text && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <h3 className="text-subtitle font-serif font-semibold text-foreground">
+            <h3 className="text-subtitle font-semibold text-foreground">
               AI Summary
             </h3>
             {tender.quality_score !== null && (
@@ -45,7 +45,7 @@ export function TenderDetailOverview({ tender }: TenderDetailOverviewProps) {
 
       {/* Metadata Grid */}
       <div className="space-y-3">
-        <h3 className="text-subtitle font-serif font-semibold text-foreground">
+        <h3 className="text-subtitle font-semibold text-foreground">
           Metadata
         </h3>
         <div className="grid grid-cols-2 gap-3">
@@ -65,7 +65,7 @@ export function TenderDetailOverview({ tender }: TenderDetailOverviewProps) {
       {/* Location Section */}
       {(tender.town || tender.delivery_address) && (
         <div className="space-y-3">
-          <h3 className="text-subtitle font-serif font-semibold text-foreground">
+          <h3 className="text-subtitle font-semibold text-foreground">
             Location
           </h3>
           <div className="rounded-lg border border-border bg-card shadow-sm p-6">

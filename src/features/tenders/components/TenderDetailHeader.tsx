@@ -57,7 +57,7 @@ export function TenderDetailHeader({ tender }: TenderDetailHeaderProps) {
     <div className="px-4 py-2.5 bg-card border-b border-border">
       {/* Row 1: Title + Recommendation Badge */}
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-h3 font-serif font-semibold text-foreground truncate flex-1">
+        <h1 className="text-h3 font-semibold text-foreground truncate flex-1">
           {title}
         </h1>
         {tender.recommendation && (
@@ -70,7 +70,7 @@ export function TenderDetailHeader({ tender }: TenderDetailHeaderProps) {
       </div>
 
       {/* Row 2: Compact meta line with bullet separators */}
-      <div className="mt-0.5 flex items-center flex-wrap gap-x-1 text-body-small">
+      <div className="-mt-1 flex items-center flex-wrap gap-x-1 text-body-small">
         {/* Tender number (if we have a generated title) */}
         {tender.generated_title && (
           <>

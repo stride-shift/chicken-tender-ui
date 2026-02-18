@@ -69,7 +69,7 @@ src/
 │   ├── supabase.ts           # Supabase client + getClientCode()
 │   └── types.ts              # TypeScript interfaces (23 types)
 ├── hooks/                    # Global hooks (useToast)
-├── contexts/                 # React contexts (ToastContext)
+├── contexts/                 # React contexts (ToastContext, SidebarContext)
 ├── pages/                    # Route-level components (thin wrappers)
 └── styles/                   # Global styles
 #+END_EXAMPLE
@@ -179,7 +179,7 @@ At-a-glance metrics, alerts, featured tenders, and visualizations.
 │ Charts (2-column grid):                                                     │
 │ ┌──────────────────────┐  ┌─────────────────────┐                          │
 │ │ Score Distribution   │  │ Department Treemap  │                          │
-│ │ (Donut Chart)        │  │ (Top 12)            │                          │
+│ │ (Pie Chart)          │  │ (Top 12)            │                          │
 │ └──────────────────────┘  └─────────────────────┘                          │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ Tender Carousel (expand/collapse toggle for carousel vs. grid view)         │
@@ -491,8 +491,9 @@ Header displays logout button when authenticated. Calls =auth.logout()= to clear
 | [[file:src/features/tenders/quick_reference.org][src/features/tenders/quick_reference.org]] | Tenders feature implementation details |
 | [[file:src/features/dashboard/quick_reference.org][src/features/dashboard/quick_reference.org]] | Dashboard feature implementation details |
 | [[file:src/components/quick_reference.org][src/components/quick_reference.org]] | Shared component implementation details |
-| [[file:src/lib/quick_reference.org][src/lib/quick_reference.org]] | Lib, pages, hooks, contexts details |
+| [[file:src/lib/quick_reference.org][src/lib/quick_reference.org]] | Lib, types, global contexts, pages details |
+| [[file:src/pages/quick_reference.org][src/pages/quick_reference.org]] | Route-level page components, dependencies, patterns |
 | [[file:context_files/frontend.md][context_files/frontend.md]] | API documentation from backend |
 
 ---
-/Last Updated/: 2026-02-11
+/Last Updated/: 2026-02-18

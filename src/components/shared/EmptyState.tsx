@@ -9,7 +9,7 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center p-8 text-center">
-      <div className="text-subtitle font-serif font-semibold text-foreground mb-2">
+      <div className="text-subtitle font-sans font-semibold text-foreground mb-2">
         {title}
       </div>
       <div className="text-muted-foreground text-sm">

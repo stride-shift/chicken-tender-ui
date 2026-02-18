@@ -51,7 +51,7 @@ export function TenderOpportunityTab({ tender }: TenderOpportunityTabProps) {
       {/* Evaluator Notes - duplicated from TenderDetailEval */}
       {tender.llm_notes && (
         <section className="rounded-lg border border-border bg-card shadow-sm p-6">
-          <h3 className="text-subtitle font-serif font-semibold text-foreground mb-4">
+          <h3 className="text-subtitle font-semibold text-foreground mb-4">
             Evaluator Notes
           </h3>
           <div className="flex gap-3">
@@ -68,7 +68,7 @@ export function TenderOpportunityTab({ tender }: TenderOpportunityTabProps) {
       {/* Metadata */}
       <section className="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
         <div className="px-6 py-3 border-b border-border">
-          <h3 className="text-subtitle font-serif font-semibold text-foreground">
+          <h3 className="text-subtitle font-semibold text-foreground">
             Metadata
           </h3>
         </div>
@@ -94,7 +94,7 @@ export function TenderOpportunityTab({ tender }: TenderOpportunityTabProps) {
       {/* Contact & Briefing */}
       <section className="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
         <div className="px-6 py-3 border-b border-border">
-          <h3 className="text-subtitle font-serif font-semibold text-foreground">
+          <h3 className="text-subtitle font-semibold text-foreground">
             Contact & Briefing
           </h3>
         </div>

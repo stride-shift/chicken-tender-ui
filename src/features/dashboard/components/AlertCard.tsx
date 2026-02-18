@@ -23,7 +23,7 @@ const severityTextColors = {
  */
 export function AlertCard({ title, value, label, severity }: AlertCardProps) {
   return (
-    <div className={`rounded-lg border bg-card p-4 shadow-sm ${severityStyles[severity]}`}>
+    <div className={`rounded-lg border bg-card py-2 px-3 shadow-sm ${severityStyles[severity]}`}>
       <div className="flex items-center gap-2">
         <span className="text-foreground font-semibold">{title}:</span>
         <span className={`font-semibold ${severityTextColors[severity]}`}>

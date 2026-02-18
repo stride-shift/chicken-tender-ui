@@ -12,7 +12,7 @@ export function RecentChanges() {
       <div className="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
         {/* Header */}
         <div className="p-3 bg-muted border-b border-border">
-          <h3 className="font-serif font-semibold text-foreground">Recent Changes</h3>
+          <h3 className="font-sans font-semibold text-foreground">Recent Changes</h3>
         </div>
         {/* Loading state */}
         <div className="p-4">
@@ -28,7 +28,7 @@ export function RecentChanges() {
       <div className="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
         {/* Header */}
         <div className="p-3 bg-muted border-b border-border">
-          <h3 className="font-serif font-semibold text-foreground">Recent Changes</h3>
+          <h3 className="font-sans font-semibold text-foreground">Recent Changes</h3>
         </div>
         {/* Error state */}
         <div className="p-4">
@@ -45,7 +45,7 @@ export function RecentChanges() {
     <div className="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
       {/* Header */}
       <div className="p-3 bg-muted border-b border-border">
-        <h3 className="font-serif font-semibold text-foreground">Recent Changes</h3>
+        <h3 className="font-sans font-semibold text-foreground">Recent Changes</h3>
       </div>
 
       {/* Content */}
@@ -58,7 +58,7 @@ export function RecentChanges() {
                 ALERT
               </span>
               <div className="flex items-center gap-2">
-                <span className="text-h3 font-serif font-semibold text-warning">{changesCount}</span>
+                <span className="text-h3 font-sans font-semibold text-warning">{changesCount}</span>
                 <span className="text-foreground text-sm">
                   high-importance {changesCount === 1 ? 'change' : 'changes'}
                 </span>

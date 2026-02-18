@@ -66,7 +66,7 @@ export function ResetPasswordPage() {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
         <div className="w-full max-w-md rounded-lg border border-border bg-card shadow-lg p-8">
-          <h2 className="font-serif font-semibold text-2xl text-destructive text-center mb-4">
+          <h2 className="font-sans font-semibold text-2xl text-destructive text-center mb-4">
             Link Expired
           </h2>
           <p className="text-sm text-muted-foreground text-center mb-6 leading-relaxed">
@@ -93,7 +93,7 @@ export function ResetPasswordPage() {
         </div>
 
         {/* Header */}
-        <h2 className="font-serif font-semibold text-2xl text-foreground text-center mb-2">
+        <h2 className="font-sans font-semibold text-2xl text-foreground text-center mb-2">
           Set New Password
         </h2>
 

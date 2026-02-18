@@ -158,7 +158,7 @@ export function FilterPopup({
         <div className="p-4">
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-serif font-semibold text-foreground">
+            <h2 className="text-lg font-semibold text-foreground">
               Filter Tenders
             </h2>
             <button

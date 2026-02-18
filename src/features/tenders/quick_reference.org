@@ -1,5 +1,5 @@
 #+TITLE: Tenders Feature - Quick Reference
-#+DATE: 2026-02-11
+#+DATE: 2026-02-18
 
 
 * Overview
@@ -22,6 +22,9 @@ Primary feature module for viewing and filtering tenders. Contains list/detail c
 | TenderDetailEval | TenderDetailEval.tsx:22 | Evaluation tab displaying rubric scores |
 | TenderDetailDocs | TenderDetailDocs.tsx:7 | Documents tab listing files and downloads |
 | TenderDetailChanges | TenderDetailChanges.tsx:9 | Change history tab with field diffs |
+| TenderDetailOverview | TenderDetailOverview.tsx:7 | Overview tab displaying description, AI summary, and metadata |
+| TenderDetailContact | TenderDetailContact.tsx:8 | Contact tab displaying contact information and briefing details |
+| TenderRubricTab | TenderRubricTab.tsx:8 | Rubric definition display with knockouts and criteria evaluation |
 
 * Hooks
 
@@ -190,4 +193,4 @@ Helper functions:
 Date display: Published text is muted (stone-400), closing text uses conditional color (urgent=red-600, normal=stone-600, closed=stone-400).
 
 ---
-/Last Updated/: 2026-02-11
+/Last Updated/: 2026-02-18

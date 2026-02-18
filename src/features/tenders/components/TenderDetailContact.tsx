@@ -13,7 +13,7 @@ export function TenderDetailContact({ tender }: TenderDetailContactProps) {
     <div className="space-y-6">
       {/* Contact Information */}
       <div className="rounded-lg border border-border bg-card shadow-sm p-6">
-        <h3 className="text-subtitle font-serif font-semibold text-foreground mb-4">
+        <h3 className="text-subtitle font-semibold text-foreground mb-4">
           Contact Information
         </h3>
 
@@ -46,7 +46,7 @@ export function TenderDetailContact({ tender }: TenderDetailContactProps) {
       {hasBriefing && (
         <div className={`rounded-lg border shadow-sm p-6 ${tender.is_briefing_compulsory ? 'border-warning bg-warning/5' : 'border-border bg-card'}`}>
           <div className="flex items-center gap-2 mb-4">
-            <h3 className="text-subtitle font-serif font-semibold text-foreground">
+            <h3 className="text-subtitle font-semibold text-foreground">
               Briefing Session
             </h3>
             {tender.is_briefing_compulsory && (
@@ -89,7 +89,7 @@ export function TenderDetailContact({ tender }: TenderDetailContactProps) {
 
       {/* Additional Info */}
       <div className="rounded-lg border border-border bg-card shadow-sm p-6">
-        <h3 className="text-subtitle font-serif font-semibold text-foreground mb-4">
+        <h3 className="text-subtitle font-semibold text-foreground mb-4">
           Additional Details
         </h3>
 

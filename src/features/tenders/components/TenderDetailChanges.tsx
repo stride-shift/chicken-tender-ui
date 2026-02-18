@@ -10,7 +10,7 @@ export function TenderDetailChanges({ changes }: TenderDetailChangesProps) {
   if (!changes || changes.length === 0) {
     return (
       <div className="space-y-4">
-        <h3 className="text-subtitle font-serif font-semibold text-foreground">
+        <h3 className="text-subtitle font-semibold text-foreground">
           Change History
         </h3>
         <p className="text-body text-muted-foreground">No changes recorded for this tender.</p>
@@ -21,7 +21,7 @@ export function TenderDetailChanges({ changes }: TenderDetailChangesProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-subtitle font-serif font-semibold text-foreground">
+        <h3 className="text-subtitle font-semibold text-foreground">
           Change History
         </h3>
         <span className="px-2 py-1 text-caption text-muted-foreground bg-muted rounded">

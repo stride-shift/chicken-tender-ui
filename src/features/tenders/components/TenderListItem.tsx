@@ -59,12 +59,12 @@ export const TenderListItem = memo(function TenderListItem({ tender, isSelected,
 
         {/* Date info: published · closes */}
         <span>·</span>
-        <span className="whitespace-nowrap" title={`Published ${daysSincePublished} days ago`}>
+        <span className="whitespace-nowrap bg-muted/70 rounded px-1.5 py-0.5" title={`Published ${daysSincePublished} days ago`}>
           {publishedText}
         </span>
         <span>·</span>
         <span
-          className={`font-medium whitespace-nowrap ${isClosed ? 'text-muted-foreground' : isUrgent ? 'text-destructive' : 'text-foreground'}`}
+          className={`font-medium whitespace-nowrap bg-muted/70 rounded px-1.5 py-0.5 ${isClosed ? 'text-muted-foreground' : isUrgent ? 'text-destructive' : 'text-foreground'}`}
           title={isClosed ? 'Tender closed' : `Closes in ${tender.days_until_close} days`}
         >
           {closesText}

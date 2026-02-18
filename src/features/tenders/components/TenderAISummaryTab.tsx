@@ -19,7 +19,7 @@ export function TenderAISummaryTab({ tender }: TenderAISummaryTabProps) {
   return (
     <div className="space-y-6">
       <section className="rounded-lg border border-border bg-card shadow-sm p-6">
-        <h3 className="text-subtitle font-serif font-semibold text-foreground mb-4">
+        <h3 className="text-subtitle font-semibold text-foreground mb-4">
           AI Summary
         </h3>
         <FormattedSummary content={tender.final_report_text} />

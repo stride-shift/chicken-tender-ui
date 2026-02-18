@@ -11,7 +11,7 @@ export function ErrorState({
 }: ErrorStateProps) {
   return (
     <div className="flex flex-col items-center justify-center p-8 text-center">
-      <div className="text-subtitle font-serif font-semibold text-destructive mb-2">
+      <div className="text-subtitle font-sans font-semibold text-destructive mb-2">
         {title}
       </div>
       <div className="text-foreground mb-4">{message}</div>

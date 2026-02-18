@@ -33,11 +33,12 @@ React frontend for the TenderRender tender management platform. South African go
 
 | File | Coverage |
 |------|----------|
-| [[file:src/features/tenders/quick_reference.org][src/features/tenders/quick_reference.org]] | 13 components, 5 hooks for tender list/detail |
+| [[file:src/features/tenders/quick_reference.org][src/features/tenders/quick_reference.org]] | 16 components, 5 hooks for tender list/detail |
 | [[file:src/features/dashboard/quick_reference.org][src/features/dashboard/quick_reference.org]] | 10 components, 2 hooks for dashboard stats/visualizations |
-| [[file:src/components/quick_reference.org][src/components/quick_reference.org]] | Layout, shared, UI components (15 total) |
-| [[file:src/lib/quick_reference.org][src/lib/quick_reference.org]] | Supabase client, 23 TypeScript types, pages, contexts |
-| [[file:src/features/auth/quick_reference.org][src/features/auth/quick_reference.org]] | 3 components, 1 hook for login/auth |
+| [[file:src/components/quick_reference.org][src/components/quick_reference.org]] | Layout, shared, UI components (26 total) |
+| [[file:src/lib/quick_reference.org][src/lib/quick_reference.org]] | Supabase client, TypeScript types, global contexts, pages |
+| [[file:src/features/auth/quick_reference.org][src/features/auth/quick_reference.org]] | 4 components, auth context, Supabase auth calls |
+| [[file:src/pages/quick_reference.org][src/pages/quick_reference.org]] | 5 route-level page components, dependencies, patterns |
 
 ** Context Files (Backend Reference)
 
@@ -83,6 +84,7 @@ cp .env.example .env.local
 | /tenders/:id | Tender list with detail panel open |
 | /rubric | Client rubric display |
 | /login | Login screen |
+| /reset-password | Password reset via Supabase callback |
 
 * Supabase MCP
 
@@ -117,4 +119,4 @@ Project ID: =weylrgoywbqgkvpndzra=
 See [[file:ARCHITECTURE.org][ARCHITECTURE.org]] for full tech stack details and rationale.
 
 ---
-/Last Updated/: 2026-01-31
+/Last Updated/: 2026-02-18

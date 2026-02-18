@@ -3,12 +3,12 @@ import { StatCard } from './StatCard';
 
 // Stat configurations for dashboard metrics
 const statConfigs = [
-  { key: 'total_active', label: 'Total Active' },
-  { key: 'total_relevant', label: 'Relevant' },
-  { key: 'total_not_relevant', label: 'Not Relevant' },
-  { key: 'excellent_count', label: 'Excellent' },
-  { key: 'good_count', label: 'Good Fit' },
-  { key: 'worth_reviewing_count', label: 'Reviewing' },
+  { key: 'total_active', label: 'Total Active', color: '#3b82f6' },      // blue
+  { key: 'total_relevant', label: 'Relevant', color: '#22c55e' },        // green
+  { key: 'total_not_relevant', label: 'Not Relevant', color: '#94a3b8' },// slate gray
+  { key: 'excellent_count', label: 'Excellent', color: '#10b981' },      // emerald
+  { key: 'good_count', label: 'Good Fit', color: '#0ea5e9' },            // sky blue
+  { key: 'worth_reviewing_count', label: 'Reviewing', color: '#f59e0b' },// amber
 ] as const;
 
 /**
@@ -24,7 +24,7 @@ export function StatsGrid() {
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
-              className="h-20 bg-muted animate-pulse rounded-lg"
+              className="h-16 bg-muted animate-pulse rounded-lg"
             />
           ))}
         </div>
@@ -52,6 +52,7 @@ export function StatsGrid() {
             label={config.label}
             value={stats?.[config.key] ?? 0}
             featured={index === 0}
+            accentColor={config.color}
           />
         ))}
       </div>

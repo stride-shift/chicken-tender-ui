@@ -52,7 +52,7 @@ export function ForgotPasswordModal({ isOpen, onClose, onSubmit }: ForgotPasswor
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <h2 className="font-serif font-semibold text-2xl text-foreground text-center mb-2">
+        <h2 className="font-sans font-semibold text-2xl text-foreground text-center mb-2">
           Reset Password
         </h2>
 

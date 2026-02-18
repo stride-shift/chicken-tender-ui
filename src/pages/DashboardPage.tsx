@@ -1,6 +1,5 @@
 import {
   StatsGrid,
-  AlertsRow,
   TenderCarousel,
   ScoreDistributionChart,
   DepartmentTreemap,
@@ -9,11 +8,8 @@ import {
 export function DashboardPage() {
   return (
     <div className="space-y-4 bg-background">
-      {/* Header: Stats + Alerts */}
-      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-        <StatsGrid />
-        <AlertsRow />
-      </div>
+      {/* Header: Stats */}
+      <StatsGrid />
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

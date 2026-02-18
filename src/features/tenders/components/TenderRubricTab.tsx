@@ -73,7 +73,7 @@ export function TenderRubricTab({ rubricPk }: TenderRubricTabProps) {
     <div className="space-y-6">
       {/* Header */}
       <div className="rounded-lg border border-border bg-card shadow-sm p-6">
-        <h3 className="text-h3 font-serif font-semibold text-foreground">Evaluation Rubric</h3>
+        <h3 className="text-h3 font-semibold text-foreground">Evaluation Rubric</h3>
         <p className="text-caption text-muted-foreground mt-1 tabular-nums">
           Version {rubric.version} - Updated {formatDate(rubric.updated_at)}
         </p>
@@ -87,7 +87,7 @@ export function TenderRubricTab({ rubricPk }: TenderRubricTabProps) {
               <span className="inline-flex items-center rounded-full border border-transparent bg-destructive px-2.5 py-0.5 text-xs font-semibold text-destructive-foreground">
                 KNOCKOUT
               </span>
-              <h4 className="text-subtitle font-serif font-semibold text-foreground">Knockout Criteria</h4>
+              <h4 className="text-subtitle font-semibold text-foreground">Knockout Criteria</h4>
             </div>
             <p className="text-caption text-muted-foreground mt-1">
               These must pass for a tender to be considered relevant.
@@ -109,7 +109,7 @@ export function TenderRubricTab({ rubricPk }: TenderRubricTabProps) {
               <span className="inline-flex items-center rounded-full border border-transparent bg-info px-2.5 py-0.5 text-xs font-semibold text-info-foreground">
                 SCORING
               </span>
-              <h4 className="text-subtitle font-serif font-semibold text-foreground">Scoring Criteria</h4>
+              <h4 className="text-subtitle font-semibold text-foreground">Scoring Criteria</h4>
             </div>
             <p className="text-caption text-muted-foreground mt-1">
               Tenders are scored on these factors.
@@ -131,7 +131,7 @@ export function TenderRubricTab({ rubricPk }: TenderRubricTabProps) {
               <span className="inline-flex items-center rounded-full border border-transparent bg-accent px-2.5 py-0.5 text-xs font-semibold text-accent-foreground">
                 THRESHOLDS
               </span>
-              <h4 className="text-subtitle font-serif font-semibold text-foreground">Scoring Thresholds</h4>
+              <h4 className="text-subtitle font-semibold text-foreground">Scoring Thresholds</h4>
             </div>
           </div>
           <div className="p-4 space-y-3">

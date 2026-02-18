@@ -3,9 +3,9 @@ import type { PieLabelRenderProps } from 'recharts'
 import { useDashboardStats } from '../hooks/useDashboardStats'
 
 const COLORS = {
-  excellent: 'hsl(32, 80%, 40%)',    // dark amber/gold (deepest, most saturated)
-  good: 'hsl(45, 93%, 50%)',         // medium gold (the primary gold)
-  review: 'hsl(48, 85%, 65%)',       // light gold (lightest shade)
+  excellent: '#22c55e',  // green-500 — excellent = green
+  good: '#3b82f6',       // blue-500 — good = blue
+  review: '#f59e0b',     // amber-500 — review = amber/orange
 }
 
 interface ChartData {
@@ -21,7 +21,7 @@ export function ScoreDistributionChart() {
     return (
       <div className="rounded-lg border border-border bg-card shadow-sm p-6">
         <div className="mb-4">
-          <h3 className="font-serif font-semibold text-foreground">Score Distribution</h3>
+          <h3 className="font-sans font-semibold text-foreground">Score Distribution</h3>
         </div>
         <div className="h-56 flex items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-primary" />
@@ -34,7 +34,7 @@ export function ScoreDistributionChart() {
     return (
       <div className="rounded-lg border border-border bg-card shadow-sm p-6">
         <div className="mb-4">
-          <h3 className="font-serif font-semibold text-foreground">Score Distribution</h3>
+          <h3 className="font-sans font-semibold text-foreground">Score Distribution</h3>
         </div>
         <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-md">
           <p className="text-sm">{(error as Error).message}</p>
@@ -58,7 +58,7 @@ export function ScoreDistributionChart() {
     return (
       <div className="rounded-lg border border-border bg-card shadow-sm p-6">
         <div className="mb-4">
-          <h3 className="font-serif font-semibold text-foreground">Score Distribution</h3>
+          <h3 className="font-sans font-semibold text-foreground">Score Distribution</h3>
         </div>
         <div className="h-56 flex items-center justify-center text-muted-foreground">
           <p className="text-sm">No relevant tenders</p>
@@ -126,21 +126,21 @@ export function ScoreDistributionChart() {
     <div className="rounded-lg border border-border bg-card shadow-sm p-6">
       {/* Header */}
       <div className="mb-4">
-        <h3 className="font-serif font-semibold text-foreground">Score Distribution</h3>
+        <h3 className="font-sans font-semibold text-foreground">Score Distribution</h3>
         <p className="text-muted-foreground text-sm mt-1">{total} relevant tenders</p>
       </div>
 
       {/* Chart area */}
       <div className="relative">
-        <div className="h-48">
+        <div className="h-40">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={chartData}
                 cx="50%"
                 cy="50%"
-                innerRadius={45}
-                outerRadius={75}
+                innerRadius={38}
+                outerRadius={65}
                 paddingAngle={3}
                 dataKey="value"
                 labelLine={false}

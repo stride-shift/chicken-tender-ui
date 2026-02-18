@@ -29,7 +29,7 @@ export function AlertsRow() {
   const recentChangesCount = stats?.high_importance_changes_24h ?? 0;
 
   return (
-    <div className="flex gap-4 text-sm">
+    <div className="flex flex-col gap-2 text-sm">
       <AlertCard
         title="Briefings"
         value={briefingsCount}

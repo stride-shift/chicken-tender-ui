@@ -1,5 +1,5 @@
 #+TITLE: Lib, Pages, Hooks & Contexts - Quick Reference
-#+DATE: 2026-02-11
+#+DATE: 2026-02-18
 
 * Overview
 
@@ -58,8 +58,8 @@ Core utilities, type definitions, page components, global hooks, and React conte
 
 | Page | File | Route | Purpose |
 |------|------|-------|---------|
-| DashboardPage | DashboardPage.tsx:9 | / | Renders StatsGrid, AlertsRow, charts, TenderCarousel |
-| TendersPage | TendersPage.tsx:6 | /tenders, /tenders/:tenderId | Tender list and detail side-by-side |
+| DashboardPage | DashboardPage.tsx:8 | / | Renders StatsGrid, AlertsRow, charts, TenderCarousel |
+| TendersPage | TendersPage.tsx:6 | /tenders, /tenders/:tenderId | Tender list with optional detail panel |
 | RubricPage | RubricPage.tsx:4 | /rubric | Displays active client evaluation rubric |
 | LoginPage | LoginPage.tsx:7 | /login | Login with forgot-password modal |
 | ResetPasswordPage | ResetPasswordPage.tsx:6 | /reset-password | Handles Supabase magic link reset |
@@ -89,24 +89,50 @@ Core utilities, type definitions, page components, global hooks, and React conte
 
 | Hook | File | Purpose |
 |------|------|---------|
-| useToast | useToast.ts:1 | Re-exports useToastContext and toast types |
+| useToast | useToast.ts:1 | Re-exports useToastContext for toast notifications |
+
+**Details**: useToast.ts re-exports useToastContext (ToastContext.tsx:62) and Toast/ToastType types.
 
 * Contexts (=contexts/=)
 
+Global React contexts providing state management for app-wide features.
+
 | Context | File | Purpose |
 |---------|------|---------|
-| ToastContext | ToastContext.tsx:17 | Provides toast state and methods |
+| ToastContext | ToastContext.tsx:17 | Provides toast notification state and methods |
+| SidebarContext | SidebarContext.tsx:10 | Provides sidebar collapse/expand state |
 
-*** ToastContext Details
+*** ToastContext
 
-| Export | Line | Purpose |
-|--------|------|---------|
-| ToastType | ToastContext.tsx:3 | Type for success/error/info toast types |
-| Toast | ToastContext.tsx:5-9 | Toast object with id, message, type |
-| ToastProvider | ToastContext.tsx:19-60 | Provider component wrapping app |
-| useToastContext | ToastContext.tsx:62-66 | Hook to access toast context |
-| addToast | ToastContext.tsx:42-53 | Adds toast, auto-removes after 5000ms |
-| removeToast | ToastContext.tsx:32-40 | Manually removes toast by id |
+Manages toast notifications (success/error/info messages). Auto-dismisses after 5000ms.
+
+| Export | Line | Type | Purpose |
+|--------|------|------|---------|
+| ToastType | ToastContext.tsx:3 | Type | 'success' \| 'error' \| 'info' |
+| Toast | ToastContext.tsx:5-9 | Interface | { id, message, type } |
+| ToastProvider | ToastContext.tsx:19 | Component | Wraps app, manages toasts state |
+| useToastContext | ToastContext.tsx:62 | Hook | Returns { toasts, addToast, removeToast } |
+| addToast | ToastContext.tsx:42 | Method | (message, type) => adds toast, auto-removes after 5000ms |
+| removeToast | ToastContext.tsx:32 | Method | (id) => manually removes toast, clears timeout |
+
+**Usage in App**: App.tsx:39 wraps entire app with ToastProvider.
+
+*** SidebarContext
+
+Manages sidebar collapsed/expanded state. Used by TendersPage to auto-collapse on first tender selection.
+
+| Export | Line | Type | Purpose |
+|--------|------|------|---------|
+| SidebarContextValue | SidebarContext.tsx:3-8 | Interface | { isCollapsed, toggleSidebar, collapseSidebar, expandSidebar } |
+| SidebarProvider | SidebarContext.tsx:16 | Component | Wraps app, manages sidebar state |
+| useSidebar | SidebarContext.tsx:41 | Hook | Returns SidebarContextValue, throws if not in provider |
+| toggleSidebar | SidebarContext.tsx:19 | Method | () => toggles isCollapsed |
+| collapseSidebar | SidebarContext.tsx:23 | Method | () => sets isCollapsed to true |
+| expandSidebar | SidebarContext.tsx:27 | Method | () => sets isCollapsed to false |
+
+**Usage in App**: App.tsx:40 wraps app (after ToastProvider) with SidebarProvider.
+
+**Usage in Pages**: TendersPage.tsx:4 imports useSidebar, TendersPage.tsx:9 calls collapseSidebar on first tender click.
 
 * App Entry Points
 
@@ -119,14 +145,14 @@ Core utilities, type definitions, page components, global hooks, and React conte
 
 | Line | Details |
 |------|---------|
-| 1-9 | Imports: React, Router, Auth, components |
+| 1-9 | Imports: React, Router, Auth, components, Contexts |
 | 11-15 | Lazy-loaded pages: Dashboard, Tenders, Rubric, ResetPassword |
 | 17-32 | ProtectedRoute wrapper checks isAuthenticated |
-| 37-73 | App function wraps app in ToastProvider → SidebarProvider → ErrorBoundary |
-| 43-67 | Routes with Suspense fallback |
+| 37 | App function start |
+| 39-72 | Provider chain: ToastProvider → SidebarProvider → ErrorBoundary → Suspense → Routes |
 | 45 | Route: /login → LoginPage (outside AppShell) |
 | 48 | Route: /reset-password → ResetPasswordPage (outside AppShell) |
-| 51-65 | Wraps protected routes in ProtectedRoute + AppShell |
+| 51-66 | Protected routes wrapped in ProtectedRoute + AppShell |
 | 57 | Route: / → DashboardPage |
 | 58 | Route: /tenders → TendersPage |
 | 59 | Route: /tenders/:tenderId → TendersPage |
@@ -138,7 +164,7 @@ Core utilities, type definitions, page components, global hooks, and React conte
 
 | Line | Details |
 |------|---------|
-| 1-8 | Imports: React, ReactDOM, TanStack Query, Router, Auth |
+| 1-7 | Imports: React, ReactDOM, TanStack Query, Router, Auth, styles |
 | 9-16 | Creates QueryClient with 5-min staleTime, disables refetch on focus |
 | 18-28 | Renders app in StrictMode with Provider chain |
 | 19 | Wraps in StrictMode |
@@ -169,4 +195,4 @@ React Router v6 setup with nested routes and URL parameters.
 | VITE_SUPABASE_ANON_KEY | supabase.ts:4 | Supabase anonymous key |
 
 ---
-/Last Updated/: 2026-02-11
+/Last Updated/: 2026-02-18

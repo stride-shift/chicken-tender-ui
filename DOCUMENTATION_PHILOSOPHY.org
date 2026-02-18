@@ -107,8 +107,10 @@ Located in =src/= directories:
 |------|-----------------|
 | src/features/tenders/quick_reference.org | TenderList, TenderDetail components, filter/detail hooks |
 | src/features/dashboard/quick_reference.org | StatsGrid, AlertsRow, RecentChanges, dashboard hooks |
+| src/features/auth/quick_reference.org | Auth components, AuthContext, Supabase auth calls |
 | src/components/quick_reference.org | Layout (AppShell, Header, Sidebar), Shared (Badges, States), UI (Toast) |
-| src/lib/quick_reference.org | Supabase client, TypeScript types, utility functions |
+| src/lib/quick_reference.org | Supabase client, TypeScript types, global contexts (Toast, Sidebar) |
+| src/pages/quick_reference.org | Route-level page components, dependencies, patterns |
 
 ** Context Files (Reference Material)
 
@@ -311,4 +313,4 @@ Before committing documentation changes:
 - [ ] "Last Updated" date is current
 
 ---
-/Last Updated/: 2026-01-29
+/Last Updated/: 2026-02-18

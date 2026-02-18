@@ -1,11 +1,11 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import { useRelevantTenders } from '../hooks/useRelevantTenders'
 
-// Gold Executive urgency colors with gradients
+// Urgency colors: red for critical, orange for urgent, blue for normal, gray for future
 const URGENCY_COLORS = {
   week1: { solid: 'hsl(0, 84%, 60%)', gradient: ['hsl(0, 84%, 70%)', 'hsl(0, 84%, 60%)', 'hsl(0, 84%, 50%)'] },
-  week2: { solid: 'hsl(38, 92%, 50%)', gradient: ['hsl(38, 92%, 60%)', 'hsl(38, 92%, 50%)', 'hsl(38, 92%, 40%)'] },
-  week3: { solid: 'hsl(45, 93%, 58%)', gradient: ['hsl(45, 93%, 68%)', 'hsl(45, 93%, 58%)', 'hsl(45, 93%, 48%)'] },
+  week2: { solid: 'hsl(25, 95%, 53%)', gradient: ['hsl(25, 95%, 63%)', 'hsl(25, 95%, 53%)', 'hsl(25, 95%, 43%)'] },
+  week3: { solid: 'hsl(221, 83%, 53%)', gradient: ['hsl(221, 83%, 63%)', 'hsl(221, 83%, 53%)', 'hsl(221, 83%, 43%)'] },
   week4: { solid: 'hsl(220, 14%, 65%)', gradient: ['hsl(220, 14%, 75%)', 'hsl(220, 14%, 65%)', 'hsl(220, 14%, 55%)'] },
 }
 
@@ -23,7 +23,7 @@ export function ClosingTimelineChart() {
     return (
       <div className="rounded-lg border border-border bg-card shadow-sm p-6">
         <div className="mb-4">
-          <h3 className="font-serif font-semibold text-foreground">Closing Timeline</h3>
+          <h3 className="font-sans font-semibold text-foreground">Closing Timeline</h3>
         </div>
         <div className="h-56 flex items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-primary" />
@@ -36,7 +36,7 @@ export function ClosingTimelineChart() {
     return (
       <div className="rounded-lg border border-border bg-card shadow-sm p-6">
         <div className="mb-4">
-          <h3 className="font-serif font-semibold text-foreground">Closing Timeline</h3>
+          <h3 className="font-sans font-semibold text-foreground">Closing Timeline</h3>
         </div>
         <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-md">
           <p className="text-sm">{error.message}</p>
@@ -66,7 +66,7 @@ export function ClosingTimelineChart() {
     return (
       <div className="rounded-lg border border-border bg-card shadow-sm p-6">
         <div className="mb-4">
-          <h3 className="font-serif font-semibold text-foreground">Closing Timeline</h3>
+          <h3 className="font-sans font-semibold text-foreground">Closing Timeline</h3>
         </div>
         <div className="h-56 flex items-center justify-center text-muted-foreground">
           <p className="text-sm">No tenders closing in 28 days</p>
@@ -99,7 +99,7 @@ export function ClosingTimelineChart() {
     <div className="rounded-lg border border-border bg-card shadow-sm p-6">
       {/* Header */}
       <div className="mb-4">
-        <h3 className="font-serif font-semibold text-foreground">Closing Timeline</h3>
+        <h3 className="font-sans font-semibold text-foreground">Closing Timeline</h3>
         <p className="text-muted-foreground text-sm mt-1">
           {totalClosing} tender{totalClosing !== 1 ? 's' : ''} closing in next 28 days
         </p>
