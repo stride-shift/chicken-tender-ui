@@ -1,7 +1,6 @@
 interface StatCardProps {
   label: string;
   value: number | string;
-  featured?: boolean;
   accentColor?: string;
 }
 
@@ -9,7 +8,7 @@ interface StatCardProps {
  * Clean stat display card showing key metrics.
  * Used in the dashboard stats grid.
  */
-export function StatCard({ label, value, featured = false, accentColor = '#3b82f6' }: StatCardProps) {
+export function StatCard({ label, value, accentColor = '#3b82f6' }: StatCardProps) {
   return (
     <div
       className="rounded-lg border border-border bg-card shadow-sm p-3 text-center"

@@ -46,12 +46,11 @@ export function StatsGrid() {
   return (
     <div className="rounded-lg border border-border bg-card shadow-sm p-4">
       <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-        {statConfigs.map((config, index) => (
+        {statConfigs.map((config) => (
           <StatCard
             key={config.key}
             label={config.label}
             value={stats?.[config.key] ?? 0}
-            featured={index === 0}
             accentColor={config.color}
           />
         ))}

@@ -3,6 +3,7 @@ import {
   TenderCarousel,
   ScoreDistributionChart,
   DepartmentTreemap,
+  CalendarPlaceholder,
 } from '@/features/dashboard'
 
 export function DashboardPage() {
@@ -12,9 +13,10 @@ export function DashboardPage() {
       <StatsGrid />
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <ScoreDistributionChart />
         <DepartmentTreemap />
+        <CalendarPlaceholder />
       </div>
 
       {/* Featured Carousel */}
